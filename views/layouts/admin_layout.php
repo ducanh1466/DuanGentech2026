@@ -28,7 +28,7 @@
         <aside class="admin-sidebar">
             <div class="sidebar-header">
                 <a href="<?= BASE_URL ?>?action=admin" class="sidebar-brand p-2 d-flex justify-content-center">
-                    <img src="<?= BASE_URL ?>assets/uploads/logo.jpg" alt="DGENTECH Logo"
+                    <img src="<?= BASE_URL ?>assets/uploads/logo.png" alt="DGENTECH Logo"
                         style="height: 80px; object-fit: contain; max-width: 100%; transform: scale(1.3); margin: 10px 0;">
                 </a>
                 <button class="sidebar-close" id="sidebarCloseBtn">

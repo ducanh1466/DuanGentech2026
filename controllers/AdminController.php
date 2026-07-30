@@ -2,7 +2,6 @@
 
 class AdminController
 {
-
     public function __construct()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -37,7 +36,6 @@ class AdminController
             if ($action_type === 'create') {
                 $name = trim($_POST['name'] ?? '');
                 $description = trim($_POST['description'] ?? '');
-
                 if (empty($name)) {
                     $_SESSION['error'] = 'Tên danh mục không được để trống!';
                 } elseif (mb_strlen($name) > 255) {
@@ -75,6 +73,61 @@ class AdminController
         $pageTitle = 'Danh mục';
         $action = 'admin-categories';
         $view = 'admin/categories';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+
+    // Chức năng: Quản lý thương hiệu (Hiển thị danh sách, thêm, sửa, xóa thương hiệu)
+    public function brands()
+    {
+        $brandModel = new BrandModel();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $action_type = $_POST['action_type'] ?? 'create';
+
+            if ($action_type === 'create') {
+                $name = trim($_POST['name'] ?? '');
+                $description = trim($_POST['description'] ?? '');
+                $status = $_POST['status'] ?? 1;
+
+                if (empty($name)) {
+                    $_SESSION['error'] = 'Tên thương hiệu không được để trống!';
+                } elseif (mb_strlen($name) > 255) {
+                    $_SESSION['error'] = 'Tên thương hiệu không được vượt quá 255 ký tự!';
+                } else {
+                    $brandModel->insertBrand($name, $description, $status);
+                    $_SESSION['success'] = 'Thêm thương hiệu thành công!';
+                }
+            } elseif ($action_type === 'update') {
+                $id = $_POST['brand_id'] ?? 0;
+                $name = trim($_POST['name'] ?? '');
+                $description = trim($_POST['description'] ?? '');
+                $status = $_POST['status'] ?? 1;
+
+                if (empty($name)) {
+                    $_SESSION['error'] = 'Tên thương hiệu không được để trống!';
+                } elseif (mb_strlen($name) > 255) {
+                    $_SESSION['error'] = 'Tên thương hiệu không được vượt quá 255 ký tự!';
+                } else {
+                    $brandModel->updateBrand($id, $name, $description, $status);
+                    $_SESSION['success'] = 'Cập nhật thương hiệu thành công!';
+                }
+            } elseif ($action_type === 'delete') {
+                $id = $_POST['brand_id'] ?? 0;
+                $brandModel->deleteBrand($id);
+                $_SESSION['success'] = 'Xóa thương hiệu thành công!';
+            }
+
+            header('Location: ' . BASE_URL . '?action=admin-brands');
+            exit;
+        }
+
+        $brands = $brandModel->getAllBrands();
+
+        $title = 'Quản lý thương hiệu - DGENTECH Admin';
+        $pageTitle = 'Thương hiệu';
+        $action = 'admin-brands';
+        $view = 'admin/brands';
         require_once PATH_VIEW_ADMIN;
     }
 }

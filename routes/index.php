@@ -8,5 +8,7 @@ match ($action) {
         //admin
     'admin'                 => (new AdminController)->dashboard(),
     'admin-categories'      => (new AdminController)->categories(),
+    'admin-brands'          => (new AdminController)->brands()
     
+
 };

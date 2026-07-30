@@ -169,7 +169,6 @@
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="<?= BASE_JS ?>main.js"></script>
     <script src="<?= BASE_JS ?>admin.js"></script>
     <script>
         // Auto-dismiss alerts after 2 seconds

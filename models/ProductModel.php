@@ -10,7 +10,7 @@ class ProductModel extends BaseModel
 
     // Lấy toàn bộ danh sách sản phẩm (Dùng nhiều trong trang quản trị Admin)
     // Bao gồm: tên danh mục, tên thương hiệu, 1 ảnh đại diện và mức giá rẻ nhất trong các biến thể
-    public function getAllProducts($keyword = '')
+    public function getAllProducts($keyword = '', $limit = 0, $offset = 0)
     {
         // Get products with their primary image and minimum variant price
         $sql = "SELECT p.*, c.category_name, b.brand_name,
@@ -24,13 +24,35 @@ class ProductModel extends BaseModel
             $sql .= " WHERE p.product_name LIKE :keyword";
         }
         $sql .= " ORDER BY p.product_id DESC";
+        
+        if ($limit > 0) {
+            $sql .= " LIMIT :limit OFFSET :offset";
+        }
 
         $stmt = $this->pdo->prepare($sql);
         if (!empty($keyword)) {
             $stmt->bindValue(':keyword', "%$keyword%");
         }
+        if ($limit > 0) {
+            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+        }
         $stmt->execute();
         return $stmt->fetchAll();
+    }
+
+    public function countTotalProducts($keyword = '')
+    {
+        $sql = "SELECT COUNT(*) as total FROM {$this->table} p";
+        if (!empty($keyword)) {
+            $sql .= " WHERE p.product_name LIKE :keyword";
+        }
+        $stmt = $this->pdo->prepare($sql);
+        if (!empty($keyword)) {
+            $stmt->bindValue(':keyword', "%$keyword%");
+        }
+        $stmt->execute();
+        return $stmt->fetch()['total'] ?? 0;
     }
 
     // Lấy danh sách các sản phẩm mới nhất (Thường dùng để hiển thị ngoài trang chủ Client)

@@ -10,19 +10,42 @@ class UserModel extends BaseModel
         return $stmt->fetchColumn();
     }
     // Lấy tất cả người dùng (hỗ trợ tìm kiếm)
-    public function getAllUsers($keyword = '')
+    public function getAllUsers($keyword = '', $limit = 0, $offset = 0)
     {
         $sql = "SELECT * FROM tb_users";
         if (!empty($keyword)) {
             $sql .= " WHERE full_name LIKE :keyword OR email LIKE :keyword OR phone LIKE :keyword";
         }
         $sql .= " ORDER BY user_id DESC";
+        
+        if ($limit > 0) {
+            $sql .= " LIMIT :limit OFFSET :offset";
+        }
+        
+        $stmt = $this->pdo->prepare($sql);
+        if (!empty($keyword)) {
+            $stmt->bindValue(':keyword', "%$keyword%");
+        }
+        if ($limit > 0) {
+            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function countTotalUsersFiltered($keyword = '')
+    {
+        $sql = "SELECT COUNT(*) as total FROM tb_users";
+        if (!empty($keyword)) {
+            $sql .= " WHERE full_name LIKE :keyword OR email LIKE :keyword OR phone LIKE :keyword";
+        }
         $stmt = $this->pdo->prepare($sql);
         if (!empty($keyword)) {
             $stmt->bindValue(':keyword', "%$keyword%");
         }
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchColumn() ?? 0;
     }
     // Lấy thông tin 1 người dùng
     public function getUserById($id)

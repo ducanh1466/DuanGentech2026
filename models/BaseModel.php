@@ -18,6 +18,11 @@ class BaseModel
         }
     }
 
+    public function getPdo()
+    {
+        return $this->pdo;
+    }
+
     // Hủy kết nối CSDL
     public function __destruct()
     {

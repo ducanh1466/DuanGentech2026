@@ -16,7 +16,7 @@ class DashboardModel extends BaseModel
     {
         try {
             $stmt = $this->pdo->query("SELECT SUM(total_amount) FROM tb_orders WHERE status = 'completed'");
-            return (int) $stmt->fetchColumn();
+            return (float) $stmt->fetchColumn();
         } catch (PDOException $e) {
             return 0;
         }
@@ -47,7 +47,7 @@ class DashboardModel extends BaseModel
         try {
             $sql = "SELECT order_id, recipient_name, total_amount, status 
                     FROM tb_orders 
-                    ORDER BY created_at DESC 
+                    ORDER BY order_date DESC 
                     LIMIT :limit";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -65,10 +65,10 @@ class DashboardModel extends BaseModel
             $revenue = array_fill(0, 12, 0);
 
             // Truy vấn lấy tổng doanh thu theo từng tháng trong năm (chỉ lấy đơn hàng đã hoàn thành)
-            $sql = "SELECT MONTH(created_at) as month, SUM(total_amount) as total 
+            $sql = "SELECT MONTH(order_date) as month, SUM(total_amount) as total 
                     FROM tb_orders 
-                    WHERE YEAR(created_at) = :year AND status = 'completed'
-                    GROUP BY MONTH(created_at)";
+                    WHERE YEAR(order_date) = :year AND status = 'completed'
+                    GROUP BY MONTH(order_date)";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':year', $year, PDO::PARAM_INT);
             $stmt->execute();
@@ -76,7 +76,7 @@ class DashboardModel extends BaseModel
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($results as $row) {
                 // index từ 0 đến 11 tương ứng với tháng 1 đến 12
-                $revenue[(int)$row['month'] - 1] = (int)$row['total'];
+                $revenue[(int)$row['month'] - 1] = (float)$row['total'];
             }
 
             return ['revenue' => $revenue];

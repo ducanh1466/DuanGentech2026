@@ -4,19 +4,23 @@ $action = $_GET['action'] ?? '/';
 
 
 match ($action) {
-    '/'         => (new HomeController)->index(),
-    
-    'admin'                => (new AdminController)->dashboard(),
-    'admin-categories'     => (new AdminController)->categories(),
-    'admin-category-create'=> (new AdminController)->categoryCreate(),
-    'admin-category-update'=> (new AdminController)->categoryUpdate(),
-    'admin-category-delete'=> (new AdminController)->categoryDelete(),
-    'admin-brands'         => (new AdminController)->brands(),
-    'admin-brand-create'   => (new AdminController)->brandCreate(),
-    'admin-brand-update'   => (new AdminController)->brandUpdate(),
-    'admin-brand-delete'   => (new AdminController)->brandDelete(),
-    'admin-products'       => (new AdminController)->products(),
+    '/' => (new HomeController)->index(),
+
+    'admin' => (new AdminController)->dashboard(),
+    'admin-categories' => (new AdminController)->categories(),
+    'admin-category-form' => (new AdminController)->categoryForm(),
+    'admin-category-detail' => (new AdminController)->categoryDetail(),
+    'admin-category-create' => (new AdminController)->categoryCreate(),
+    'admin-category-update' => (new AdminController)->categoryUpdate(),
+    'admin-category-delete' => (new AdminController)->categoryDelete(),
+    'admin-brands' => (new AdminController)->brands(),
+    'admin-brand-form' => (new AdminController)->brandForm(),
+    'admin-brand-detail' => (new AdminController)->brandDetail(),
+    'admin-brand-create' => (new AdminController)->brandCreate(),
+    'admin-brand-update' => (new AdminController)->brandUpdate(),
+    'admin-brand-delete' => (new AdminController)->brandDelete(),
+    'admin-products' => (new AdminController)->products(),
     'admin-product-create' => (new AdminController)->createProduct(),
-    'admin-product-edit'   => (new AdminController)->editProduct(),
+    'admin-product-edit' => (new AdminController)->editProduct(),
     'admin-product-delete' => (new AdminController)->deleteProduct(),
 };

@@ -23,4 +23,11 @@ match ($action) {
     'admin-product-create' => (new AdminController)->createProduct(),
     'admin-product-edit' => (new AdminController)->editProduct(),
     'admin-product-delete' => (new AdminController)->deleteProduct(),
+    'admin-users'         => (new AdminController)->users(),
+    'admin-user-create'   => (new AdminController)->createUser(),
+    'admin-user-store'    => (new AdminController)->storeUser(),
+    'admin-user-edit'     => (new AdminController)->editUser(),
+    'admin-user-update'   => (new AdminController)->updateUser(),
+    'admin-user-delete'   => (new AdminController)->deleteUser(),
+    'admin-user-status'   => (new AdminController)->changeUserStatus(),
 };

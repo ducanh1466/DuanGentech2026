@@ -88,11 +88,6 @@
                 <?php if ($_SESSION['user']['role'] == 1): ?>
                     <div class="nav-label">Tùy Chọn </div>
                     <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-gear"></i> Cài đặt
-                            </a>
-                        </li>
                     <?php else: ?>
                         <ul class="nav flex-column">
                         <?php endif; ?>

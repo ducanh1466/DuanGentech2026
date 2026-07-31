@@ -7,7 +7,13 @@ match ($action) {
     
     'admin'                => (new AdminController)->dashboard(),
     'admin-categories'     => (new AdminController)->categories(),
+    'admin-category-create'=> (new AdminController)->categoryCreate(),
+    'admin-category-update'=> (new AdminController)->categoryUpdate(),
+    'admin-category-delete'=> (new AdminController)->categoryDelete(),
     'admin-brands'         => (new AdminController)->brands(),
+    'admin-brand-create'   => (new AdminController)->brandCreate(),
+    'admin-brand-update'   => (new AdminController)->brandUpdate(),
+    'admin-brand-delete'   => (new AdminController)->brandDelete(),
     'admin-products'       => (new AdminController)->products(),
     'admin-product-create' => (new AdminController)->productForm(),
     'admin-product-edit'   => (new AdminController)->productForm(),

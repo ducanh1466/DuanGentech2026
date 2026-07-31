@@ -5,9 +5,19 @@
 <div class="admin-table-card">
     <div class="card-header-custom">
         <h6><i class="bi bi-star me-2"></i>Quản lý thương hiệu</h6>
-        <a href="<?= BASE_URL ?>?action=admin-brand-form" class="btn btn-accent btn-sm">
-            <i class="bi bi-plus-lg me-1"></i> Thêm thương hiệu
-        </a>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+            <form method="GET" class="d-flex">
+                <input type="hidden" name="action" value="admin-brands">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute"
+                        style="left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);"></i>
+                    <input type="text" name="keyword" class="admin-search-input" value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>" placeholder="Tìm thương hiệu...">
+                </div>
+            </form>
+            <a href="<?= BASE_URL ?>?action=admin-brand-form" class="btn btn-accent btn-sm">
+                <i class="bi bi-plus-lg me-1"></i> Thêm thương hiệu
+            </a>
+        </div>
     </div>
 
     <div class="table-responsive">

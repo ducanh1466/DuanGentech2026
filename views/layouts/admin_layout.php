@@ -28,10 +28,12 @@
         <aside class="admin-sidebar">
             <div class="sidebar-header">
                 <a href="<?= BASE_URL ?>?action=admin" class="sidebar-brand p-3 d-flex justify-content-center align-items-center text-decoration-none">
-                    <img src="<?= BASE_URL ?>assets/uploads/logo1.png?v=<?= time() ?>" alt="Brand Logo" 
-                         style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2)); transition: transform 0.3s ease;"
-                         onmouseover="this.style.transform='scale(1.05)'" 
-                         onmouseout="this.style.transform='scale(1)'">
+                    <div style="background-color: #ffffff; padding: 10px 15px; border-radius: 12px; width: 90%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        <img src="<?= BASE_URL ?>assets/uploads/logo1.png?v=<?= time() ?>" alt="Brand Logo" 
+                             style="max-height: 42px; width: auto; object-fit: contain; transition: transform 0.3s ease;"
+                             onmouseover="this.style.transform='scale(1.05)'" 
+                             onmouseout="this.style.transform='scale(1)'">
+                    </div>
                 </a>
                 <button class="sidebar-close" id="sidebarCloseBtn">
                     <i class="bi bi-x-lg"></i>
@@ -101,21 +103,6 @@
                     </ul>
             </nav>
 
-            <div class="sidebar-footer">
-                <div class="admin-user">
-                    <div class="admin-avatar">
-                        <?= substr($_SESSION['user']['full_name'] ?? 'A', 0, 1) ?>
-                    </div>
-                    <div class="admin-info">
-                        <span>
-                            <?= $_SESSION['user']['full_name'] ?? 'Admin' ?>
-                        </span>
-                        <small>
-                            <?= $_SESSION['user']['email'] ?? 'admin@dgentech.vn' ?>
-                        </small>
-                    </div>
-                </div>
-            </div>
         </aside>
 
         <!-- ========== MAIN CONTENT ========== -->
@@ -140,14 +127,25 @@
                         </nav>
                     </div>
                 </div>
-                <div class="topbar-right">
+                <div class="topbar-right d-flex align-items-center gap-3">
                     <button class="theme-toggle" aria-label="Chuyển đổi giao diện">
                         <i class="bi bi-moon-fill icon-moon"></i>
                         <i class="bi bi-sun-fill icon-sun"></i>
                     </button>
-                    <a href="<?= BASE_URL ?>?action=logout" class="btn btn-sm btn-outline-danger rounded-pill">
-                        <i class="bi bi-box-arrow-right me-1"></i> Đăng xuất
-                    </a>
+                    
+                    <div class="dropdown">
+                        <div class="cursor-pointer" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #0d6efd; color: white; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 1.1rem;">
+                                <?= strtoupper(substr($_SESSION['user']['full_name'] ?? 'A', 0, 1)) ?>
+                            </div>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 8px; margin-top: 10px; min-width: 200px;">
+                            <li><a class="dropdown-item py-2 text-secondary" href="<?= BASE_URL ?>?action=admin-profile">Thông tin tài khoản</a></li>
+                            <li><a class="dropdown-item py-2 text-secondary" href="<?= BASE_URL ?>?action=admin-change-password">Đổi mật khẩu</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2 text-secondary" href="<?= BASE_URL ?>?action=logout">Đăng xuất</a></li>
+                        </ul>
+                    </div>
                 </div>
             </header>
 

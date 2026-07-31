@@ -99,27 +99,23 @@
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <div class="table-actions">
-                                    <!-- Sửa -->
-                                    <a
-                                        href="<?= BASE_URL ?>?action=admin-user-edit&id=<?= $user['user_id'] ?>"
-                                        class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-pencil"></i>
+                                <div class="d-flex align-items-center gap-2 action-dropdown position-relative">
+                                    <a href="<?= BASE_URL ?>?action=admin-user-edit&id=<?= $user['user_id'] ?>" class="btn-action-detail text-decoration-none">
+                                        <i class="bi bi-info-circle"></i> Chi tiết
                                     </a>
-                                    <!-- Khóa / Mở khóa -->
-                                    <a
-                                        href="<?= BASE_URL ?>?action=admin-user-status&id=<?= $user['user_id'] ?>&status=<?= $user['status'] == 1 ? 0 : 1 ?>"
-                                        class="btn btn-sm <?= $user['status'] == 1 ? 'btn-outline-warning' : 'btn-outline-success' ?>">
-
-                                        <i class="bi <?= $user['status'] == 1 ? 'bi-lock-fill' : 'bi-unlock-fill' ?>"></i>
-                                    </a>
-                                    <!-- Xóa -->
-                                    <a
-                                        href="<?= BASE_URL ?>?action=admin-user-delete&id=<?= $user['user_id'] ?>"
-                                        class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">
-                                        <i class="bi bi-trash3"></i>
-                                    </a>
+                                    <div class="dropdown dropend">
+                                        <button class="btn-action-more dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-custom">
+                                            <li>
+                                                <a class="dropdown-item" href="<?= BASE_URL ?>?action=admin-user-edit&id=<?= $user['user_id'] ?>">Chỉnh sửa</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="<?= BASE_URL ?>?action=admin-user-delete&id=<?= $user['user_id'] ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">Xóa</a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </td>
                         </tr>

@@ -10,7 +10,7 @@ class ProductModel extends BaseModel
 
     // Lấy toàn bộ danh sách sản phẩm (Dùng nhiều trong trang quản trị Admin)
     // Bao gồm: tên danh mục, tên thương hiệu, 1 ảnh đại diện và mức giá rẻ nhất trong các biến thể
-    public function getAllProducts()
+    public function getAllProducts($keyword = '')
     {
         // Get products with their primary image and minimum variant price
         $sql = "SELECT p.*, c.category_name, b.brand_name,
@@ -18,10 +18,17 @@ class ProductModel extends BaseModel
                    (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
             FROM {$this->table} p
             LEFT JOIN tb_categories c ON p.category_id = c.category_id
-            LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
-            ORDER BY p.product_id DESC";
+            LEFT JOIN tb_brands b ON p.brand_id = b.brand_id";
+            
+        if (!empty($keyword)) {
+            $sql .= " WHERE p.product_name LIKE :keyword";
+        }
+        $sql .= " ORDER BY p.product_id DESC";
 
         $stmt = $this->pdo->prepare($sql);
+        if (!empty($keyword)) {
+            $stmt->bindValue(':keyword', "%$keyword%");
+        }
         $stmt->execute();
         return $stmt->fetchAll();
     }

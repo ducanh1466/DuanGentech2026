@@ -1,9 +1,19 @@
 <div class="admin-table-card">
     <div class="card-header-custom">
         <h6><i class="bi bi-tags me-2"></i>Quản lý danh mục</h6>
-        <a href="<?= BASE_URL ?>?action=admin-category-form" class="btn btn-accent btn-sm">
-            <i class="bi bi-plus-lg me-1"></i> Thêm danh mục
-        </a>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+            <form method="GET" class="d-flex">
+                <input type="hidden" name="action" value="admin-categories">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute"
+                        style="left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);"></i>
+                    <input type="text" name="keyword" class="admin-search-input" value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>" placeholder="Tìm danh mục...">
+                </div>
+            </form>
+            <a href="<?= BASE_URL ?>?action=admin-category-form" class="btn btn-accent btn-sm">
+                <i class="bi bi-plus-lg me-1"></i> Thêm danh mục
+            </a>
+        </div>
     </div>
 
     <div class="table-responsive">

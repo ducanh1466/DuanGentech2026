@@ -9,13 +9,18 @@ class UserModel extends BaseModel
         $stmt->execute();
         return $stmt->fetchColumn();
     }
-    // Lấy tất cả người dùng
-    public function getAllUsers()
+    // Lấy tất cả người dùng (hỗ trợ tìm kiếm)
+    public function getAllUsers($keyword = '')
     {
-        $sql = "SELECT *
-                FROM tb_users
-                ORDER BY user_id DESC";
+        $sql = "SELECT * FROM tb_users";
+        if (!empty($keyword)) {
+            $sql .= " WHERE full_name LIKE :keyword OR email LIKE :keyword OR phone LIKE :keyword";
+        }
+        $sql .= " ORDER BY user_id DESC";
         $stmt = $this->pdo->prepare($sql);
+        if (!empty($keyword)) {
+            $stmt->bindValue(':keyword', "%$keyword%");
+        }
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -9,10 +9,18 @@ class CategoryModel extends BaseModel
     }
 
     // Lấy danh sách tất cả các danh mục
-    public function getAllCategories()
+    public function getAllCategories($keyword = '')
     {
-        $sql = "SELECT * FROM {$this->table} ORDER BY category_id DESC";
+        $sql = "SELECT * FROM {$this->table}";
+        if (!empty($keyword)) {
+            $sql .= " WHERE category_name LIKE :keyword";
+        }
+        $sql .= " ORDER BY category_id DESC";
+        
         $stmt = $this->pdo->prepare($sql);
+        if (!empty($keyword)) {
+            $stmt->bindValue(':keyword', "%$keyword%");
+        }
         $stmt->execute();
         return $stmt->fetchAll();
     }

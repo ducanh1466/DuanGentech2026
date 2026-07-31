@@ -48,7 +48,8 @@ class AdminController
     public function categories()
     {
         $categoryModel = new CategoryModel();
-        $categories = $categoryModel->getAllCategories();
+        $keyword = trim($_GET['keyword'] ?? '');
+        $categories = $categoryModel->getAllCategories($keyword);
         
         $title = 'Quản lý danh mục - DGENTECH Admin';
         $pageTitle = 'Danh mục';
@@ -196,8 +197,9 @@ class AdminController
     public function products()
 {
     $productModel = new ProductModel();
-
-    $products = $productModel->getAllProducts();
+    $keyword = trim($_GET['keyword'] ?? '');
+    
+    $products = $productModel->getAllProducts($keyword);
 
     $title = 'Quản lý sản phẩm - DGENTECH Admin';
     $pageTitle = 'Sản phẩm';
@@ -510,7 +512,8 @@ public function editProduct()
     public function brands()
     {
         $brandModel = new BrandModel();
-        $brands = $brandModel->getAllBrands();
+        $keyword = trim($_GET['keyword'] ?? '');
+        $brands = $brandModel->getAllBrands($keyword);
 
         $title = 'Quản lý thương hiệu - DGENTECH Admin';
         $pageTitle = 'Thương hiệu';
@@ -583,11 +586,7 @@ public function editProduct()
         $userModel = new UserModel();
         $keyword = trim($_GET['keyword'] ?? '');
 
-        if (!empty($keyword)) {
-            $users = $userModel->searchUser($keyword);
-        } else {
-            $users = $userModel->getAllUsers();
-        }
+        $users = $userModel->getAllUsers($keyword);
         $title = 'Quản lý người dùng';
         $pageTitle = 'Quản lý người dùng';
         $action = 'admin-users';

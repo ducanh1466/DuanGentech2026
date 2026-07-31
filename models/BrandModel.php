@@ -9,10 +9,18 @@ class BrandModel extends BaseModel
     }
 
     // Lấy danh sách tất cả các thương hiệu
-    public function getAllBrands()
+    public function getAllBrands($keyword = '')
     {
-        $sql = "SELECT * FROM {$this->table} ORDER BY brand_id DESC";
+        $sql = "SELECT * FROM {$this->table}";
+        if (!empty($keyword)) {
+            $sql .= " WHERE brand_name LIKE :keyword";
+        }
+        $sql .= " ORDER BY brand_id DESC";
+        
         $stmt = $this->pdo->prepare($sql);
+        if (!empty($keyword)) {
+            $stmt->bindValue(':keyword', "%$keyword%");
+        }
         $stmt->execute();
         return $stmt->fetchAll();
     }

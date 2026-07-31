@@ -4,6 +4,10 @@
 /** @var array $variants */
 /** @var array|null $product */
 /** @var int $id */
+
+$id = $id ?? 0;
+$product = $product ?? null;
+$variants = $variants ?? [];
 ?>
 <div class="row g-4 justify-content-center">
     <div class="col-lg-10">
@@ -13,8 +17,7 @@
             </div>
 
             <form method="POST" action="" enctype="multipart/form-data">
-                
-                <!-- Row 1 -->
+                <!-- Trạng thái & Tên SP -->
                 <div class="row form-horizontal-row align-items-center">
                     <div class="col-md-2">
                         <label class="form-horizontal-label">Trạng thái <span class="text-danger">*</span></label>
@@ -25,7 +28,7 @@
                             <option value="inactive" <?= (isset($product['status']) && ($product['status'] === 'inactive' || $product['status'] == 0)) ? 'selected' : '' ?>>Ẩn</option>
                         </select>
                     </div>
-                    
+
                     <div class="col-md-2">
                         <label class="form-horizontal-label ps-md-4">Tên sản phẩm <span class="text-danger">*</span></label>
                     </div>
@@ -35,7 +38,7 @@
                     </div>
                 </div>
 
-                <!-- Row 2 -->
+                <!-- Danh mục & Thương hiệu -->
                 <div class="row form-horizontal-row align-items-center">
                     <div class="col-md-2">
                         <label class="form-horizontal-label">Danh mục <span class="text-danger">*</span></label>
@@ -58,48 +61,102 @@
                         <select class="form-select" name="brand_id">
                             <option value="">-- Chọn thương hiệu --</option>
                             <?php foreach ($brands as $brand): ?>
-                            <option value="<?= $brand['brand_id'] ?>" <?= (isset($product['brand_id']) && $product['brand_id'] == $brand['brand_id']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($brand['brand_name']) ?>
-                            </option>
+                                <option value="<?= $brand['brand_id'] ?>" <?= (isset($product['brand_id']) && $product['brand_id'] == $brand['brand_id']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($brand['brand_name']) ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
 
-                <!-- Row 3 -->
+                <!-- Giá, Số lượng, Bảo hành -->
                 <div class="row form-horizontal-row align-items-center">
                     <div class="col-md-2">
                         <label class="form-horizontal-label">Giá bán (VNĐ) <span class="text-danger">*</span></label>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <input type="text" class="form-control" name="price" id="priceInput"
                             value="<?= number_format($product['price'] ?? 0, 0, '', '.') ?>" required>
                     </div>
-                    
+
                     <div class="col-md-2">
-                        <label class="form-horizontal-label ps-md-4">Kho / Bảo hành</label>
+                        <label class="form-horizontal-label ps-md-4">Số lượng <span class="text-danger">*</span></label>
                     </div>
-                    <div class="col-md-4">
-                        <div class="d-flex gap-2">
-                            <input type="number" class="form-control" name="stock"
-                                value="<?= htmlspecialchars($product['stock'] ?? 0) ?>" placeholder="SL" required>
-                            <input type="number" class="form-control" name="warranty_period"
-                                value="<?= htmlspecialchars($product['warranty_period'] ?? '') ?>" placeholder="Bảo hành (tháng)">
-                        </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control" name="stock"
+                            value="<?= htmlspecialchars($product['stock'] ?? ($variants[0]['stock_quantity'] ?? 0)) ?>" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-horizontal-label ps-md-4">Bảo hành</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control" name="warranty_period"
+                            value="<?= htmlspecialchars($product['warranty_period'] ?? '') ?>" placeholder="tháng">
                     </div>
                 </div>
 
-                <!-- Row 4 -->
+                <!-- Tùy chọn -->
                 <div class="row form-horizontal-row">
                     <div class="col-md-2">
-                        <label class="form-horizontal-label">Mô tả</label>
+                        <label class="form-horizontal-label mt-2">Các tùy chọn<br><small class="text-muted fw-normal">(Màu sắc, Phiên bản)</small></label>
                     </div>
                     <div class="col-md-10">
-                        <textarea class="form-control" name="description" rows="4"><?= htmlspecialchars($product['description'] ?? '') ?></textarea>
+                        <div id="variantsContainer" class="p-3 border rounded bg-light">
+                            <?php if (!empty($variants)): ?>
+                                <?php foreach ($variants as $idx => $v): ?>
+                                    <div class="row g-2 mb-2 variant-row align-items-center">
+                                        <div class="col-md-5">
+                                            <input type="hidden" name="variant_id[]" value="<?= $v['variant_id'] ?>">
+                                            <input type="text" class="form-control form-control-sm" name="variant_name[]"
+                                                value="<?= htmlspecialchars($v['variant_name']) ?>"
+                                                placeholder="Tên (VD: Đen 256GB)" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control form-control-sm" name="variant_price[]"
+                                                value="<?= htmlspecialchars($v['price'] ?? '') ?>"
+                                                placeholder="Giá (nếu có)">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control form-control-sm" name="variant_stock[]"
+                                                value="<?= htmlspecialchars($v['stock_quantity']) ?>" placeholder="Tồn kho">
+                                        </div>
+                                        <div class="col-md-1 text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-danger w-100"
+                                                onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <!-- Empty row for new entry -->
+                                <div class="row g-2 mb-2 variant-row align-items-center">
+                                    <div class="col-md-5">
+                                        <input type="hidden" name="variant_id[]" value="">
+                                        <input type="text" class="form-control form-control-sm" name="variant_name[]"
+                                            value="" placeholder="Tên (VD: Đen 256GB)">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control form-control-sm" name="variant_price[]"
+                                            value="" placeholder="Giá (nếu có)">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control form-control-sm" name="variant_stock[]"
+                                            value="" placeholder="Tồn kho">
+                                    </div>
+                                    <div class="col-md-1 text-end">
+                                        <button type="button" class="btn btn-sm btn-outline-danger w-100"
+                                            onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addVariantRow()">
+                            <i class="bi bi-plus-lg me-1"></i> Thêm tùy chọn
+                        </button>
                     </div>
                 </div>
 
-                <!-- Row 5 -->
+                <!-- Hình ảnh -->
                 <div class="row form-horizontal-row">
                     <div class="col-md-2">
                         <label class="form-horizontal-label">Hình ảnh</label>
@@ -120,58 +177,14 @@
                     </div>
                 </div>
 
-                <!-- Row 6: Variants -->
+                <!-- Mô tả -->
                 <div class="row form-horizontal-row">
                     <div class="col-md-2">
-                        <label class="form-horizontal-label">Tùy chọn <br><small class="text-muted fw-normal">(Màu sắc, Dung lượng)</small></label>
+                        <label class="form-horizontal-label">Mô tả chi tiết</label>
                     </div>
                     <div class="col-md-10">
-                        <div id="variantsContainer">
-                            <?php if (!empty($variants)): ?>
-                                <?php foreach ($variants as $idx => $v): ?>
-                                <div class="row g-2 mb-2 variant-row align-items-center">
-                                    <div class="col-md-5">
-                                        <input type="hidden" name="variant_id[]" value="<?= $v['variant_id'] ?>">
-                                        <input type="text" class="form-control form-control-sm" name="variant_name[]"
-                                        value="<?= htmlspecialchars($v['variant_name']) ?>" placeholder="Tên (VD: Đen 256GB)" required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" class="form-control form-control-sm" name="variant_price[]"
-                                        value="<?= htmlspecialchars($v['price'] ?? '') ?>" placeholder="Giá (nếu có)">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" class="form-control form-control-sm" name="variant_stock[]"
-                                        value="<?= htmlspecialchars($v['stock_quantity'] ?? '') ?>" placeholder="Tồn kho">
-                                    </div>
-                                    <div class="col-md-1 text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-danger w-100" style="padding: 4px 0;"
-                                        onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <!-- Empty row for new entry -->
-                                <div class="row g-2 mb-2 variant-row align-items-center">
-                                    <div class="col-md-5">
-                                        <input type="hidden" name="variant_id[]" value="">
-                                        <input type="text" class="form-control form-control-sm" name="variant_name[]" value="" placeholder="Tên (VD: Đen 256GB)">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" class="form-control form-control-sm" name="variant_price[]" value="" placeholder="Giá (nếu có)">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="number" class="form-control form-control-sm" name="variant_stock[]" value="" placeholder="Tồn kho">
-                                    </div>
-                                    <div class="col-md-1 text-end">
-                                        <button type="button" class="btn btn-sm btn-outline-danger w-100" style="padding: 4px 0;"
-                                        onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addVariantRow()">
-                            <i class="bi bi-plus-lg me-1"></i> Thêm tùy chọn
-                        </button>
+                        <textarea class="form-control" name="description" rows="6"
+                            placeholder="Mô tả chi tiết sản phẩm..."><?= htmlspecialchars($product['description'] ?? '') ?></textarea>
                     </div>
                 </div>
 
@@ -179,15 +192,15 @@
                 <div class="form-actions mt-5">
                     <?php if ($id): ?>
                         <button type="button" class="btn-form-delete me-auto"
-                        onclick="if(confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) { document.getElementById('deleteForm').submit(); }">
+                            onclick="if(confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) { document.getElementById('deleteForm').submit(); }">
                             <i class="bi bi-trash me-1"></i> Xóa
                         </button>
                     <?php endif; ?>
-                    
+
                     <a href="<?= BASE_URL ?>?action=admin-products" class="btn-form-close text-decoration-none d-inline-flex align-items-center">
                         <i class="bi bi-x-lg me-1"></i> Đóng
                     </a>
-                    
+
                     <button type="submit" class="btn-form-save d-inline-flex align-items-center">
                         <i class="bi bi-save me-1"></i> Lưu
                     </button>
@@ -195,42 +208,41 @@
             </form>
 
             <?php if ($id): ?>
-            <form id="deleteForm" method="POST" action="<?= BASE_URL ?>?action=admin-products">
+            <form id="deleteForm" method="POST" action="<?= BASE_URL ?>?action=admin-product-delete">
                 <input type="hidden" name="action_type" value="delete">
                 <input type="hidden" name="product_id" value="<?= $id ?>">
             </form>
             <?php endif; ?>
-
         </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Price formatter
-    const priceInput = document.getElementById('priceInput');
-    if (priceInput) {
-        priceInput.addEventListener('input', function(e) {
-            let value = this.value.replace(/[^0-9]/g, '');
-            if (value !== '') {
-                this.value = parseInt(value, 10).toLocaleString('vi-VN').replace(/,/g, '.');
-            } else {
-                this.value = '';
-            }
-        });
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Formatter tiền tệ
+        const priceInput = document.getElementById('priceInput');
+        if (priceInput) {
+            priceInput.addEventListener('input', function (e) {
+                let value = this.value.replace(/[^0-9]/g, '');
+                if (value !== '') {
+                    this.value = parseInt(value, 10).toLocaleString('vi-VN').replace(/,/g, '.');
+                } else {
+                    this.value = '';
+                }
+            });
+        }
 
-    // Image upload trigger
-    const uploadArea = document.querySelector('.upload-area');
-    const imageInput = document.getElementById('productImage');
-    if (uploadArea && imageInput) {
-        uploadArea.addEventListener('click', () => imageInput.click());
-    }
-});
+        // Kích hoạt nút upload hình
+        const uploadArea = document.querySelector('.upload-area');
+        const imageInput = document.getElementById('productImage');
+        if (uploadArea && imageInput) {
+            uploadArea.addEventListener('click', () => imageInput.click());
+        }
+    });
 
-function addVariantRow() {
-    const container = document.getElementById('variantsContainer');
-    const html = `
+    function addVariantRow() {
+        const container = document.getElementById('variantsContainer');
+        const html = `
     <div class="row g-2 mb-2 variant-row align-items-center">
         <div class="col-md-5">
             <input type="hidden" name="variant_id[]" value="">
@@ -243,11 +255,11 @@ function addVariantRow() {
             <input type="number" class="form-control form-control-sm" name="variant_stock[]" placeholder="Tồn kho">
         </div>
         <div class="col-md-1 text-end">
-            <button type="button" class="btn btn-sm btn-outline-danger w-100" style="padding: 4px 0;"
+            <button type="button" class="btn btn-sm btn-outline-danger w-100"
             onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
         </div>
     </div>
     `;
-    container.insertAdjacentHTML('beforeend', html);
-}
+        container.insertAdjacentHTML('beforeend', html);
+    }
 </script>

@@ -55,16 +55,27 @@
                                     class="status-badge <?= ($p['status'] == 1 || $p['status'] === 'active') ? 'active' : 'inactive' ?>"><?= ($p['status'] == 1 || $p['status'] === 'active') ? 'Hiển thị' : 'Ẩn' ?></span>
                             </td>
                             <td>
-                                <div class="table-actions">
-                                    <a href="<?= BASE_URL ?>?action=admin-product-edit&id=<?= $p['product_id'] ?>"
-                                        class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
-                                    <form method="POST" action="" style="display:inline-block;"
-                                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
-                                        <input type="hidden" name="action_type" value="delete">
-                                        <input type="hidden" name="product_id" value="<?= $p['product_id'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i
-                                                class="bi bi-trash3"></i></button>
-                                    </form>
+                                <div class="d-flex align-items-center gap-2 action-dropdown position-relative">
+                                    <a href="<?= BASE_URL ?>?action=admin-product-edit&id=<?= $p['product_id'] ?>" class="btn-action-detail text-decoration-none">
+                                        <i class="bi bi-info-circle"></i> Chi tiết
+                                    </a>
+                                    <div class="dropdown dropend">
+                                        <button class="btn-action-more dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-custom">
+                                            <li>
+                                                <a class="dropdown-item" href="<?= BASE_URL ?>?action=admin-product-edit&id=<?= $p['product_id'] ?>">Chỉnh sửa</a>
+                                            </li>
+                                            <li>
+                                                <form method="POST" action="<?= BASE_URL ?>?action=admin-product-delete" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                                    <input type="hidden" name="action_type" value="delete">
+                                                    <input type="hidden" name="product_id" value="<?= $p['product_id'] ?>">
+                                                    <button type="submit" class="dropdown-item text-danger">Xóa</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </td>
                         </tr>

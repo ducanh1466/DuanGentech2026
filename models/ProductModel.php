@@ -11,23 +11,20 @@ class ProductModel extends BaseModel
     // Lấy toàn bộ danh sách sản phẩm (Dùng nhiều trong trang quản trị Admin)
     // Bao gồm: tên danh mục, tên thương hiệu, 1 ảnh đại diện và mức giá rẻ nhất trong các biến thể
     public function getAllProducts()
-{
-    // Get products with their primary image and minimum variant price
-    $sql = "SELECT p.*, c.category_name, b.brand_name,
+    {
+        // Get products with their primary image and minimum variant price
+        $sql = "SELECT p.*, c.category_name, b.brand_name,
                    (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                   COALESCE(
-                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id),
-                       p.price
-                   ) as price
+                   (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
             FROM {$this->table} p
             LEFT JOIN tb_categories c ON p.category_id = c.category_id
             LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
             ORDER BY p.product_id DESC";
 
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll();
-}
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 
     // Lấy danh sách các sản phẩm mới nhất (Thường dùng để hiển thị ngoài trang chủ Client)
     // Chỉ lấy các sản phẩm có trạng thái 'active' (đang hoạt động)
@@ -35,10 +32,7 @@ class ProductModel extends BaseModel
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
                        (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                       COALESCE(
-                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id),
-                       p.price
-                   ) as price
+                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
                 FROM {$this->table} p
                 LEFT JOIN tb_categories c ON p.category_id = c.category_id
                 LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
@@ -56,10 +50,7 @@ class ProductModel extends BaseModel
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
                        (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                       COALESCE(
-                            (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id),
-                            p.price
-                            ) as price
+                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
                 FROM {$this->table} p
                 LEFT JOIN tb_categories c ON p.category_id = c.category_id
                 LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
@@ -127,10 +118,7 @@ class ProductModel extends BaseModel
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
                        (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                       COALESCE(
-    (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id),
-    p.price
-) as price
+                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
                 FROM {$this->table} p
                 LEFT JOIN tb_categories c ON p.category_id = c.category_id
                 LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
@@ -146,11 +134,15 @@ class ProductModel extends BaseModel
     }
 
     // Thêm mới một sản phẩm vào CSDL (Chỉ thêm thông tin cơ bản)
-    public function insertProduct($category_id, $product_name, $brand_id, $warranty_period = null, $description = null, $status = 1)
+    public function insertProduct($category_id, $product_name, $brand_id, $price, $warranty_period = null, $description = null, $status = 1)
     {
-        $sql = "INSERT INTO {$this->table} (category_id, product_name, brand_id, warranty_period, description, status) 
-                VALUES (:category_id, :product_name, :brand_id, :warranty_period, :description, :status)";
+        $sql = "INSERT INTO {$this->table} 
+    (category_id, product_name, brand_id, warranty_period, description, status) 
+    VALUES 
+    (:category_id, :product_name, :brand_id, :warranty_period, :description, :status)";
+
         $stmt = $this->pdo->prepare($sql);
+
         $stmt->execute([
             'category_id' => $category_id,
             'product_name' => $product_name,
@@ -159,15 +151,20 @@ class ProductModel extends BaseModel
             'description' => $description,
             'status' => $status
         ]);
+
         return $this->pdo->lastInsertId();
     }
 
     // Cập nhật thông tin cơ bản của một sản phẩm
-    public function updateProduct($id, $category_id, $product_name, $brand_id, $warranty_period = null, $description = null, $status = 1)
+    public function updateProduct($id, $category_id, $product_name, $brand_id, $price, $warranty_period = null, $description = null, $status = 1)
     {
         $sql = "UPDATE {$this->table} 
-                SET category_id = :category_id, product_name = :product_name, brand_id = :brand_id, 
-                    warranty_period = :warranty_period, description = :description, status = :status
+                SET category_id = :category_id,
+                product_name = :product_name,
+                brand_id = :brand_id,
+                warranty_period = :warranty_period,
+                description = :description,
+                status = :status
                 WHERE product_id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
@@ -335,10 +332,7 @@ class ProductModel extends BaseModel
         } else {
             $sql = "SELECT p.*, c.category_name, b.brand_name,
                            (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                           COALESCE(
-    (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id),
-    p.price
-) as price
+                           (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
                     FROM tb_products p
                     LEFT JOIN tb_categories c ON p.category_id = c.category_id
                     LEFT JOIN tb_brands b ON p.brand_id = b.brand_id

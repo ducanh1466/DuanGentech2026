@@ -1,6 +1,6 @@
 <?php
 
-$action = $_GET['action'] ?? 'admin';
+$action = $_GET['action'] ?? '/';
 
 match ($action) {
     'admin' => (new AdminController)->dashboard(),

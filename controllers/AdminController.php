@@ -113,182 +113,307 @@ class AdminController
         }
     }
     public function products()
-    {
-        $productModel = new ProductModel();
+{
+    $productModel = new ProductModel();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $action_type = $_POST['action_type'] ?? '';
-            if ($action_type === 'delete') {
-                $id = $_POST['product_id'] ?? 0;
-                $productModel->deleteProduct($id);
-                $_SESSION['success'] = 'Xóa sản phẩm thành công!';
-            }
-            header('Location: ' . BASE_URL . '?action=admin-products');
-            exit;
-        }
+    $products = $productModel->getAllProducts();
 
-        $products = $productModel->getAllProducts();
+    $title = 'Quản lý sản phẩm - DGENTECH Admin';
+    $pageTitle = 'Sản phẩm';
+    $action = 'admin-products';
+    $view = 'admin/products';
 
-        $title = 'Quản lý sản phẩm - DGENTECH Admin';
-        $pageTitle = 'Sản phẩm';
-        $action = 'admin-products';
-        $view = 'admin/products';
-        require_once PATH_VIEW_ADMIN;
-    }
+    require_once PATH_VIEW_ADMIN;
+}
+public function deleteProduct()
+{
+    $productModel = new ProductModel();
 
-    // Chức năng: Hiển thị form Thêm/Sửa sản phẩm và xử lý dữ liệu khi submit form
-    public function productForm()
-    {
-        $productModel = new ProductModel();
-        $categoryModel = new CategoryModel();
-        $brandModel = new BrandModel();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        $id = $_GET['id'] ?? 0;
-        $product = null;
+        $id = $_POST['product_id'] ?? 0;
 
         if ($id) {
-            $product = $productModel->getProductById($id);
-            $variants = $productModel->getVariantsByProductId($id);
+            $productModel->deleteProduct($id);
+            $_SESSION['success'] = 'Xóa sản phẩm thành công!';
         } else {
-            $variants = [];
+            $_SESSION['error'] = 'Không tìm thấy sản phẩm cần xóa!';
         }
+    }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $category_id = !empty($_POST['category_id']) ? $_POST['category_id'] : null;
-            $product_name = trim($_POST['product_name'] ?? '');
-            $brand_id = !empty($_POST['brand_id']) ? $_POST['brand_id'] : null;
-            $warranty_period = !empty($_POST['warranty_period']) ? $_POST['warranty_period'] : null;
-            $description = trim($_POST['description'] ?? '');
-            $status = $_POST['status'] ?? 'active';
-            $price_raw = $_POST['price'] ?? '0';
-            $price = (int) str_replace(['.', ','], '', $price_raw);
-            $stock = (int) ($_POST['stock'] ?? 0);
+    header('Location: ' . BASE_URL . '?action=admin-products');
+    exit;
+}
+    // Chức năng: Thêm sản phẩm
+    public function createProduct()
+{
+    $productModel = new ProductModel();
+    $categoryModel = new CategoryModel();
+    $brandModel = new BrandModel();
 
-            // Validations
-            if (empty($product_name)) {
-                $_SESSION['error'] = 'Tên sản phẩm không được để trống!';
-                header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                exit;
-            }
-            if (mb_strlen($product_name) > 255) {
-                $_SESSION['error'] = 'Tên sản phẩm không vượt quá 255 ký tự!';
-                header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                exit;
-            }
-            if ($price < 0) {
-                $_SESSION['error'] = 'Giá sản phẩm phải là số dương!';
-                header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                exit;
-            }
-            if ($stock < 0) {
-                $_SESSION['error'] = 'Số lượng tồn kho không được là số âm!';
-                header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                exit;
-            }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // Handle file upload
-            $image_path = null;
-            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $allowed_extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-                $file_info = pathinfo($_FILES['image']['name']);
-                $extension = strtolower($file_info['extension'] ?? '');
-                
-                if (!in_array($extension, $allowed_extensions)) {
-                    $_SESSION['error'] = 'Định dạng ảnh không hợp lệ (chỉ hỗ trợ JPG, PNG, WEBP, GIF)!';
-                    header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                    exit;
-                }
+        $category_id = $_POST['category_id'] ?? null;
+        $product_name = trim($_POST['product_name'] ?? '');
+        $brand_id = $_POST['brand_id'] ?? null;
+        $warranty_period = !empty($_POST['warranty_period']) 
+        ? (int) $_POST['warranty_period'] 
+        : null;
+        $description = trim($_POST['description'] ?? '');
+        $status = $_POST['status'] ?? 'active';
 
-                $upload_dir = 'uploads/products/';
-                if (!is_dir($upload_dir)) {
-                    mkdir($upload_dir, 0777, true);
-                }
+        $price = (int) str_replace(['.', ','], '', $_POST['price'] ?? 0);
+        $stock = (int) ($_POST['stock'] ?? 0);
 
-                $file_name = time() . '_' . basename($_FILES['image']['name']);
-                $target_file = $upload_dir . $file_name;
 
-                if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-                    $image_path = BASE_URL . $target_file;
-                }
-            }
-
-            if ($id) {
-                // Update
-                $productModel->updateProduct($id, $category_id, $product_name, $brand_id, $warranty_period, $description, $status);
-                // Also update primary image if uploaded
-                if ($image_path) {
-                    $productModel->deleteProductImages($id);
-                    $productModel->insertProductImage($id, $image_path, 1, 1);
-                }
-                $_SESSION['success'] = 'Cập nhật sản phẩm thành công!';
-            } else {
-                // Create
-                $id = $productModel->insertProduct($category_id, $product_name, $brand_id, $warranty_period, $description, $status,);
-                if ($image_path) {
-                    $productModel->insertProductImage($id, $image_path, 1, 1);
-                }
-                $_SESSION['success'] = 'Thêm sản phẩm thành công!';
-            }
-
-            // Process variants
-            $variant_names = $_POST['variant_name'] ?? [];
-            $variant_ids = $_POST['variant_id'] ?? [];
-            $variant_prices = $_POST['variant_price'] ?? [];
-            $variant_stocks = $_POST['variant_stock'] ?? [];
-            $submitted_variant_names = array_filter(array_map('trim', (array) $variant_names));
-            $existing_variants = $id ? $productModel->getVariantsByProductId($id) : [];
-
-            if ($id) {
-                // Update mode
-                $submitted_ids = [];
-                if (!empty($variant_names) && is_array($variant_names)) {
-                    for ($i = 0; $i < count($variant_names); $i++) {
-                        $v_name = trim($variant_names[$i]);
-                        $v_id = $variant_ids[$i] ?? '';
-                        $v_price = (isset($variant_prices[$i]) && $variant_prices[$i] !== '') ? (int)$variant_prices[$i] : $price;
-                        $v_stock = (isset($variant_stocks[$i]) && $variant_stocks[$i] !== '') ? (int)$variant_stocks[$i] : $stock;
-
-                        if ($v_name !== '') {
-                            if (!empty($v_id)) {
-                                $productModel->updateVariant($v_id, $v_name, $v_price, $v_stock);
-                                $submitted_ids[] = $v_id;
-                            } else {
-                                $new_id = $productModel->insertVariant($id, $v_name, $v_price, $v_stock);
-                                $submitted_ids[] = $new_id;
-                            }
-                        }
-                    }
-                }
-                $productModel->deleteUnusedVariants($id, $submitted_ids);
-            } else {
-                // Create mode
-                if (!empty($variant_names) && is_array($variant_names)) {
-                    for ($i = 0; $i < count($variant_names); $i++) {
-                        $v_name = trim($variant_names[$i]);
-                        $v_price = (isset($variant_prices[$i]) && $variant_prices[$i] !== '') ? (int)$variant_prices[$i] : $price;
-                        $v_stock = (isset($variant_stocks[$i]) && $variant_stocks[$i] !== '') ? (int)$variant_stocks[$i] : $stock;
-                        if ($v_name !== '') {
-                            $productModel->insertVariant($id, $v_name, $v_price, $v_stock);
-                        }
-                    }
-                }
-            }
-
-            if (empty($submitted_variant_names) && empty($existing_variants) && $price > 0) {
-                $productModel->insertDefaultVariant($id, $price, $stock);
-            }
-
-            header('Location: ' . BASE_URL . '?action=admin-products');
+        // Validate
+        if (empty($product_name)) {
+            $_SESSION['error'] = 'Tên sản phẩm không được để trống!';
+            header('Location: ' . BASE_URL . '?action=admin-product-create');
             exit;
         }
 
-        $categories = $categoryModel->getAllCategories();
-        $brands = $brandModel->getAllBrands();
-        $title = $id ? 'Sửa sản phẩm' : 'Thêm sản phẩm';
-        $pageTitle = $title;
-        $action = $id ? 'admin-product-edit' : 'admin-product-create';
-        $view = 'admin/product_form';
-        require_once PATH_VIEW_ADMIN;
+
+        // Thêm sản phẩm
+        $id = $productModel->insertProduct(
+            $category_id,
+            $product_name,
+            $brand_id,
+            $price,
+            $warranty_period,
+            $description,
+            $status
+        );
+        // Tạo biến thể mặc định để lưu giá và tồn kho
+            $productModel->insertDefaultVariant(
+            $id,
+            $price,
+            $stock
+        );
+
+
+        // Upload ảnh
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+
+            $upload_dir = 'uploads/products/';
+
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
+
+            $file_name = time().'_'.basename($_FILES['image']['name']);
+
+            $target_file = $upload_dir.$file_name;
+
+
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+
+                $image_path = BASE_URL.$target_file;
+
+                $productModel->insertProductImage(
+                    $id,
+                    $image_path,
+                    1,
+                    1
+                );
+            }
+        }
+
+
+        // Thêm biến thể
+        $variant_names = $_POST['variant_name'] ?? [];
+        $variant_prices = $_POST['variant_price'] ?? [];
+        $variant_stocks = $_POST['variant_stock'] ?? [];
+        $stock = $_POST['stock'] ?? 0;
+
+
+        foreach ($variant_names as $i => $name) {
+
+            $name = trim($name);
+
+            if ($name != '') {
+
+                $productModel->insertVariant(
+                    $id,
+                    $name,
+                    $variant_prices[$i] ?? $price,
+                    $variant_stocks[$i] ?? $stock
+                );
+            }
+        }
+
+
+        $_SESSION['success'] = 'Thêm sản phẩm thành công!';
+
+        header('Location: '.BASE_URL.'?action=admin-products');
+        exit;
+    }
+
+
+    $categories = $categoryModel->getAllCategories();
+    $brands = $brandModel->getAllBrands();
+
+    $title = 'Thêm sản phẩm';
+    $pageTitle = $title;
+    $action = 'admin-product-create';
+    $view = 'admin/product_form';
+
+    require_once PATH_VIEW_ADMIN;
+}
+
+// Chức năng: sửa sản phẩm
+public function editProduct()
+{
+    $productModel = new ProductModel();
+    $categoryModel = new CategoryModel();
+    $brandModel = new BrandModel();
+
+
+    $id = $_GET['id'] ?? 0;
+
+
+    $product = $productModel->getProductById($id);
+    $variants = $productModel->getVariantsByProductId($id);
+
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+
+        $category_id = $_POST['category_id'] ?? null;
+        $product_name = trim($_POST['product_name'] ?? '');
+        $brand_id = $_POST['brand_id'] ?? null;
+        $warranty_period = !empty($_POST['warranty_period']) 
+        ? (int)$_POST['warranty_period'] 
+        : null;
+        $stock = (int)($_POST['stock'] ?? 0);
+        $description = trim($_POST['description'] ?? '');
+        $status = $_POST['status'] ?? 'active';
+
+        // Update sản phẩm
+
+        $price = (int) str_replace(['.', ','], '', $_POST['price'] ?? 0);
+
+        $productModel->updateProduct(
+        $id,
+        $category_id,
+        $product_name,
+        $brand_id,
+        $price,
+        $warranty_period,
+        $description,
+        $status
+        );
+        if (!empty($variants[0]['variant_id'])) {
+        $productModel->updateVariant(
+        $variants[0]['variant_id'],
+        $variants[0]['variant_name'],
+        $price,
+        $stock
+        );
+        }
+
+
+        // Nếu có ảnh mới
+
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+
+
+            $upload_dir = 'uploads/products/';
+
+
+            $file_name = time().'_'.basename($_FILES['image']['name']);
+
+            $target_file = $upload_dir.$file_name;
+
+
+            if(move_uploaded_file($_FILES['image']['tmp_name'], $target_file)){
+
+
+                $image_path = BASE_URL.$target_file;
+
+
+                $productModel->deleteProductImages($id);
+
+
+                $productModel->insertProductImage(
+                    $id,
+                    $image_path,
+                    1,
+                    1
+                );
+
+            }
+        }
+
+
+
+        // Update biến thể
+
+        $variant_ids = $_POST['variant_id'] ?? [];
+        $variant_names = $_POST['variant_name'] ?? [];
+        $variant_prices = $_POST['variant_price'] ?? [];
+        $variant_stocks = $_POST['variant_stock'] ?? [];
+
+
+        if (isset($_POST['stock'])) {
+        $variant_stocks[0] = (int)$_POST['stock'];
+        }
+
+
+        $submitted_ids = [];
+
+
+        foreach($variant_names as $i=>$name){
+
+            $name = trim($name);
+
+
+            if($name != ''){
+
+
+                if(!empty($variant_ids[$i])){
+
+
+                    $productModel->updateVariant(
+                        $variant_ids[$i],
+                        $name,
+                        $variant_prices[$i],
+                    $variant_stocks[$i] ?? $stock
+                    );
+
+
+                    $submitted_ids[] = $variant_ids[$i];
+
+
+                }else{
+
+
+                    $new_id = $productModel->insertVariant(
+                        $id,
+                        $name,
+                        $variant_prices[$i],
+                        $variant_stocks[$i]
+                    );
+
+
+                    $submitted_ids[] = $new_id;
+                }
+            }
+        }
+
+
+        $productModel->deleteUnusedVariants(
+            $id,
+            $submitted_ids
+        );
+
+
+        $_SESSION['success'] = 'Cập nhật sản phẩm thành công!';
+
+
+        header('Location: '.BASE_URL.'?action=admin-products');
+        exit;
+
     }
 
     // Chức năng: Quản lý thương hiệu (Hiển thị danh sách)

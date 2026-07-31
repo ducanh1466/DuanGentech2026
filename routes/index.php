@@ -2,6 +2,7 @@
 
 $action = $_GET['action'] ?? '/';
 
+
 match ($action) {
     '/'         => (new HomeController)->index(),
     
@@ -15,6 +16,7 @@ match ($action) {
     'admin-brand-update'   => (new AdminController)->brandUpdate(),
     'admin-brand-delete'   => (new AdminController)->brandDelete(),
     'admin-products'       => (new AdminController)->products(),
-    'admin-product-create' => (new AdminController)->productForm(),
-    'admin-product-edit'   => (new AdminController)->productForm(),
+    'admin-product-create' => (new AdminController)->createProduct(),
+    'admin-product-edit'   => (new AdminController)->editProduct(),
+    'admin-product-delete' => (new AdminController)->deleteProduct(),
 };

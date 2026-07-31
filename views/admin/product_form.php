@@ -4,6 +4,10 @@
 /** @var array $variants */
 /** @var array|null $product */
 /** @var int $id */
+
+$id = $id ?? 0;
+$product = $product ?? null;
+$variants = $variants ?? [];
 ?>
 <div class="row g-4">
     <div class="col-lg-12">
@@ -55,7 +59,8 @@
                             <div class="col-md-4">
                                 <label class="form-label">Số lượng kho <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" name="stock"
-                                    value="<?= htmlspecialchars($product['stock'] ?? 0) ?>" placeholder="Số lượng" required>
+                                    value="<?= htmlspecialchars($product['stock'] ?? ($variants[0]['stock_quantity'] ?? 0)) ?>"
+                                    placeholder="Số lượng" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Thời gian bảo hành (tháng)</label>
@@ -87,7 +92,7 @@
                                         </div>
                                         <div class="col-md-2">
                                             <input type="number" class="form-control form-control-sm" name="variant_stock[]"
-                                            value="<?= htmlspecialchars($v['stock_quantity'] ?? '') ?>" placeholder="Tồn kho">
+                                            value="<?= htmlspecialchars($v['stock_quantity']) ?>" placeholder="Tồn kho">
                                         </div>
                                         <div class="col-md-2">
                                             <button type="button" class="btn btn-sm btn-outline-danger w-100"
@@ -185,7 +190,7 @@
                             <i class="bi bi-x-lg me-1"></i> Hủy
                         </a>
                     </div>
-                    <?php if ($id): ?>
+                    <?php if (!empty($id)): ?>
                     <hr>
                     <div class="d-grid gap-2">
                         <button type="button" class="btn btn-outline-danger"
@@ -197,7 +202,7 @@
                 </div>
             </div>
         </form>
-        <?php if ($id): ?>
+        <?php if (!empty($id)): ?>
         <form id="deleteForm" method="POST" action="<?= BASE_URL ?>?action=admin-products">
             <input type="hidden" name="action_type" value="delete">
             <input type="hidden" name="product_id" value="<?= $id ?>">

@@ -28,7 +28,7 @@
                 <td>
                 <div class="table-actions">
                     <button class="btn btn-sm btn-outline-primary" onclick="editCategory(<?= $cat['category_id'] ?>, '<?= htmlspecialchars(addslashes($cat['category_name'])) ?>', '<?= htmlspecialchars(addslashes($cat['description'] ?? '')) ?>')" data-bs-toggle="modal" data-bs-target="#categoryModal"><i class="bi bi-pencil"></i></button>
-                    <form method="POST" action="" style="display:inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
+                    <form method="POST" action="?action=admin-category-delete" style="display:inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
                      <input type="hidden" name="action_type" value="delete">
                      <input type="hidden" name="category_id" value="<?= $cat['category_id'] ?>">
                      <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3"></i></button>
@@ -51,7 +51,7 @@
             <h5 class="modal-title" id="modalTitle">Thêm danh mục</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <form method="POST" action="">
+        <form method="POST" action="?action=admin-category-create" id="categoryForm">
             <input type="hidden" name="action_type" id="actionType" value="create">
             <input type="hidden" name="category_id" id="categoryId" value="">
                 
@@ -80,6 +80,7 @@
 function editCategory(id, name, desc) {
     document.getElementById('modalTitle').innerText = 'Sửa danh mục';
     document.getElementById('actionType').value = 'update';
+    document.getElementById('categoryForm').action = '?action=admin-category-update';
     document.getElementById('categoryId').value = id;
     document.getElementById('categoryName').value = name;
     document.getElementById('categoryDesc').value = desc;
@@ -89,6 +90,7 @@ function editCategory(id, name, desc) {
 document.getElementById('categoryModal').addEventListener('hidden.bs.modal', function () {
     document.getElementById('modalTitle').innerText = 'Thêm danh mục';
     document.getElementById('actionType').value = 'create';
+    document.getElementById('categoryForm').action = '?action=admin-category-create';
     document.getElementById('categoryId').value = '';
     document.getElementById('categoryName').value = '';
     document.getElementById('categoryDesc').value = '';

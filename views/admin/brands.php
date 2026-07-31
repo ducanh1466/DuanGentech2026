@@ -38,7 +38,7 @@
                         <td>
                             <div class="table-actions">
                                 <button class="btn btn-sm btn-outline-primary" onclick="editBrand(<?= $brand['brand_id'] ?>, '<?= htmlspecialchars(addslashes($brand['brand_name'])) ?>', '<?= htmlspecialchars(addslashes($brand['description'] ?? '')) ?>', <?= $brand['status'] ?>)" data-bs-toggle="modal" data-bs-target="#brandModal"><i class="bi bi-pencil"></i></button>
-                                <form method="POST" action="" style="display:inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thương hiệu này?');">
+                                <form method="POST" action="?action=admin-brand-delete" style="display:inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thương hiệu này?');">
                                     <input type="hidden" name="action_type" value="delete">
                                     <input type="hidden" name="brand_id" value="<?= $brand['brand_id'] ?>">
                                     <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash3"></i></button>
@@ -61,7 +61,7 @@
                 <h5 class="modal-title" id="modalTitle">Thêm thương hiệu</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="">
+            <form method="POST" action="?action=admin-brand-create" id="brandForm">
                 <input type="hidden" name="action_type" id="actionType" value="create">
                 <input type="hidden" name="brand_id" id="brandId" value="">
                 
@@ -98,6 +98,7 @@
 function editBrand(id, name, desc, status) {
     document.getElementById('modalTitle').innerText = 'Sửa thương hiệu';
     document.getElementById('actionType').value = 'update';
+    document.getElementById('brandForm').action = '?action=admin-brand-update';
     document.getElementById('brandId').value = id;
     document.getElementById('brandName').value = name;
     document.getElementById('brandDesc').value = desc;
@@ -108,6 +109,7 @@ function editBrand(id, name, desc, status) {
 document.getElementById('brandModal').addEventListener('hidden.bs.modal', function () {
     document.getElementById('modalTitle').innerText = 'Thêm thương hiệu';
     document.getElementById('actionType').value = 'create';
+    document.getElementById('brandForm').action = '?action=admin-brand-create';
     document.getElementById('brandId').value = '';
     document.getElementById('brandName').value = '';
     document.getElementById('brandDesc').value = '';

@@ -19,6 +19,24 @@ class AdminController
 
     public function dashboard()
     {
+        $dashboardModel = new DashboardModel();
+
+        // Lấy số liệu thống kê tổng quan từ CSDL
+        $totalOrders = $dashboardModel->getTotalOrders();
+        $revenue = $dashboardModel->getTotalRevenue();
+        $totalProducts = $dashboardModel->getTotalProducts();
+        $totalUsers = $dashboardModel->getTotalUsers();
+
+        // Lấy năm đang chọn, mặc định là năm hiện tại
+        $selectedYear = $_GET['year'] ?? date('Y');
+        $availableYears = [date('Y') - 2, date('Y') - 1, date('Y'), date('Y') + 1];
+
+        // Lấy 5 đơn hàng mới nhất
+        $recentOrders = $dashboardModel->getRecentOrders(5);
+
+        // Lấy dữ liệu doanh thu theo 12 tháng của năm được chọn
+        $chartData = json_encode($dashboardModel->getRevenueByMonths($selectedYear));
+
         $title = 'Dashboard - DGENTECH Admin';
         $pageTitle = 'Dashboard';
         $action = 'admin';
@@ -26,45 +44,72 @@ class AdminController
         require_once PATH_VIEW_ADMIN;
     }
 
-    // Chức năng: Quản lý danh mục (Hiển thị danh sách, thêm, sửa, xóa danh mục)
+    // Chức năng: Quản lý danh mục (Hiển thị danh sách)
     public function categories()
     {
         $categoryModel = new CategoryModel();
+        $categories = $categoryModel->getAllCategories();
+        
+        $title = 'Quản lý danh mục - DGENTECH Admin';
+        $pageTitle = 'Danh mục';
+        $action = 'admin-categories';
+        $view = 'admin/categories';
+        require_once PATH_VIEW_ADMIN;
+    }
 
+    // Chức năng: Thêm danh mục
+    public function categoryCreate()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $action_type = $_POST['action_type'] ?? 'create';
+            $categoryModel = new CategoryModel();
+            $name = trim($_POST['name'] ?? '');
+            $description = trim($_POST['description'] ?? '');
 
-            if ($action_type === 'create') {
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên danh mục không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
-                } else {
-                    $categoryModel->insertCategory($name, $description);
-                    $_SESSION['success'] = 'Thêm danh mục thành công!';
-                }
-            } elseif ($action_type === 'update') {
-                $id = $_POST['category_id'] ?? 0;
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên danh mục không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
-                } else {
-                    $categoryModel->updateCategory($id, $name, $description);
-                    $_SESSION['success'] = 'Cập nhật danh mục thành công!';
-                }
-            } elseif ($action_type === 'delete') {
-                $id = $_POST['category_id'] ?? 0;
-                $categoryModel->deleteCategory($id);
-                $_SESSION['success'] = 'Xóa danh mục thành công!';
+            if (empty($name)) {
+                $_SESSION['error'] = 'Tên danh mục không được để trống!';
+            } elseif (mb_strlen($name) > 255) {
+                $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
+            } else {
+                $categoryModel->insertCategory($name, $description);
+                $_SESSION['success'] = 'Thêm danh mục thành công!';
             }
-
             header('Location: ' . BASE_URL . '?action=admin-categories');
+            exit;
+        }
+    }
+
+    // Chức năng: Sửa danh mục
+    public function categoryUpdate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $categoryModel = new CategoryModel();
+            $id = $_POST['category_id'] ?? 0;
+            $name = trim($_POST['name'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+
+            if (empty($name)) {
+                $_SESSION['error'] = 'Tên danh mục không được để trống!';
+            } elseif (mb_strlen($name) > 255) {
+                $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
+            } else {
+                $categoryModel->updateCategory($id, $name, $description);
+                $_SESSION['success'] = 'Cập nhật danh mục thành công!';
+            }
+            header('Location: ' . BASE_URL . '?action=admin-categories');
+            exit;
+        }
+    }
+
+    // Chức năng: Xóa danh mục
+    public function categoryDelete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $categoryModel = new CategoryModel();
+            $id = $_POST['category_id'] ?? 0;
+            $categoryModel->deleteCategory($id);
+            $_SESSION['success'] = 'Xóa danh mục thành công!';
+            header('Location: ' . BASE_URL . '?action=admin-categories');
+            exit;
         }
     }
     public function products()
@@ -371,66 +416,10 @@ public function editProduct()
 
     }
 
-
-
-    $categories = $categoryModel->getAllCategories();
-    $brands = $brandModel->getAllBrands();
-
-
-    $title = 'Sửa sản phẩm';
-    $pageTitle = $title;
-    $action = 'admin-product-edit';
-    $view = 'admin/product_form';
-
-
-    require_once PATH_VIEW_ADMIN;
-}
-
-    // Chức năng: Quản lý thương hiệu (Hiển thị danh sách, thêm, sửa, xóa thương hiệu)
+    // Chức năng: Quản lý thương hiệu (Hiển thị danh sách)
     public function brands()
     {
         $brandModel = new BrandModel();
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $action_type = $_POST['action_type'] ?? 'create';
-
-            if ($action_type === 'create') {
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-                $status = $_POST['status'] ?? 1;
-
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên thương hiệu không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên thương hiệu không được vượt quá 255 ký tự!';
-                } else {
-                    $brandModel->insertBrand($name, $description, $status);
-                    $_SESSION['success'] = 'Thêm thương hiệu thành công!';
-                }
-            } elseif ($action_type === 'update') {
-                $id = $_POST['brand_id'] ?? 0;
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-                $status = $_POST['status'] ?? 1;
-
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên thương hiệu không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên thương hiệu không được vượt quá 255 ký tự!';
-                } else {
-                    $brandModel->updateBrand($id, $name, $description, $status);
-                    $_SESSION['success'] = 'Cập nhật thương hiệu thành công!';
-                }
-            } elseif ($action_type === 'delete') {
-                $id = $_POST['brand_id'] ?? 0;
-                $brandModel->deleteBrand($id);
-                $_SESSION['success'] = 'Xóa thương hiệu thành công!';
-            }
-
-            header('Location: ' . BASE_URL . '?action=admin-brands');
-            exit;
-        }
-
         $brands = $brandModel->getAllBrands();
 
         $title = 'Quản lý thương hiệu - DGENTECH Admin';
@@ -439,4 +428,61 @@ public function editProduct()
         $view = 'admin/brands';
         require_once PATH_VIEW_ADMIN;
     }
+
+    // Chức năng: Thêm thương hiệu
+    public function brandCreate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $brandModel = new BrandModel();
+            $name = trim($_POST['name'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $status = $_POST['status'] ?? 1;
+
+            if (empty($name)) {
+                $_SESSION['error'] = 'Tên thương hiệu không được để trống!';
+            } elseif (mb_strlen($name) > 255) {
+                $_SESSION['error'] = 'Tên thương hiệu không được vượt quá 255 ký tự!';
+            } else {
+                $brandModel->insertBrand($name, $description, $status);
+                $_SESSION['success'] = 'Thêm thương hiệu thành công!';
+            }
+            header('Location: ' . BASE_URL . '?action=admin-brands');
+            exit;
+        }
+    }
+
+    // Chức năng: Sửa thương hiệu
+    public function brandUpdate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $brandModel = new BrandModel();
+            $id = $_POST['brand_id'] ?? 0;
+            $name = trim($_POST['name'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $status = $_POST['status'] ?? 1;
+
+            if (empty($name)) {
+                $_SESSION['error'] = 'Tên thương hiệu không được để trống!';
+            } elseif (mb_strlen($name) > 255) {
+                $_SESSION['error'] = 'Tên thương hiệu không được vượt quá 255 ký tự!';
+            } else {
+                $brandModel->updateBrand($id, $name, $description, $status);
+                $_SESSION['success'] = 'Cập nhật thương hiệu thành công!';
+            }
+            header('Location: ' . BASE_URL . '?action=admin-brands');
+            exit;
+        }
+    }
+
+    // Chức năng: Xóa thương hiệu
+    public function brandDelete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $brandModel = new BrandModel();
+            $id = $_POST['brand_id'] ?? 0;
+            $brandModel->deleteBrand($id);
+            $_SESSION['success'] = 'Xóa thương hiệu thành công!';
+            header('Location: ' . BASE_URL . '?action=admin-brands');
+            exit;
+        }
 }

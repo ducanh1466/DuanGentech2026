@@ -27,9 +27,11 @@
         <!-- ========== SIDEBAR ========== -->
         <aside class="admin-sidebar">
             <div class="sidebar-header">
-                <a href="<?= BASE_URL ?>?action=admin" class="sidebar-brand p-2 d-flex justify-content-center">
-                    <img src="<?= BASE_URL ?>assets/uploads/logo.jpg" alt="DGENTECH Logo"
-                        style="height: 80px; object-fit: contain; max-width: 100%; transform: scale(1.3); margin: 10px 0;">
+                <a href="<?= BASE_URL ?>?action=admin" class="sidebar-brand p-3 d-flex justify-content-center align-items-center text-decoration-none">
+                    <img src="<?= BASE_URL ?>assets/uploads/logo1.png?v=<?= time() ?>" alt="Brand Logo" 
+                         style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2)); transition: transform 0.3s ease;"
+                         onmouseover="this.style.transform='scale(1.05)'" 
+                         onmouseout="this.style.transform='scale(1)'">
                 </a>
                 <button class="sidebar-close" id="sidebarCloseBtn">
                     <i class="bi bi-x-lg"></i>

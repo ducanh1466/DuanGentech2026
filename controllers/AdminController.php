@@ -57,6 +57,45 @@ class AdminController
         require_once PATH_VIEW_ADMIN;
     }
 
+    // Chức năng: Hiển thị form Thêm/Sửa danh mục
+    public function categoryForm()
+    {
+        $id = $_GET['id'] ?? 0;
+        $category = null;
+        $isDetail = false;
+        
+        if ($id) {
+            $categoryModel = new CategoryModel();
+            $category = $categoryModel->getCategoryById($id);
+        }
+
+        $title = ($id ? 'Sửa' : 'Thêm') . ' danh mục - DGENTECH Admin';
+        $pageTitle = 'Danh mục';
+        $action = 'admin-categories';
+        $view = 'admin/category_form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    // Chức năng: Hiển thị form Chi tiết danh mục
+    public function categoryDetail()
+    {
+        $id = $_GET['id'] ?? 0;
+        if (!$id) {
+            header('Location: ' . BASE_URL . '?action=admin-categories');
+            exit;
+        }
+
+        $categoryModel = new CategoryModel();
+        $category = $categoryModel->getCategoryById($id);
+        $isDetail = true;
+
+        $title = 'Chi tiết danh mục - DGENTECH Admin';
+        $pageTitle = 'Danh mục';
+        $action = 'admin-categories';
+        $view = 'admin/category_form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
     // Chức năng: Thêm danh mục
     public function categoryCreate()
     {
@@ -112,6 +151,85 @@ class AdminController
             exit;
         }
     }
+    
+    // Chức năng: Hiển thị form Thêm/Sửa thương hiệu
+    public function brandForm()
+    {
+        $id = $_GET['id'] ?? 0;
+        $brand = null;
+        $isDetail = false;
+        
+        if ($id) {
+            $brandModel = new BrandModel();
+            $brand = $brandModel->getBrandById($id);
+        }
+
+        $title = ($id ? 'Sửa' : 'Thêm') . ' thương hiệu - DGENTECH Admin';
+        $pageTitle = 'Thương hiệu';
+        $action = 'admin-brands';
+        $view = 'admin/brand_form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    // Chức năng: Hiển thị form Chi tiết thương hiệu
+    public function brandDetail()
+    {
+        $id = $_GET['id'] ?? 0;
+        if (!$id) {
+            header('Location: ' . BASE_URL . '?action=admin-brands');
+            exit;
+        }
+
+        $brandModel = new BrandModel();
+        $brand = $brandModel->getBrandById($id);
+        $isDetail = true;
+
+        $title = 'Chi tiết thương hiệu - DGENTECH Admin';
+        $pageTitle = 'Thương hiệu';
+        $action = 'admin-brands';
+        $view = 'admin/brand_form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    // Chức năng: Hiển thị form Thêm/Sửa thương hiệu
+    public function brandForm()
+    {
+        $id = $_GET['id'] ?? 0;
+        $brand = null;
+        $isDetail = false;
+        
+        if ($id) {
+            $brandModel = new BrandModel();
+            $brand = $brandModel->getBrandById($id);
+        }
+
+        $title = ($id ? 'Sửa' : 'Thêm') . ' thương hiệu - DGENTECH Admin';
+        $pageTitle = 'Thương hiệu';
+        $action = 'admin-brands';
+        $view = 'admin/brand_form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    // Chức năng: Hiển thị form Chi tiết thương hiệu
+    public function brandDetail()
+    {
+        $id = $_GET['id'] ?? 0;
+        if (!$id) {
+            header('Location: ' . BASE_URL . '?action=admin-brands');
+            exit;
+        }
+
+        $brandModel = new BrandModel();
+        $brand = $brandModel->getBrandById($id);
+        $isDetail = true;
+
+        $title = 'Chi tiết thương hiệu - DGENTECH Admin';
+        $pageTitle = 'Thương hiệu';
+        $action = 'admin-brands';
+        $view = 'admin/brand_form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
     public function products()
     {
         $productModel = new ProductModel();
@@ -360,4 +478,5 @@ class AdminController
             header('Location: ' . BASE_URL . '?action=admin-brands');
             exit;
         }
+    }
 }

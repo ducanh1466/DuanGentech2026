@@ -18,7 +18,15 @@
         <div class="stat-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="stat-value"><?= number_format($revenue / 1000000, 1, ',', '.') ?>Tr</div>
+                    <div class="stat-value">
+                        <?php
+                            if ($revenue >= 1000000000) {
+                                echo number_format($revenue / 1000000000, 2, ',', '.') . ' Tỷ';
+                            } else {
+                                echo number_format($revenue / 1000000, 1, ',', '.') . ' Tr';
+                            }
+                        ?>
+                    </div>
                     <div class="stat-label">Doanh thu</div>
                 </div>
                 <div class="stat-icon bg-green icon-pulse"><i class="bi bi-currency-dollar"></i></div>
@@ -205,7 +213,10 @@
                         ticks: {
                             callback: function (value, index, values) {
                                 if (value === 0) return '0';
-                                return (value / 1000000).toLocaleString('vi-VN') + 'Tr'; // Display in millions
+                                if (value >= 1000000000) {
+                                    return (value / 1000000000).toLocaleString('vi-VN') + ' Tỷ';
+                                }
+                                return (value / 1000000).toLocaleString('vi-VN') + ' Tr';
                             }
                         }
                     },

@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-
-    </div>
-                <div class="col-md-6">
-=======
 <?php
 /** @var array $categories */
 /** @var array $brands */
@@ -31,27 +26,24 @@
                                 <select class="form-select" name="category_id" required>
                                     <option value="">-- Chọn danh mục --</option>
                                     <?php foreach ($categories as $cat): ?>
-                                        <option value="<?= $cat['category_id'] ?>" <?= (isset($product['category_id']) && $product['category_id'] == $cat['category_id']) ? 'selected' : '' ?>>
+                                        <option value="<?= $cat['category_id'] ?>" <?= (isset($product['category_id'])
+                                            && $product['category_id'] == $cat['category_id']) ? 'selected' : '' ?>>
                                             <?= htmlspecialchars($cat['category_name']) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-md-6">
->>>>>>> 9151ec9 (quan-li-san-pham)
                                 <label class="form-label">Thương hiệu</label>
                                 <select class="form-select" name="brand_id">
                                     <option value="">-- Chọn thương hiệu --</option>
                                     <?php foreach ($brands as $brand): ?>
-                                        <option value="<?= $brand['brand_id'] ?>" <?= (isset($product['brand_id']) && $product['brand_id'] == $brand['brand_id']) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($brand['brand_name']) ?>
-                                        </option>
+                                    <option value="<?= $brand['brand_id'] ?>" <?= (isset($product['brand_id']) && $product['brand_id'] == $brand['brand_id']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($brand['brand_name']) ?>
+                                    </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-<<<<<<< HEAD
-                        </div>
-=======
                         </div>
 
                         <div class="row g-3 mb-3">
@@ -86,16 +78,20 @@
                                     <div class="row g-2 mb-2 variant-row align-items-center">
                                         <div class="col-md-5">
                                             <input type="hidden" name="variant_id[]" value="<?= $v['variant_id'] ?>">
-                                            <input type="text" class="form-control form-control-sm" name="variant_name[]" value="<?= htmlspecialchars($v['variant_name']) ?>" placeholder="Tên (VD: Đen 256GB)" required>
+                                            <input type="text" class="form-control form-control-sm" name="variant_name[]"
+                                            value="<?= htmlspecialchars($v['variant_name']) ?>" placeholder="Tên (VD: Đen 256GB)" required>
                                         </div>
                                         <div class="col-md-3">
-                                            <input type="number" class="form-control form-control-sm" name="variant_price[]" value="<?= htmlspecialchars($v['price'] ?? '') ?>" placeholder="Giá (nếu có)">
+                                            <input type="number" class="form-control form-control-sm" name="variant_price[]"
+                                            value="<?= htmlspecialchars($v['price'] ?? '') ?>" placeholder="Giá (nếu có)">
                                         </div>
                                         <div class="col-md-2">
-                                            <input type="number" class="form-control form-control-sm" name="variant_stock[]" value="<?= htmlspecialchars($v['stock_quantity'] ?? '') ?>" placeholder="Tồn kho">
+                                            <input type="number" class="form-control form-control-sm" name="variant_stock[]"
+                                            value="<?= htmlspecialchars($v['stock_quantity'] ?? '') ?>" placeholder="Tồn kho">
                                         </div>
                                         <div class="col-md-2">
-                                            <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger w-100"
+                                            onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                     <?php endforeach; ?>
@@ -113,7 +109,8 @@
                                             <input type="number" class="form-control form-control-sm" name="variant_stock[]" value="" placeholder="Tồn kho">
                                         </div>
                                         <div class="col-md-2">
-                                            <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger w-100"
+                                            onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -141,7 +138,8 @@
                             <input type="number" class="form-control form-control-sm" name="variant_stock[]" placeholder="Tồn kho">
                         </div>
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger w-100"
+                            onclick="this.closest('.variant-row').remove();"><i class="bi bi-trash"></i></button>
                         </div>
                     </div>
                     `;
@@ -154,8 +152,12 @@
                     <div class="admin-form-card mb-4">
                         <h6 class="fw-bold mb-3">Trạng thái</h6>
                         <select class="form-select" name="status">
-                            <option value="active" <?= (!isset($product['status']) || $product['status'] === 'active' || $product['status'] == 1) ? 'selected' : '' ?>>Hiển thị</option>
-                            <option value="inactive" <?= (isset($product['status']) && ($product['status'] === 'inactive' || $product['status'] == 0)) ? 'selected' : '' ?>>Ẩn</option>
+                            <option value="active"
+                            <?= (!isset($product['status']) || $product['status'] === 'active' || $product['status'] == 1) ? 'selected' : '' ?>>Hiển thị
+                            </option>
+                            <option value="inactive"
+                            <?= (isset($product['status']) && ($product['status'] === 'inactive' || $product['status'] == 0)) ? 'selected' : '' ?>>Ẩn
+                            </option>
                         </select>
                     </div>
 
@@ -186,7 +188,8 @@
                     <?php if ($id): ?>
                     <hr>
                     <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-outline-danger" onclick="if(confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) { document.getElementById('deleteForm').submit(); }">
+                        <button type="button" class="btn btn-outline-danger"
+                        onclick="if(confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) { document.getElementById('deleteForm').submit(); }">
                             <i class="bi bi-trash me-1"></i> Xóa sản phẩm
                         </button>
                     </div>
@@ -220,4 +223,3 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
->>>>>>> 9151ec9 (quan-li-san-pham)

@@ -58,9 +58,8 @@
                                 <div class="table-actions">
                                     <a href="<?= BASE_URL ?>?action=admin-product-edit&id=<?= $p['product_id'] ?>"
                                         class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
-                                    <form method="POST" action="" style="display:inline-block;"
+                                    <form method="POST" action="<?= BASE_URL ?>?action=admin-product-delete" style="display:inline-block;"
                                         onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
-                                        <input type="hidden" name="action_type" value="delete">
                                         <input type="hidden" name="product_id" value="<?= $p['product_id'] ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-danger"><i
                                                 class="bi bi-trash3"></i></button>

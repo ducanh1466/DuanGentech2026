@@ -1,7 +1,7 @@
 <?php
 
 $action = $_GET['action'] ?? '/';
-$action = $_GET['action'] ?? 'admin';
+
 
 match ($action) {
     '/'         => (new HomeController)->index(),

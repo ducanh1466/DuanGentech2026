@@ -23,39 +23,25 @@ class OrderModel extends BaseModel
     // Phân trang đơn hàng
     public function getOrdersPaginated($limit = 10, $offset = 0, $keyword = '')
     {
-        $sql = "SELECT o.*, u.full_name as user_full_name 
-                FROM {$this->table} o
-                LEFT JOIN tb_users u ON o.user_id = u.user_id";
-        
-        $params = [];
-        if (!empty($keyword)) {
-            $sql .= " WHERE o.order_id LIKE :keyword OR u.full_name LIKE :keyword OR o.recipient_phone LIKE :keyword";
-            $params['keyword'] = "%{$keyword}%";
-        }
-        
-        $sql .= " ORDER BY o.order_id DESC LIMIT :limit OFFSET :offset";
-        
-        $stmt = $this->pdo->prepare($sql);
-        foreach ($params as $key => $value) {
-            $stmt->bindValue(":$key", $value);
-        }
-        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
+        return $this->fetchWithPagination(
+            "SELECT o.*, u.full_name as user_full_name FROM {$this->table} o LEFT JOIN tb_users u ON o.user_id = u.user_id",
+            [],
+            ['o.order_id', 'u.full_name', 'o.recipient_phone'],
+            $keyword,
+            "o.order_id DESC",
+            $limit,
+            $offset
+        );
     }
 
     public function countTotalOrdersFiltered($keyword = '')
     {
-        $sql = "SELECT COUNT(*) as total FROM {$this->table} o LEFT JOIN tb_users u ON o.user_id = u.user_id";
-        $params = [];
-        if (!empty($keyword)) {
-            $sql .= " WHERE o.order_id LIKE :keyword OR u.full_name LIKE :keyword OR o.recipient_phone LIKE :keyword";
-            $params['keyword'] = "%{$keyword}%";
-        }
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetch()['total'] ?? 0;
+        return $this->countTotalFiltered(
+            "SELECT COUNT(*) as total FROM {$this->table} o LEFT JOIN tb_users u ON o.user_id = u.user_id",
+            [],
+            ['o.order_id', 'u.full_name', 'o.recipient_phone'],
+            $keyword
+        );
     }
 
     // Lấy chi tiết thông tin chung của 1 đơn hàng theo ID mã đơn

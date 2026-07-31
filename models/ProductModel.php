@@ -13,46 +13,32 @@ class ProductModel extends BaseModel
     public function getAllProducts($keyword = '', $limit = 0, $offset = 0)
     {
         // Get products with their primary image and minimum variant price
-        $sql = "SELECT p.*, c.category_name, b.brand_name,
+        $baseSql = "SELECT p.*, c.category_name, b.brand_name,
                    (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                    (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
             FROM {$this->table} p
             LEFT JOIN tb_categories c ON p.category_id = c.category_id
             LEFT JOIN tb_brands b ON p.brand_id = b.brand_id";
             
-        if (!empty($keyword)) {
-            $sql .= " WHERE p.product_name LIKE :keyword";
-        }
-        $sql .= " ORDER BY p.product_id DESC";
-        
-        if ($limit > 0) {
-            $sql .= " LIMIT :limit OFFSET :offset";
-        }
-
-        $stmt = $this->pdo->prepare($sql);
-        if (!empty($keyword)) {
-            $stmt->bindValue(':keyword', "%$keyword%");
-        }
-        if ($limit > 0) {
-            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
-        }
-        $stmt->execute();
-        return $stmt->fetchAll();
+        return $this->fetchWithPagination(
+            $baseSql,
+            [],
+            ['p.product_name'],
+            $keyword,
+            "p.product_id DESC",
+            $limit,
+            $offset
+        );
     }
 
     public function countTotalProducts($keyword = '')
     {
-        $sql = "SELECT COUNT(*) as total FROM {$this->table} p";
-        if (!empty($keyword)) {
-            $sql .= " WHERE p.product_name LIKE :keyword";
-        }
-        $stmt = $this->pdo->prepare($sql);
-        if (!empty($keyword)) {
-            $stmt->bindValue(':keyword', "%$keyword%");
-        }
-        $stmt->execute();
-        return $stmt->fetch()['total'] ?? 0;
+        return $this->countTotalFiltered(
+            "SELECT COUNT(*) as total FROM {$this->table} p",
+            [],
+            ['p.product_name'],
+            $keyword
+        );
     }
 
     // Lấy danh sách các sản phẩm mới nhất (Thường dùng để hiển thị ngoài trang chủ Client)

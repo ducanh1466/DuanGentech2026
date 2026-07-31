@@ -8,43 +8,27 @@ class BrandModel extends BaseModel
         $this->table = 'tb_brands';
     }
 
-    // Lấy danh sách tất cả các thương hiệu
     public function getAllBrands($keyword = '', $limit = 0, $offset = 0)
     {
-        $sql = "SELECT * FROM {$this->table}";
-        if (!empty($keyword)) {
-            $sql .= " WHERE brand_name LIKE :keyword";
-        }
-        $sql .= " ORDER BY brand_id DESC";
-        
-        if ($limit > 0) {
-            $sql .= " LIMIT :limit OFFSET :offset";
-        }
-        
-        $stmt = $this->pdo->prepare($sql);
-        if (!empty($keyword)) {
-            $stmt->bindValue(':keyword', "%$keyword%");
-        }
-        if ($limit > 0) {
-            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
-        }
-        $stmt->execute();
-        return $stmt->fetchAll();
+        return $this->fetchWithPagination(
+            "SELECT * FROM {$this->table}",
+            [],
+            ['brand_name'],
+            $keyword,
+            "brand_id DESC",
+            $limit,
+            $offset
+        );
     }
 
     public function countTotalBrands($keyword = '')
     {
-        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
-        if (!empty($keyword)) {
-            $sql .= " WHERE brand_name LIKE :keyword";
-        }
-        $stmt = $this->pdo->prepare($sql);
-        if (!empty($keyword)) {
-            $stmt->bindValue(':keyword', "%$keyword%");
-        }
-        $stmt->execute();
-        return $stmt->fetch()['total'] ?? 0;
+        return $this->countTotalFiltered(
+            "SELECT COUNT(*) as total FROM {$this->table}",
+            [],
+            ['brand_name'],
+            $keyword
+        );
     }
 
     // Lấy thông tin một thương hiệu theo ID

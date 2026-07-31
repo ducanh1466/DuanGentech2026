@@ -8,43 +8,27 @@ class CategoryModel extends BaseModel
         $this->table = 'tb_categories';
     }
 
-    // Lấy danh sách tất cả các danh mục
     public function getAllCategories($keyword = '', $limit = 0, $offset = 0)
     {
-        $sql = "SELECT * FROM {$this->table}";
-        if (!empty($keyword)) {
-            $sql .= " WHERE category_name LIKE :keyword";
-        }
-        $sql .= " ORDER BY category_id DESC";
-        
-        if ($limit > 0) {
-            $sql .= " LIMIT :limit OFFSET :offset";
-        }
-        
-        $stmt = $this->pdo->prepare($sql);
-        if (!empty($keyword)) {
-            $stmt->bindValue(':keyword', "%$keyword%");
-        }
-        if ($limit > 0) {
-            $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
-        }
-        $stmt->execute();
-        return $stmt->fetchAll();
+        return $this->fetchWithPagination(
+            "SELECT * FROM {$this->table}",
+            [],
+            ['category_name'],
+            $keyword,
+            "category_id DESC",
+            $limit,
+            $offset
+        );
     }
 
     public function countTotalCategories($keyword = '')
     {
-        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
-        if (!empty($keyword)) {
-            $sql .= " WHERE category_name LIKE :keyword";
-        }
-        $stmt = $this->pdo->prepare($sql);
-        if (!empty($keyword)) {
-            $stmt->bindValue(':keyword', "%$keyword%");
-        }
-        $stmt->execute();
-        return $stmt->fetch()['total'] ?? 0;
+        return $this->countTotalFiltered(
+            "SELECT COUNT(*) as total FROM {$this->table}",
+            [],
+            ['category_name'],
+            $keyword
+        );
     }
 
     // Lấy thông tin chi tiết một danh mục theo ID

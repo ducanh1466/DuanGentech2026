@@ -26,321 +26,171 @@ class AdminController
         require_once PATH_VIEW_ADMIN;
     }
 
-    // Chức năng: Quản lý danh mục (Hiển thị danh sách, thêm, sửa, xóa danh mục)
-    public function categories()
+    // Danh sách người dùng
+    public function users()
     {
-        $categoryModel = new CategoryModel();
+        $userModel = new UserModel();
+        $keyword = trim($_GET['keyword'] ?? '');
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $action_type = $_POST['action_type'] ?? 'create';
-
-            if ($action_type === 'create') {
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên danh mục không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
-                } else {
-                    $categoryModel->insertCategory($name, $description);
-                    $_SESSION['success'] = 'Thêm danh mục thành công!';
-                }
-            } elseif ($action_type === 'update') {
-                $id = $_POST['category_id'] ?? 0;
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên danh mục không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
-                } else {
-                    $categoryModel->updateCategory($id, $name, $description);
-                    $_SESSION['success'] = 'Cập nhật danh mục thành công!';
-                }
-            } elseif ($action_type === 'delete') {
-                $id = $_POST['category_id'] ?? 0;
-                $categoryModel->deleteCategory($id);
-                $_SESSION['success'] = 'Xóa danh mục thành công!';
-            }
-
-            header('Location: ' . BASE_URL . '?action=admin-categories');
-        }
-    }
-    public function products()
-    {
-        $productModel = new ProductModel();
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $action_type = $_POST['action_type'] ?? '';
-            if ($action_type === 'delete') {
-                $id = $_POST['product_id'] ?? 0;
-                $productModel->deleteProduct($id);
-                $_SESSION['success'] = 'Xóa sản phẩm thành công!';
-            }
-            header('Location: ' . BASE_URL . '?action=admin-products');
-            exit;
-        }
-
-        $products = $productModel->getAllProducts();
-
-        $title = 'Quản lý sản phẩm - DGENTECH Admin';
-        $pageTitle = 'Sản phẩm';
-        $action = 'admin-products';
-        $view = 'admin/products';
-        require_once PATH_VIEW_ADMIN;
-    }
-
-    // Chức năng: Hiển thị form Thêm/Sửa sản phẩm và xử lý dữ liệu khi submit form
-    public function productForm()
-    {
-        $productModel = new ProductModel();
-        $categoryModel = new CategoryModel();
-
-        $id = $_GET['id'] ?? 0;
-        $product = null;
-
-        if ($id) {
-            $product = $productModel->getProductById($id);
-            $variants = $productModel->getVariantsByProductId($id);
+        if (!empty($keyword)) {
+            $users = $userModel->searchUser($keyword);
         } else {
-            $variants = [];
+            $users = $userModel->getAllUsers();
         }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $category_id = !empty($_POST['category_id']) ? $_POST['category_id'] : null;
-            $product_name = trim($_POST['product_name'] ?? '');
-            $brand_id = !empty($_POST['brand_id']) ? $_POST['brand_id'] : null;
-            $warranty_period = !empty($_POST['warranty_period']) ? $_POST['warranty_period'] : null;
-            $description = trim($_POST['description'] ?? '');
-            $status = $_POST['status'] ?? 'active';
-            $price_raw = $_POST['price'] ?? '0';
-            $price = (int) str_replace(['.', ','], '', $price_raw);
-            $stock = (int) ($_POST['stock'] ?? 0);
-
-            // Validations
-            if (empty($product_name)) {
-                $_SESSION['error'] = 'Tên sản phẩm không được để trống!';
-                header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                exit;
-            }
-            if (mb_strlen($product_name) > 255) {
-                $_SESSION['error'] = 'Tên sản phẩm không vượt quá 255 ký tự!';
-                header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                exit;
-            }
-            if ($price < 0) {
-                $_SESSION['error'] = 'Giá sản phẩm phải là số dương!';
-                header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                exit;
-            }
-            if ($stock < 0) {
-                $_SESSION['error'] = 'Số lượng tồn kho không được là số âm!';
-                header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                exit;
-            }
-
-            // Handle file upload
-            $image_path = null;
-            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $allowed_extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-                $file_info = pathinfo($_FILES['image']['name']);
-                $extension = strtolower($file_info['extension'] ?? '');
-                
-                if (!in_array($extension, $allowed_extensions)) {
-                    $_SESSION['error'] = 'Định dạng ảnh không hợp lệ (chỉ hỗ trợ JPG, PNG, WEBP, GIF)!';
-                    header('Location: ' . BASE_URL . '?action=' . ($id ? 'admin-product-edit&id=' . $id : 'admin-product-create'));
-                    exit;
-                }
-
-                $upload_dir = 'uploads/products/';
-                if (!is_dir($upload_dir)) {
-                    mkdir($upload_dir, 0777, true);
-                }
-
-                $file_name = time() . '_' . basename($_FILES['image']['name']);
-                $target_file = $upload_dir . $file_name;
-
-                if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-                    $image_path = BASE_URL . $target_file;
-                }
-            }
-
-            if ($id) {
-                // Update
-                $productModel->updateProduct($id, $category_id, $product_name, $brand_id, $warranty_period, $description, $status);
-                // Also update primary image if uploaded
-                if ($image_path) {
-                    $productModel->deleteProductImages($id);
-                    $productModel->insertProductImage($id, $image_path, 1, 1);
-                }
-                $_SESSION['success'] = 'Cập nhật sản phẩm thành công!';
-            } else {
-                // Create
-                $id = $productModel->insertProduct($category_id, $product_name, $brand_id, $warranty_period, $description, $status,);
-                if ($image_path) {
-                    $productModel->insertProductImage($id, $image_path, 1, 1);
-                }
-                $_SESSION['success'] = 'Thêm sản phẩm thành công!';
-            }
-
-            // Process variants
-            $variant_names = $_POST['variant_name'] ?? [];
-            $variant_ids = $_POST['variant_id'] ?? [];
-            $variant_prices = $_POST['variant_price'] ?? [];
-            $variant_stocks = $_POST['variant_stock'] ?? [];
-            $submitted_variant_names = array_filter(array_map('trim', (array) $variant_names));
-            $existing_variants = $id ? $productModel->getVariantsByProductId($id) : [];
-
-            if ($id) {
-                // Update mode
-                $submitted_ids = [];
-                if (!empty($variant_names) && is_array($variant_names)) {
-                    for ($i = 0; $i < count($variant_names); $i++) {
-                        $v_name = trim($variant_names[$i]);
-                        $v_id = $variant_ids[$i] ?? '';
-                        $v_price = (isset($variant_prices[$i]) && $variant_prices[$i] !== '') ? (int)$variant_prices[$i] : $price;
-                        $v_stock = (isset($variant_stocks[$i]) && $variant_stocks[$i] !== '') ? (int)$variant_stocks[$i] : $stock;
-
-                        if ($v_name !== '') {
-                            if (!empty($v_id)) {
-                                $productModel->updateVariant($v_id, $v_name, $v_price, $v_stock);
-                                $submitted_ids[] = $v_id;
-                            } else {
-                                $new_id = $productModel->insertVariant($id, $v_name, $v_price, $v_stock);
-                                $submitted_ids[] = $new_id;
-                            }
-                        }
-                    }
-                }
-                $productModel->deleteUnusedVariants($id, $submitted_ids);
-            } else {
-                // Create mode
-                if (!empty($variant_names) && is_array($variant_names)) {
-                    for ($i = 0; $i < count($variant_names); $i++) {
-                        $v_name = trim($variant_names[$i]);
-                        $v_price = (isset($variant_prices[$i]) && $variant_prices[$i] !== '') ? (int)$variant_prices[$i] : $price;
-                        $v_stock = (isset($variant_stocks[$i]) && $variant_stocks[$i] !== '') ? (int)$variant_stocks[$i] : $stock;
-                        if ($v_name !== '') {
-                            $productModel->insertVariant($id, $v_name, $v_price, $v_stock);
-                        }
-                    }
-                }
-            }
-
-            if (empty($submitted_variant_names) && empty($existing_variants) && $price > 0) {
-                $productModel->insertDefaultVariant($id, $price, $stock);
-            }
-
-            header('Location: ' . BASE_URL . '?action=admin-products');
-            exit;
-        }
-
-        $categories = $categoryModel->getAllCategories();
-        require_once PATH_VIEW_ADMIN;
-    }
-public function categories()
-    {
-        $categoryModel = new CategoryModel();
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $action_type = $_POST['action_type'] ?? 'create';
-
-            if ($action_type === 'create') {
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên danh mục không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
-                } else {
-                    $categoryModel->insertCategory($name, $description);
-                    $_SESSION['success'] = 'Thêm danh mục thành công!';
-                }
-            } elseif ($action_type === 'update') {
-                $id = $_POST['category_id'] ?? 0;
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên danh mục không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
-                } else {
-                    $categoryModel->updateCategory($id, $name, $description);
-                    $_SESSION['success'] = 'Cập nhật danh mục thành công!';
-                }
-            } elseif ($action_type === 'delete') {
-                $id = $_POST['category_id'] ?? 0;
-                $categoryModel->deleteCategory($id);
-                $_SESSION['success'] = 'Xóa danh mục thành công!';
-            }
-
-            header('Location: ' . BASE_URL . '?action=admin-categories');
-            exit;
-        }
-
-        $categories = $categoryModel->getAllCategories();
-
-        $title = 'Quản lý danh mục - DGENTECH Admin';
-        $pageTitle = 'Danh mục';
-        $action = 'admin-categories';
-        $view = 'admin/categories';
+        $title = 'Quản lý người dùng';
+        $pageTitle = 'Quản lý người dùng';
+        $action = 'admin-users';
+        $view = 'admin/users';
         require_once PATH_VIEW_ADMIN;
     }
 
-
-    // Chức năng: Quản lý thương hiệu (Hiển thị danh sách, thêm, sửa, xóa thương hiệu)
-    public function brands()
+    // Hiển thị form thêm
+    public function createUser()
     {
-        $brandModel = new BrandModel();
+        $user = null;
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $action_type = $_POST['action_type'] ?? 'create';
+        $title = 'Thêm người dùng';
+        $pageTitle = 'Thêm người dùng';
+        $action = 'admin-user-create';
+        $view = 'admin/user_form';
 
-            if ($action_type === 'create') {
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-                $status = $_POST['status'] ?? 1;
+        require_once PATH_VIEW_ADMIN;
+    }
 
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên thương hiệu không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên thương hiệu không được vượt quá 255 ký tự!';
-                } else {
-                    $brandModel->insertBrand($name, $description, $status);
-                    $_SESSION['success'] = 'Thêm thương hiệu thành công!';
-                }
-            } elseif ($action_type === 'update') {
-                $id = $_POST['brand_id'] ?? 0;
-                $name = trim($_POST['name'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-                $status = $_POST['status'] ?? 1;
+    // Xử lý thêm
+    public function storeUser()
+    {
+        $userModel = new UserModel();
 
-                if (empty($name)) {
-                    $_SESSION['error'] = 'Tên thương hiệu không được để trống!';
-                } elseif (mb_strlen($name) > 255) {
-                    $_SESSION['error'] = 'Tên thương hiệu không được vượt quá 255 ký tự!';
-                } else {
-                    $brandModel->updateBrand($id, $name, $description, $status);
-                    $_SESSION['success'] = 'Cập nhật thương hiệu thành công!';
-                }
-            } elseif ($action_type === 'delete') {
-                $id = $_POST['brand_id'] ?? 0;
-                $brandModel->deleteBrand($id);
-                $_SESSION['success'] = 'Xóa thương hiệu thành công!';
-            }
-
-            header('Location: ' . BASE_URL . '?action=admin-brands');
+        $full_name = trim($_POST['full_name']);
+        $email = trim($_POST['email']);
+        $phone = trim($_POST['phone']);
+        $address = trim($_POST['address']);
+        $role = $_POST['role'];
+        $status = $_POST['status'];
+        $password = $_POST['password'];
+        if (empty($full_name)) {
+            $_SESSION['error'] = 'Họ tên không được để trống!';
+        } elseif (mb_strlen($full_name) > 100) {
+            $_SESSION['error'] = 'Họ tên tối đa 100 ký tự!';
+        } elseif (empty($email)) {
+            $_SESSION['error'] = 'Email không được để trống!';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error'] = 'Email không đúng định dạng!';
+        } elseif ($userModel->checkEmail($email)) {
+            $_SESSION['error'] = 'Email đã tồn tại!';
+        } elseif (empty($phone)) {
+            $_SESSION['error'] = 'Số điện thoại không được để trống!';
+        } elseif (!preg_match('/^0\d{9}$/', $phone)) {
+            $_SESSION['error'] = 'Số điện thoại phải bắt đầu bằng số 0 và đủ 10 số!';
+        } elseif (empty($password)) {
+            $_SESSION['error'] = 'Mật khẩu không được để trống!';
+        }
+        if (!empty($_SESSION['error'])) {
+            header('Location: ' . BASE_URL . '?action=admin-user-create');
             exit;
         }
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        $userModel->insertUser(
+            $full_name,
+            $email,
+            $password,
+            $phone,
+            $address,
+            $role,
+            $status
+        );
+        $_SESSION['success'] = 'Thêm người dùng thành công!';
+        header('Location: ' . BASE_URL . '?action=admin-users');
+        exit;
+    }
 
-        $brands = $brandModel->getAllBrands();
-
-        $title = 'Quản lý thương hiệu - DGENTECH Admin';
-        $pageTitle = 'Thương hiệu';
-        $action = 'admin-brands';
-        $view = 'admin/brands';
+    // Hiển thị form sửa
+    public function editUser()
+    {
+        $userModel = new UserModel();
+        $id = $_GET['id'] ?? 0;
+        $user = $userModel->getUserById($id);
+        if (!$user) {
+            $_SESSION['error'] = 'Người dùng không tồn tại!';
+            header('Location: ' . BASE_URL . '?action=admin-users');
+            exit;
+        }
+        $title = 'Cập nhật người dùng';
+        $pageTitle = 'Cập nhật người dùng';
+        $action = 'admin-user-edit';
+        $view = 'admin/user_form';
         require_once PATH_VIEW_ADMIN;
+    }
+
+    // Xử lý cập nhật
+    public function updateUser()
+    {
+        $userModel = new UserModel();
+        $id = $_GET['id'] ?? 0;
+        $full_name = trim($_POST['full_name']);
+        $email = trim($_POST['email']);
+        $phone = trim($_POST['phone']);
+        $address = trim($_POST['address']);
+        $role = $_POST['role'];
+        $status = $_POST['status'];
+        if (empty($full_name)) {
+            $_SESSION['error'] = 'Họ tên không được để trống!';
+        } elseif (mb_strlen($full_name) > 100) {
+            $_SESSION['error'] = 'Họ tên tối đa 100 ký tự!';
+        } elseif (empty($email)) {
+            $_SESSION['error'] = 'Email không được để trống!';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error'] = 'Email không đúng định dạng!';
+        } elseif ($userModel->checkEmailUpdate($email, $id)) {
+            $_SESSION['error'] = 'Email đã tồn tại!';
+        } elseif (empty($phone)) {
+            $_SESSION['error'] = 'Số điện thoại không được để trống!';
+        } elseif (!preg_match('/^0\d{9}$/', $phone)) {
+            $_SESSION['error'] = 'Số điện thoại phải bắt đầu bằng số 0 và đủ 10 số!';
+        }
+        if (!empty($_SESSION['error'])) {
+            header('Location: ' . BASE_URL . '?action=admin-user-edit&id=' . $id);
+            exit;
+        }
+        $userModel->updateUser(
+            $id,
+            $full_name,
+            $email,
+            $phone,
+            $address,
+            $role,
+            $status
+        );
+        $_SESSION['success'] = 'Cập nhật người dùng thành công!';
+        header('Location: ' . BASE_URL . '?action=admin-users');
+        exit;
+    }
+
+    // Khóa / Mở khóa tài khoản
+    public function changeUserStatus()
+    {
+        $userModel = new UserModel();
+        $id = $_GET['id'] ?? 0;
+        $status = $_GET['status'] ?? 1;
+        $userModel->changeStatus($id, $status);
+        if ($status == 0) {
+            $_SESSION['success'] = 'Đã khóa tài khoản thành công!';
+        } else {
+            $_SESSION['success'] = 'Đã mở khóa tài khoản thành công!';
+        }
+        header('Location: ' . BASE_URL . '?action=admin-users');
+        exit;
+    }
+    
+    // Xóa người dùng
+    public function deleteUser()
+    {
+        $userModel = new UserModel();
+        $id = $_GET['id'] ?? 0;
+        $userModel->deleteUser($id);
+        $_SESSION['success'] = 'Xóa người dùng thành công!';
+        header('Location: ' . BASE_URL . '?action=admin-users');
+        exit;
     }
 }

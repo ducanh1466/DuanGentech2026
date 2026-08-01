@@ -9,8 +9,18 @@
         <p class="auth-subtitle">Chào mừng bạn quay trở lại!</p>
 
         <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger"><?= $_SESSION['error'];
+            <div class="alert alert-danger" id="errorAlert"><?= $_SESSION['error'];
             unset($_SESSION['error']); ?></div>
+            <script>
+                setTimeout(function() {
+                    const alert = document.getElementById('errorAlert');
+                    if (alert) {
+                        alert.style.transition = 'opacity 0.5s ease';
+                        alert.style.opacity = '0';
+                        setTimeout(() => alert.remove(), 500);
+                    }
+                }, 3500);
+            </script>
         <?php endif; ?>
         <?php if (isset($_SESSION['success'])): ?>
             <div class="alert alert-success"><?= $_SESSION['success'];

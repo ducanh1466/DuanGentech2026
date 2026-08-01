@@ -86,27 +86,20 @@ $id = isset($user['user_id']) ? $user['user_id'] : 0;
 
                 <div class="row form-horizontal-row align-items-center">
                     <div class="col-md-3">
-                        <label class="form-horizontal-label">Trạng thái</label>
+                        <label class="form-horizontal-label mb-0">Trạng thái</label>
                     </div>
                     <div class="col-md-9">
-                        <select name="status" class="form-select">
-                            <option value="1" <?= (($user['status'] ?? 1) == 1) ? 'selected' : '' ?>>Hoạt động</option>
-                            <option value="0" <?= (($user['status'] ?? 1) == 0) ? 'selected' : '' ?>>Khóa</option>
-                        </select>
+                        <div class="form-check form-switch d-flex align-items-center" style="font-size: 1.1rem;">
+                            <input type="hidden" name="status" value="0">
+                            <input class="form-check-input mt-0" type="checkbox" role="switch" id="statusSwitch" name="status" value="1" <?= (($user['status'] ?? 1) == 1) ? 'checked' : '' ?> style="cursor: pointer; width: 2.5em; height: 1.25em;">
+                            <label class="form-check-label ms-3 mb-0" for="statusSwitch" style="cursor: pointer;">Hoạt động</label>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Actions -->
                 <div class="form-actions mt-5">
                     <?php if ($id): ?>
-                        <a href="<?= BASE_URL ?>?action=admin-user-status&id=<?= $id ?>&status=<?= $user['status'] == 1 ? 0 : 1 ?>"
-                           class="btn btn-<?= $user['status'] == 1 ? 'warning' : 'success' ?> me-2 d-inline-flex align-items-center text-white"
-                           style="border-radius: 8px; padding: 10px 24px; font-weight: 500;"
-                           onclick="return confirm('Bạn có chắc chắn muốn <?= $user['status'] == 1 ? 'khóa' : 'mở khóa' ?> tài khoản này?');">
-                            <i class="bi bi-<?= $user['status'] == 1 ? 'lock-fill' : 'unlock-fill' ?> me-1"></i>
-                            <?= $user['status'] == 1 ? 'Khóa tài khoản' : 'Mở khóa tài khoản' ?>
-                        </a>
-                        
                         <button type="button" class="btn-form-delete me-auto"
                             onclick="if(confirm('Bạn có chắc chắn muốn xóa người dùng này?')) { document.getElementById('deleteForm').submit(); }">
                             <i class="bi bi-trash me-1"></i> Xóa

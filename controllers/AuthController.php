@@ -29,10 +29,11 @@ class AuthController
 
             $user = $this->userModel->getUserByEmail($email);
 
-            if ($user && password_verify($password, $user['password'])) {
+            if ($user) {
                 if ($user['status'] == 0) {
                     $_SESSION['error'] = 'Tài khoản của bạn đã bị khóa!';
-                } else {
+                } elseif (password_verify($password, $user['password'])) {
+                    unset($_SESSION['login_attempts'][$email]);
                     $_SESSION['user'] = $user;
                     if ($user['role'] == 1) {
                         header('Location: ' . BASE_URL . '?action=admin');
@@ -40,6 +41,21 @@ class AuthController
                         header('Location: ' . BASE_URL);
                     }
                     exit;
+                } else {
+                    if (!isset($_SESSION['login_attempts'][$email])) {
+                        $_SESSION['login_attempts'][$email] = 1;
+                    } else {
+                        $_SESSION['login_attempts'][$email]++;
+                    }
+
+                    if ($_SESSION['login_attempts'][$email] >= 5) {
+                        $this->userModel->changeStatus($user['user_id'], 0);
+                        $_SESSION['error'] = 'Tài khoản của bạn đã bị khóa do nhập sai mật khẩu quá 5 lần!';
+                        unset($_SESSION['login_attempts'][$email]);
+                    } else {
+                        $remaining = 5 - $_SESSION['login_attempts'][$email];
+                        $_SESSION['error'] = "Mật khẩu không chính xác! Bạn còn $remaining lần thử.";
+                    }
                 }
             } else {
                 $_SESSION['error'] = 'Email hoặc mật khẩu không chính xác!';

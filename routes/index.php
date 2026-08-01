@@ -6,6 +6,12 @@ $action = $_GET['action'] ?? '/';
 match ($action) {
     '/' => (new HomeController)->index(),
 
+    'login' => (new AuthController)->login(),
+    'post-login' => (new AuthController)->postLogin(),
+    'register' => (new AuthController)->register(),
+    'post-register' => (new AuthController)->postRegister(),
+    'logout' => (new AuthController)->logout(),
+
     'admin' => (new AdminController)->dashboard(),
     'admin-categories' => (new AdminController)->categories(),
     'admin-category-form' => (new AdminController)->categoryForm(),
@@ -32,4 +38,8 @@ match ($action) {
     'admin-user-status' => (new AdminController)->changeUserStatus(),
     'admin-orders' => (new AdminController)->orders(),
     'admin-order-detail' => (new AdminController)->orderDetail(),
+    'admin-profile' => (new AdminController)->profile(),
+    'admin-update-profile' => (new AdminController)->updateProfile(),
+    'admin-change-password' => (new AdminController)->changePassword(),
+    'admin-update-password' => (new AdminController)->updatePassword(),
 };

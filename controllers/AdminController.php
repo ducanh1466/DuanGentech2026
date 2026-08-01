@@ -20,9 +20,10 @@ class AdminController
     private function getPaginationParams()
     {
         $keyword = trim($_GET['keyword'] ?? '');
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        if ($page < 1) $page = 1;
-        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        if ($page < 1)
+            $page = 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
         if (!in_array($limit, [10, 20, 50, 100])) {
             $limit = 10;
         }
@@ -42,7 +43,8 @@ class AdminController
                 $pdo->exec("ALTER TABLE tb_products MODIFY price BIGINT");
                 $pdo->exec("ALTER TABLE tb_product_variants MODIFY price BIGINT");
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         // Lấy số liệu thống kê tổng quan từ CSDL
         $totalOrders = $dashboardModel->getTotalOrders();
@@ -841,5 +843,88 @@ class AdminController
         $action = 'admin-order-detail';
         $view = 'admin/order_detail';
         require_once PATH_VIEW_ADMIN;
+    }
+    public function profile()
+    {
+        $userModel = new UserModel();
+        // Lấy thông tin mới nhất từ DB dựa vào user đang đăng nhập
+        $user = $userModel->getUserById($_SESSION['user']['user_id'] ?? $_SESSION['user']['id'] ?? 0);
+        if ($user) {
+            $_SESSION['user'] = $user; // Cập nhật session
+        }
+
+        $title = 'Thông tin tài khoản - DGENTECH Admin';
+        $pageTitle = 'Thông tin tài khoản';
+        $action = 'admin-profile';
+        $view = 'admin/profile';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function updateProfile()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userModel = new UserModel();
+            $full_name = trim($_POST['full_name'] ?? '');
+            $phone = trim($_POST['phone'] ?? '');
+            $address = trim($_POST['address'] ?? '');
+
+            if (empty($full_name) || empty($phone)) {
+                $_SESSION['error'] = 'Vui lòng nhập đầy đủ họ tên và số điện thoại!';
+            } else {
+                $userId = $_SESSION['user']['user_id'] ?? $_SESSION['user']['id'];
+                $result = $userModel->updateProfile($userId, $full_name, $phone, $address);
+                if ($result) {
+                    $_SESSION['success'] = 'Cập nhật thông tin thành công!';
+                } else {
+                    $_SESSION['error'] = 'Có lỗi xảy ra, vui lòng thử lại!';
+                }
+            }
+        }
+
+        header('Location: ' . BASE_URL . '?action=admin-profile');
+        exit;
+    }
+
+    public function changePassword()
+    {
+        $title = 'Đổi mật khẩu - DGENTECH Admin';
+        $pageTitle = 'Đổi mật khẩu';
+        $action = 'admin-change-password';
+        $view = 'admin/change_password';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function updatePassword()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userModel = new UserModel();
+            $old_password = $_POST['old_password'] ?? '';
+            $new_password = $_POST['new_password'] ?? '';
+            $confirm_password = $_POST['confirm_password'] ?? '';
+
+            if (empty($old_password) || empty($new_password) || empty($confirm_password)) {
+                $_SESSION['error'] = 'Vui lòng nhập đầy đủ thông tin!';
+            } elseif ($new_password !== $confirm_password) {
+                $_SESSION['error'] = 'Mật khẩu mới không khớp!';
+            } else {
+                $userId = $_SESSION['user']['user_id'] ?? $_SESSION['user']['id'];
+                $user = $userModel->getUserById($userId);
+
+                if ($user && password_verify($old_password, $user['password'])) {
+                    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                    $result = $userModel->updatePassword($userId, $hashed_password);
+                    if ($result) {
+                        $_SESSION['success'] = 'Đổi mật khẩu thành công!';
+                    } else {
+                        $_SESSION['error'] = 'Có lỗi xảy ra, vui lòng thử lại!';
+                    }
+                } else {
+                    $_SESSION['error'] = 'Mật khẩu hiện tại không chính xác!';
+                }
+            }
+        }
+
+        header('Location: ' . BASE_URL . '?action=admin-change-password');
+        exit;
     }
 }

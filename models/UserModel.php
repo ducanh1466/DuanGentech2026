@@ -22,7 +22,7 @@ class UserModel extends BaseModel
             $offset
         );
     }
-    
+
     public function countTotalUsersFiltered($keyword = '')
     {
         return $this->countTotalFiltered(
@@ -172,5 +172,26 @@ class UserModel extends BaseModel
             $id
         ]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function getUserByEmail($email)
+    {
+        $sql = "SELECT * FROM tb_users WHERE email = :email LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['email' => $email]);
+        return $stmt->fetch();
+    }
+
+    public function updateProfile($id, $full_name, $phone, $address)
+    {
+        $sql = "UPDATE tb_users SET full_name = ?, phone = ?, address = ? WHERE user_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$full_name, $phone, $address, $id]);
+    }
+
+    public function updatePassword($id, $password)
+    {
+        $sql = "UPDATE tb_users SET password = ? WHERE user_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$password, $id]);
     }
 }

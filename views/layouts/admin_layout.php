@@ -27,12 +27,14 @@
         <!-- ========== SIDEBAR ========== -->
         <aside class="admin-sidebar">
             <div class="sidebar-header">
-                <a href="<?= BASE_URL ?>?action=admin" class="sidebar-brand p-3 d-flex justify-content-center align-items-center text-decoration-none">
-                    <div style="background-color: #ffffff; padding: 10px 15px; border-radius: 12px; width: 90%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                        <img src="<?= BASE_URL ?>assets/uploads/logo1.png?v=<?= time() ?>" alt="Brand Logo" 
-                             style="max-height: 42px; width: auto; object-fit: contain; transition: transform 0.3s ease;"
-                             onmouseover="this.style.transform='scale(1.05)'" 
-                             onmouseout="this.style.transform='scale(1)'">
+                <a href="<?= BASE_URL ?>?action=admin"
+                    class="sidebar-brand p-3 d-flex justify-content-center align-items-center text-decoration-none">
+                    <div
+                        style="background-color: #ffffff; padding: 10px 15px; border-radius: 12px; width: 90%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        <img src="<?= BASE_URL ?>assets/uploads/logo1.png?v=<?= time() ?>" alt="Brand Logo"
+                            style="max-height: 42px; width: auto; object-fit: contain; transition: transform 0.3s ease;"
+                            onmouseover="this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.transform='scale(1)'">
                     </div>
                 </a>
                 <button class="sidebar-close" id="sidebarCloseBtn">
@@ -132,18 +134,25 @@
                         <i class="bi bi-moon-fill icon-moon"></i>
                         <i class="bi bi-sun-fill icon-sun"></i>
                     </button>
-                    
+
                     <div class="dropdown">
                         <div class="cursor-pointer" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div style="width: 38px; height: 38px; border-radius: 50%; background-color: #0d6efd; color: white; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 1.1rem;">
+                            <div
+                                style="width: 38px; height: 38px; border-radius: 50%; background-color: #0d6efd; color: white; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 1.1rem;">
                                 <?= strtoupper(substr($_SESSION['user']['full_name'] ?? 'A', 0, 1)) ?>
                             </div>
                         </div>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 8px; margin-top: 10px; min-width: 200px;">
-                            <li><a class="dropdown-item py-2 text-secondary" href="<?= BASE_URL ?>?action=admin-profile">Thông tin tài khoản</a></li>
-                            <li><a class="dropdown-item py-2 text-secondary" href="<?= BASE_URL ?>?action=admin-change-password">Đổi mật khẩu</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item py-2 text-secondary" href="<?= BASE_URL ?>?action=logout">Đăng xuất</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0"
+                            style="border-radius: 8px; margin-top: 10px; min-width: 200px;">
+                            <li><a class="dropdown-item py-2 text-secondary"
+                                    href="<?= BASE_URL ?>?action=admin-profile">Thông tin tài khoản</a></li>
+                            <li><a class="dropdown-item py-2 text-secondary"
+                                    href="<?= BASE_URL ?>?action=admin-change-password">Đổi mật khẩu</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item py-2 text-secondary" href="<?= BASE_URL ?>?action=logout">Đăng
+                                    xuất</a></li>
                         </ul>
                     </div>
                 </div>

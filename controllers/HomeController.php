@@ -4,6 +4,7 @@ class HomeController
 {
     public function index()
     {
-        require_once PATH_VIEW . 'main.php';
+        $view = 'client/home';
+        require_once PATH_VIEW . 'layouts/client_layout.php';
     }
 }

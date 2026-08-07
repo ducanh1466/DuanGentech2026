@@ -10,7 +10,9 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link href="<?= BASE_CSS ?? 'assets/css/' ?>client.css?v=<?= time() ?>" rel="stylesheet">
@@ -37,10 +39,10 @@
                         <li class="nav-item">
                             <a class="nav-link active" href="<?= BASE_URL ?? '/' ?>">Trang chủ</a>
                         </li>
-                        <li class="nav-item dropdown position-static mega-dropdown">
+                        <li class="nav-item dropdown mega-dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Sản phẩm</a>
                             <!-- Mega Menu -->
-                            <div class="dropdown-menu mega-menu w-100 mt-0 border-0 shadow-sm rounded-4 p-4">
+                            <div class="dropdown-menu mega-menu mt-0 border-0 shadow-sm rounded-4 p-4">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <h6 class="fw-bold mb-3">Điện thoại & Tablet</h6>
@@ -199,5 +201,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script src="<?= BASE_JS ?? 'assets/js/' ?>client.js?v=<?= time() ?>"></script>
+    <!-- AOS Animation JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50,
+            easing: 'ease-out-cubic'
+        });
+    </script>
 </body>
 </html>

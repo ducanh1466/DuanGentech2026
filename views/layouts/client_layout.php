@@ -16,6 +16,7 @@
     
     <!-- Custom CSS -->
     <link href="<?= BASE_CSS ?? 'assets/css/' ?>client.css?v=<?= time() ?>" rel="stylesheet">
+    <link href="<?= BASE_CSS ?? 'assets/css/' ?>style.css?v=<?= time() ?>" rel="stylesheet">
 </head>
 <body>
 
@@ -94,12 +95,12 @@
                             <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
                             <input type="text" class="form-control rounded-pill ps-5 bg-light border-0" placeholder="Tìm kiếm...">
                         </div>
-                        <a href="<?= BASE_URL ?? '/' ?>?action=cart" class="btn btn-light rounded-circle icon-btn position-relative hover-primary-bg transition-all">
+                        <button class="btn btn-light rounded-circle icon-btn position-relative hover-primary-bg transition-all border-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart">
                             <i class="bi bi-cart3 fs-5"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm">
                                 3
                             </span>
-                        </a>
+                        </button>
                         <?php if (isset($_SESSION['user'])): ?>
                             <div class="dropdown d-inline-block">
                                 <a href="#" class="btn btn-light rounded-circle icon-btn" data-bs-toggle="dropdown">
@@ -110,6 +111,7 @@
                                     <?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] == 1): ?>
                                         <li><a class="dropdown-item" href="<?= BASE_URL ?? '/' ?>?action=admin">Trang quản trị</a></li>
                                     <?php endif; ?>
+                                    <li><a class="dropdown-item" href="<?= BASE_URL ?? '/' ?>?action=profile"><i class="bi bi-person me-2"></i>Hồ sơ cá nhân</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item text-danger" href="<?= BASE_URL ?? '/' ?>?action=logout"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
                                 </ul>
@@ -253,6 +255,57 @@
             </div>
         </div>
     </footer>
+
+    <!-- Off-Canvas Cart (Premium) -->
+    <div class="offcanvas offcanvas-end offcanvas-cart" tabindex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">
+        <div class="offcanvas-header border-bottom py-3">
+            <h5 class="offcanvas-title fw-bold" id="offcanvasCartLabel"><i class="bi bi-cart3 me-2"></i>Giỏ hàng (3)</h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0 custom-scrollbar">
+            <!-- Cart Items -->
+            <div class="d-flex flex-column h-100">
+                <div class="flex-grow-1 overflow-auto p-3">
+                    <?php for($i=1; $i<=3; $i++): ?>
+                    <div class="cart-item d-flex gap-3 mb-3 pb-3 border-bottom position-relative">
+                        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=100&auto=format&fit=crop" class="rounded-3 border" width="80" height="80" style="object-fit:cover;" alt="Product">
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1 text-truncate" style="max-width: 220px;">iPhone 15 Pro Max</h6>
+                            <p class="text-muted small mb-2">Titan Tự Nhiên, 256GB</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-danger">29.990.000đ</span>
+                                <div class="input-group input-group-sm" style="width: 90px;">
+                                    <button class="btn btn-outline-secondary px-2" type="button">-</button>
+                                    <input type="text" class="form-control text-center px-1" value="1">
+                                    <button class="btn btn-outline-secondary px-2" type="button">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-link text-danger position-absolute top-0 end-0 p-0 shadow-none"><i class="bi bi-trash3"></i></button>
+                    </div>
+                    <?php endfor; ?>
+                </div>
+                
+                <!-- Cart Footer -->
+                <div class="p-4 bg-light border-top mt-auto">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Tạm tính:</span>
+                        <span class="fw-bold fs-6">89.970.000đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="text-muted">Giảm giá:</span>
+                        <span class="text-success fw-bold">-0đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4 pb-3 border-bottom border-gray-300">
+                        <span class="fw-bold fs-5 text-dark">Tổng cộng:</span>
+                        <span class="fw-bold fs-4 text-danger">89.970.000đ</span>
+                    </div>
+                    <a href="<?= BASE_URL ?? '/' ?>?action=cart" class="btn btn-outline-dark w-100 rounded-pill py-2 mb-2 fw-bold">Xem chi tiết giỏ hàng</a>
+                    <a href="<?= BASE_URL ?? '/' ?>?action=checkout" class="btn btn-premium-gradient w-100 rounded-pill py-3 fw-bold fs-6">Thanh Toán Ngay <i class="bi bi-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

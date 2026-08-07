@@ -60,6 +60,28 @@ class ProductModel extends BaseModel
         return $stmt->fetchAll();
     }
 
+    // Lấy danh sách các sản phẩm bán chạy nhất dựa trên số lượng đã bán trong tb_order_items
+    public function getBestSellingProducts($limit = 8)
+    {
+        $sql = "SELECT p.*, c.category_name, b.brand_name,
+                       (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
+                       (SELECT SUM(oi.quantity) 
+                        FROM tb_order_items oi 
+                        LEFT JOIN tb_product_variants pv ON oi.variant_id = pv.variant_id 
+                        WHERE pv.product_id = p.product_id OR oi.variant_id = p.product_id) as total_sold
+                FROM {$this->table} p
+                LEFT JOIN tb_categories c ON p.category_id = c.category_id
+                LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
+                WHERE p.status = 'active' OR p.status = 1
+                ORDER BY total_sold DESC, p.product_id DESC
+                LIMIT :limit";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     // Lấy thông tin chi tiết của 1 sản phẩm cụ thể dựa vào ID
     public function getProductById($id)
     {

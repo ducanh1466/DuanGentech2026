@@ -205,7 +205,7 @@
                     </div>
                 </div>
                 
-                <button type="button" class="btn btn-primary w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm hover-scale transition-transform d-flex justify-content-center align-items-center gap-2">
+                <button type="button" class="btn btn-premium-gradient w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm hover-elevate transition-transform d-flex justify-content-center align-items-center gap-2">
                     <i class="bi bi-lock-fill"></i> ĐẶT HÀNG NGAY
                 </button>
                 

@@ -1914,7 +1914,234 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--danger);
 }
 .fpt-sticky-old-price {
-    font-size: 0.8rem;
     text-decoration: line-through;
     color: var(--text-muted);
+}
+
+/* ==========================================
+   ULTRA PREMIUM UI EXTENSIONS (GENTECH PRO)
+   ========================================== */
+
+/* 1. Global Utilities & Micro-interactions */
+.hover-elevate {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.hover-elevate:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+}
+
+.glassmorphism {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Custom Scrollbar Premium */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* 2. Hero Parallax Slider */
+.hero-parallax-slider {
+    position: relative;
+    height: 80vh;
+    min-height: 600px;
+    overflow: hidden;
+    border-radius: 24px;
+    margin-top: 1rem;
+}
+.hero-parallax-item {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    z-index: 1;
+}
+.hero-parallax-item.active {
+    opacity: 1;
+    z-index: 2;
+}
+.hero-parallax-bg {
+    position: absolute;
+    inset: -5%;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.1);
+    transition: transform 8s ease-out;
+}
+.hero-parallax-item.active .hero-parallax-bg {
+    transform: scale(1);
+}
+.hero-parallax-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.2) 100%);
+}
+.hero-parallax-content {
+    position: absolute;
+    top: 50%;
+    left: 8%;
+    transform: translateY(-50%);
+    max-width: 600px;
+    color: white;
+    opacity: 0;
+    transform: translateY(-30px);
+    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s;
+}
+.hero-parallax-item.active .hero-parallax-content {
+    opacity: 1;
+    transform: translateY(-50%);
+}
+
+/* 3. Sticky Navbar Premium */
+.navbar-premium {
+    background: transparent;
+    transition: all 0.4s ease;
+    padding: 1.5rem 0;
+}
+.navbar-premium.scrolled {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    padding: 1rem 0;
+}
+
+/* 4. Product Cards Enhanced */
+.product-card-premium {
+    border: none;
+    border-radius: 20px;
+    background: #fff;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+.product-card-premium:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+.product-card-premium .card-img-wrap {
+    overflow: hidden;
+    position: relative;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+}
+.product-card-premium .card-img-wrap img {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: contain;
+    padding: 2rem;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.product-card-premium:hover .card-img-wrap img {
+    transform: scale(1.1);
+}
+.btn-quick-add {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2563eb;
+    color: white;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    border: none;
+    box-shadow: 0 4px 15px rgba(37,99,235,0.3);
+}
+.product-card-premium:hover .btn-quick-add {
+    bottom: 20px;
+    opacity: 1;
+}
+
+/* 5. Product Detail Premium */
+.gallery-sticky {
+    position: sticky;
+    top: 100px;
+}
+.btn-premium-gradient {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(37,99,235,0.25);
+    transition: all 0.3s ease;
+}
+.btn-premium-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(37,99,235,0.35);
+    color: white;
+}
+
+/* 6. Off-Canvas Cart */
+.offcanvas-cart {
+    width: 400px !important;
+    border-left: none;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+}
+.offcanvas-cart .cart-item {
+    transition: all 0.2s ease;
+}
+.offcanvas-cart .cart-item:hover {
+    background: #f8fafc;
+}
+
+/* 7. Timeline Premium (Profile) */
+.timeline-premium {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+.timeline-premium::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    height: 4px;
+    background: #e2e8f0;
+    transform: translateY(-50%);
+    z-index: 1;
+    border-radius: 4px;
+}
+.timeline-step {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+.timeline-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    border: 4px solid #fff;
+}
+.timeline-step.active .timeline-icon {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.2);
+}
+.timeline-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+}
+.timeline-step.active .timeline-label {
+    color: #0f172a;
 }

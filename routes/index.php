@@ -12,6 +12,7 @@ match ($action) {
     'product-detail' => (new HomeController)->productDetail(),
     'cart' => (new HomeController)->cart(),
     'checkout' => (new HomeController)->checkout(),
+    'profile' => (new HomeController)->profile(),
 
     'login'         => (new AuthController)->login(),
     'post-login'    => (new AuthController)->postLogin(),

@@ -40,36 +40,39 @@
                             <a class="nav-link active" href="<?= BASE_URL ?? '/' ?>">Trang chủ</a>
                         </li>
                         <li class="nav-item dropdown mega-dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Sản phẩm</a>
+                            <a class="nav-link dropdown-toggle" href="<?= BASE_URL ?? '/' ?>?action=products" data-bs-toggle="dropdown">Sản phẩm</a>
                             <!-- Mega Menu -->
                             <div class="dropdown-menu mega-menu mt-0 border-0 shadow-sm rounded-4 p-4">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <h6 class="fw-bold mb-3">Điện thoại & Tablet</h6>
                                         <ul class="list-unstyled">
-                                            <li><a class="dropdown-item px-0" href="#">iPhone</a></li>
-                                            <li><a class="dropdown-item px-0" href="#">Samsung Galaxy</a></li>
-                                            <li><a class="dropdown-item px-0" href="#">Xiaomi</a></li>
-                                            <li><a class="dropdown-item px-0" href="#">iPad</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">iPhone</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">Samsung Galaxy</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">Xiaomi</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">iPad</a></li>
                                         </ul>
                                     </div>
                                     <div class="col-md-4">
                                         <h6 class="fw-bold mb-3">Laptop & Macbook</h6>
                                         <ul class="list-unstyled">
-                                            <li><a class="dropdown-item px-0" href="#">Macbook Pro</a></li>
-                                            <li><a class="dropdown-item px-0" href="#">Asus ROG</a></li>
-                                            <li><a class="dropdown-item px-0" href="#">Dell XPS</a></li>
-                                            <li><a class="dropdown-item px-0" href="#">HP Envy</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">Macbook Pro</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">Asus ROG</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">Dell XPS</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">HP Envy</a></li>
                                         </ul>
                                     </div>
                                     <div class="col-md-4">
                                         <h6 class="fw-bold mb-3">Phụ Kiện & Âm Thanh</h6>
                                         <ul class="list-unstyled">
-                                            <li><a class="dropdown-item px-0" href="#">Tai nghe Bluetooth</a></li>
-                                            <li><a class="dropdown-item px-0" href="#">Loa di động</a></li>
-                                            <li><a class="dropdown-item px-0" href="#">Chuột & Bàn phím</a></li>
-                                            <li><a class="dropdown-item px-0" href="#">Cáp sạc & Pin dự phòng</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">Tai nghe Bluetooth</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">Loa di động</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">Chuột & Bàn phím</a></li>
+                                            <li><a class="dropdown-item px-0" href="?action=products">Cáp sạc & Pin dự phòng</a></li>
                                         </ul>
+                                    </div>
+                                    <div class="col-12 mt-3 pt-3 border-top text-center">
+                                        <a href="?action=products" class="text-primary fw-bold text-decoration-none hover-primary">Xem tất cả sản phẩm <i class="bi bi-arrow-right"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -91,7 +94,7 @@
                             <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
                             <input type="text" class="form-control rounded-pill ps-5 bg-light border-0" placeholder="Tìm kiếm...">
                         </div>
-                        <a href="#" class="btn btn-light rounded-circle icon-btn position-relative">
+                        <a href="<?= BASE_URL ?? '/' ?>?action=cart" class="btn btn-light rounded-circle icon-btn position-relative hover-primary-bg transition-all">
                             <i class="bi bi-cart3 fs-5"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 3

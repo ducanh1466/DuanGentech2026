@@ -1,50 +1,30 @@
-<!-- Hero Section -->
-<div class="container mt-4" data-aos="fade-up">
-    <div class="hero-section text-center d-flex flex-column align-items-center justify-content-center">
-        <span class="badge bg-dark rounded-pill px-3 py-2 mb-4 fs-6 fw-medium text-white shadow-sm" data-aos="zoom-in" data-aos-delay="100">Siêu Phẩm 2026</span>
-        <h1 class="hero-title mb-4" data-aos="fade-up" data-aos-delay="200">Gentech Pro Max <span class="text-primary">M3</span></h1>
-        <p class="hero-subtitle mb-5 mx-auto" data-aos="fade-up" data-aos-delay="300">Trải nghiệm sức mạnh vô song với chip xử lý thế hệ mới. Mỏng hơn, nhẹ hơn, và thông minh hơn bao giờ hết.</p>
-        <div class="d-flex gap-4 justify-content-center mb-5" data-aos="fade-up" data-aos-delay="400">
-            <button class="btn btn-primary rounded-pill px-5 py-3 fw-bold fs-6 shadow-sm">Mua Ngay</button>
-            <button class="btn btn-outline-dark rounded-pill px-5 py-3 fw-bold fs-6">Tìm Hiểu Thêm</button>
-        </div>
-        <div class="w-100 mt-4 rounded-4 overflow-hidden shadow-float" data-aos="fade-up" data-aos-delay="500">
-            <!-- SLIDER BANNER CHÍNH -->
-            <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
-                <!-- Chấm tròn chuyển slide -->
-                <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+<!-- Hero Parallax Section -->
+<div class="container-fluid px-4 mt-3" data-aos="fade-up">
+    <div class="hero-parallax-slider shadow-lg">
+        <!-- Slide 1 -->
+        <div class="hero-parallax-item active">
+            <div class="hero-parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=2070&auto=format&fit=crop');"></div>
+            <div class="hero-parallax-overlay"></div>
+            <div class="hero-parallax-content">
+                <span class="badge bg-primary rounded-pill px-3 py-2 mb-4 fs-6 shadow-sm border border-light border-opacity-25" data-aos="fade-up" data-aos-delay="200">Kỷ Nguyên Mới</span>
+                <h1 class="display-3 fw-bold mb-4 text-white" style="letter-spacing: -2px;">GENTECH PRO MAX <span class="text-primary">M3</span></h1>
+                <p class="fs-5 text-light mb-5 opacity-75">Trải nghiệm sức mạnh vô song với chip xử lý thế hệ mới. Đẳng cấp công nghệ nằm trong tay bạn.</p>
+                <div class="d-flex gap-3">
+                    <button class="btn btn-primary rounded-pill px-5 py-3 fw-bold fs-6 shadow-sm hover-elevate border-0" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Mua Ngay</button>
+                    <button class="btn btn-outline-light rounded-pill px-5 py-3 fw-bold fs-6 hover-elevate glassmorphism text-white">Tìm Hiểu Thêm</button>
                 </div>
-                
-                <!-- Khu vực chứa các ảnh -->
-                <div class="carousel-inner">
-                    <div class="carousel-item active" data-bs-interval="4000">
-                        <!-- ĐIỀN ĐƯỜNG DẪN ẢNH BANNER 1 -->
-                        <img src="DUONG_DAN_ANH_BANNER_1.jpg" class="d-block w-100" alt="Banner 1" style="object-fit: cover; max-height: 500px; min-height: 300px;">
-                    </div>
-                    <div class="carousel-item" data-bs-interval="4000">
-                        <!-- ĐIỀN ĐƯỜNG DẪN ẢNH BANNER 2 -->
-                        <img src="DUONG_DAN_ANH_BANNER_2.jpg" class="d-block w-100" alt="Banner 2" style="object-fit: cover; max-height: 500px; min-height: 300px;">
-                    </div>
-                    <div class="carousel-item" data-bs-interval="4000">
-                        <!-- ĐIỀN ĐƯỜNG DẪN ẢNH BANNER 3 -->
-                        <img src="DUONG_DAN_ANH_BANNER_3.jpg" class="d-block w-100" alt="Banner 3" style="object-fit: cover; max-height: 500px; min-height: 300px;">
-                    </div>
-                </div>
-                
-                <!-- Nút bấm trái phải -->
-                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Trước</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Sau</span>
-                </button>
             </div>
         </div>
+        
+        <!-- Script to rotate slides (simulated for now, would be handled by JS) -->
+        <script>
+            // Basic parallax slider script
+            document.addEventListener('DOMContentLoaded', function() {
+                const slider = document.querySelector('.hero-parallax-slider');
+                if(!slider) return;
+                // Add more slides dynamically or handle in PHP
+            });
+        </script>
     </div>
 </div>
 
@@ -105,46 +85,56 @@
 
 <!-- Latest Products -->
 <div class="container mt-5 pt-5">
-    <div class="d-flex justify-content-between align-items-end mb-5" data-aos="fade-up">
-        <div>
-            <h2 class="fw-bold mb-2" style="font-size: 2.5rem; letter-spacing: -1px;">Sản Phẩm Mới Nhất</h2>
-            <p class="text-muted fs-5 mb-0">Những công nghệ đột phá vừa ra mắt.</p>
-        </div>
-        <a href="#" class="text-decoration-none text-primary fw-bold fs-5 d-none d-md-block">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold mb-2" style="font-size: 2.5rem; letter-spacing: -1px;">Sản Phẩm Mới Nhất</h2>
+        <p class="text-muted fs-5 mb-0">Những công nghệ đột phá vừa ra mắt.</p>
     </div>
     
     <div class="row">
-        <?php for($i=1; $i<=4; $i++): ?>
-        <div class="col-sm-6 col-lg-3 mb-5" data-aos="fade-up" data-aos-delay="<?= $i * 100 ?>">
-            <div class="product-card">
-                <div class="product-badge bg-danger">Mới</div>
-                <div class="product-image-wrap">
-                    <i class="bi bi-laptop text-secondary" style="font-size: 100px;"></i>
-                </div>
-                <div class="product-info mt-4">
-                    <div class="d-flex text-warning mb-2 fs-6">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star"></i>
-                        <span class="text-muted ms-2 small fw-medium">(24)</span>
+        <?php if (!empty($latestProducts)): ?>
+            <?php foreach($latestProducts as $index => $product): 
+                $img = $product['image'] ?? '';
+                $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_URL . 'assets/uploads/' . $img) : 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=2071&auto=format&fit=crop';
+            ?>
+            <div class="col-sm-6 col-lg-3 mb-5" data-aos="fade-up" data-aos-delay="<?= ($index % 4 + 1) * 100 ?>">
+                <div class="product-card-premium h-100 d-flex flex-column">
+                    <div class="card-img-wrap bg-light border-bottom" style="border-color:#f1f5f9 !important; position: relative;">
+                        <a href="<?= BASE_URL ?>?action=product-detail&id=<?= $product['product_id'] ?? 0 ?>" class="d-block w-100 h-100">
+                            <img src="<?= $imgUrl ?>" alt="<?= htmlspecialchars($product['product_name'] ?? 'Product') ?>" style="object-fit: cover; width: 100%; height: 100%;">
+                        </a>
+                        <div style="position: absolute; top: 10px; right: 10px; z-index: 999;">
+                            <span class="badge bg-danger shadow-sm px-3 py-2 rounded-pill fw-bold" style="font-size:0.85rem;"><i class="bi bi-stars"></i> Mới</span>
+                        </div>
+                        <button class="btn-quick-add hover-elevate">Thêm vào giỏ</button>
                     </div>
-                    <h5 class="fw-bold mb-2 text-truncate">Gentech Ultrabook <?= $i ?></h5>
-                    <p class="text-muted mb-3" style="font-size: 0.95rem;">Intel Core Ultra / 16GB RAM</p>
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <span class="product-price">28.990.000đ</span>
-                        <button class="btn btn-primary rounded-circle icon-btn shadow-sm add-to-cart-btn" style="width: 45px; height: 45px; display:flex; align-items:center; justify-content:center;">
-                            <i class="bi bi-plus-lg fs-5"></i>
-                        </button>
+                    <div class="product-info p-4 flex-grow-1 d-flex flex-column">
+                        <div class="d-flex text-warning mb-2" style="font-size:0.9rem;">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star"></i>
+                            <span class="text-muted ms-2 fw-medium text-dark">(24)</span>
+                        </div>
+                        <a href="<?= BASE_URL ?>?action=product-detail&id=<?= $product['product_id'] ?? 0 ?>" class="text-decoration-none text-dark">
+                            <h5 class="fw-bold mb-1 text-truncate text-dark hover-primary" style="font-size:1.15rem;"><?= htmlspecialchars($product['product_name'] ?? 'Tên sản phẩm') ?></h5>
+                        </a>
+                        <p class="text-muted mb-3 text-truncate" style="font-size: 0.9rem;"><?= htmlspecialchars($product['category_name'] ?? 'Danh mục') ?></p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-5 text-danger"><?= number_format($product['price'] ?? 0, 0, ',', '.') ?>đ</span>
+                            <button class="btn btn-light rounded-circle icon-btn hover-elevate shadow-sm" style="width: 40px; height: 40px; display:flex; align-items:center; justify-content:center; border:1px solid #e2e8f0;">
+                                <i class="bi bi-heart text-danger"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <?php endfor; ?>
-    </div>
-    <div class="text-center d-md-none mt-4" data-aos="fade-up">
-        <a href="#" class="btn btn-outline-dark rounded-pill px-5 py-3 fw-bold w-100">Xem tất cả sản phẩm mới</a>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col-12 text-center text-muted">
+                <p>Không có sản phẩm nào để hiển thị.</p>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -152,15 +142,13 @@
 <div class="container mt-5 pt-5">
     <div class="row g-4">
         <div class="col-md-6" data-aos="fade-right">
-            <!-- CHỈ CẦN ĐIỀN ĐƯỜNG DẪN ẢNH BANNER VÀO THUỘC TÍNH SRC DƯỚI ĐÂY -->
             <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
-                <img src="DUONG_DAN_ANH_BANNER_KHUYEN_MAI_1.jpg" alt="Banner Khuyến Mãi 1" class="img-fluid w-100 rounded-4">
+                <img src="https://images.unsplash.com/photo-1550009158-9effb6628340?q=80&w=1000&auto=format&fit=crop" alt="Banner Khuyến Mãi 1" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
             </a>
         </div>
         <div class="col-md-6" data-aos="fade-left">
-            <!-- CHỈ CẦN ĐIỀN ĐƯỜNG DẪN ẢNH BANNER VÀO THUỘC TÍNH SRC DƯỚI ĐÂY -->
             <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
-                <img src="DUONG_DAN_ANH_BANNER_KHUYEN_MAI_2.jpg" alt="Banner Khuyến Mãi 2" class="img-fluid w-100 rounded-4">
+                <img src="https://images.unsplash.com/photo-1542393545-10f5cde2c810?q=80&w=1000&auto=format&fit=crop" alt="Banner Khuyến Mãi 2" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
             </a>
         </div>
     </div>
@@ -168,46 +156,57 @@
 
 <!-- Best Sellers -->
 <div class="container mt-5 pt-5 mb-5">
-    <div class="d-flex justify-content-between align-items-end mb-5" data-aos="fade-up">
-        <div>
-            <h2 class="fw-bold mb-2" style="font-size: 2.5rem; letter-spacing: -1px;">Bán Chạy Nhất</h2>
-            <p class="text-muted fs-5 mb-0">Các sản phẩm được yêu thích nhất tháng này.</p>
-        </div>
-        <a href="#" class="text-decoration-none text-primary fw-bold fs-5 d-none d-md-block">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold mb-2" style="font-size: 2.5rem; letter-spacing: -1px;">Bán Chạy Nhất</h2>
+        <p class="text-muted fs-5 mb-0">Các sản phẩm được yêu thích nhất tháng này.</p>
     </div>
     
     <div class="row">
-        <?php for($i=1; $i<=4; $i++): ?>
-        <div class="col-sm-6 col-lg-3 mb-5" data-aos="fade-up" data-aos-delay="<?= $i * 100 ?>">
-            <div class="product-card">
-                <div class="product-badge bg-dark">Bán Chạy</div>
-                <div class="product-image-wrap">
-                    <i class="bi bi-phone text-secondary" style="font-size: 100px;"></i>
-                </div>
-                <div class="product-info mt-4">
-                    <div class="d-flex text-warning mb-2 fs-6">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-half"></i>
-                        <span class="text-muted ms-2 small fw-medium">(892)</span>
-                    </div>
-                    <h5 class="fw-bold mb-2 text-truncate">Gentech Phone Pro <?= $i ?></h5>
-                    <p class="text-muted mb-3" style="font-size: 0.95rem;">256GB / Xám titan</p>
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <div>
-                            <span class="product-price text-danger">24.990.000đ</span>
-                            <br>
-                            <span class="text-muted text-decoration-line-through small">29.990.000đ</span>
+        <?php if (!empty($bestSellers)): ?>
+            <?php foreach($bestSellers as $index => $product): 
+                $img = $product['image'] ?? '';
+                $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_URL . 'assets/uploads/' . $img) : 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=2080&auto=format&fit=crop';
+            ?>
+            <div class="col-sm-6 col-lg-3 mb-5" data-aos="fade-up" data-aos-delay="<?= ($index % 4 + 1) * 100 ?>">
+                <div class="product-card-premium h-100 d-flex flex-column">
+                    <div class="card-img-wrap bg-light border-bottom" style="border-color:#f1f5f9 !important; position: relative;">
+                        <a href="<?= BASE_URL ?>?action=product-detail&id=<?= $product['product_id'] ?? 0 ?>" class="d-block w-100 h-100">
+                            <img src="<?= $imgUrl ?>" alt="<?= htmlspecialchars($product['product_name'] ?? 'Product') ?>" style="object-fit: cover; width: 100%; height: 100%;">
+                        </a>
+                        <div style="position: absolute; top: 10px; right: 10px; z-index: 999;">
+                            <span class="badge bg-dark shadow-sm px-3 py-2 rounded-pill fw-bold" style="font-size:0.85rem;"><i class="bi bi-fire text-warning"></i> Bán Chạy</span>
                         </div>
-                        <button class="btn btn-primary rounded-circle icon-btn shadow-sm add-to-cart-btn" style="width: 45px; height: 45px; display:flex; align-items:center; justify-content:center;">
-                            <i class="bi bi-plus-lg fs-5"></i>
-                        </button>
+                        <button class="btn-quick-add hover-elevate">Thêm vào giỏ</button>
+                    </div>
+                    <div class="product-info p-4 flex-grow-1 d-flex flex-column">
+                        <div class="d-flex text-warning mb-2" style="font-size:0.9rem;">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                            <span class="text-muted ms-2 fw-medium text-dark">(892)</span>
+                        </div>
+                        <a href="<?= BASE_URL ?>?action=product-detail&id=<?= $product['product_id'] ?? 0 ?>" class="text-decoration-none text-dark">
+                            <h5 class="fw-bold mb-1 text-truncate text-dark hover-primary" style="font-size:1.15rem;"><?= htmlspecialchars($product['product_name'] ?? 'Tên sản phẩm') ?></h5>
+                        </a>
+                        <p class="text-muted mb-3 text-truncate" style="font-size: 0.9rem;"><?= htmlspecialchars($product['category_name'] ?? 'Danh mục') ?></p>
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold fs-5 text-danger"><?= number_format($product['price'] ?? 0, 0, ',', '.') ?>đ</span>
+                            </div>
+                            <button class="btn btn-light rounded-circle icon-btn hover-elevate shadow-sm" style="width: 40px; height: 40px; display:flex; align-items:center; justify-content:center; border:1px solid #e2e8f0;">
+                                <i class="bi bi-heart text-danger"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <?php endfor; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col-12 text-center text-muted">
+                <p>Không có sản phẩm nào để hiển thị.</p>
+            </div>
+        <?php endif; ?>
     </div>
 </div>

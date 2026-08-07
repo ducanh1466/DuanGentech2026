@@ -4,6 +4,12 @@ class HomeController
 {
     public function index()
     {
+        require_once PATH_MODEL . 'ProductModel.php';
+        $productModel = new ProductModel();
+        
+        $latestProducts = $productModel->getLatestProducts(8);
+        $bestSellers = $productModel->getBestSellingProducts(8);
+        
         $view = 'client/home';
         require_once PATH_VIEW . 'layouts/client_layout.php';
     }
@@ -54,6 +60,13 @@ class HomeController
     {
         $view = 'client/checkout';
         $title = 'Thanh Toán - Gentech';
+        require_once PATH_VIEW . 'layouts/client_layout.php';
+    }
+
+    public function profile()
+    {
+        $view = 'client/profile';
+        $title = 'Hồ Sơ Cá Nhân - Gentech';
         require_once PATH_VIEW . 'layouts/client_layout.php';
     }
 }

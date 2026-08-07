@@ -109,26 +109,26 @@
             <!-- Action Buttons -->
             <div class="row g-3 mb-4">
                 <div class="col-12">
-                    <button class="btn btn-primary w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm">
-                        MUA NGAY
-                        <small class="d-block fw-normal" style="font-size: 0.8rem;">Giao hàng miễn phí tận nơi</small>
+                    <button class="btn btn-premium-gradient w-100 py-3 d-flex flex-column align-items-center justify-content-center">
+                        <span class="fs-5">MUA NGAY</span>
+                        <small class="fw-normal" style="font-size: 0.85rem; opacity: 0.9;">Giao hàng miễn phí tận nơi</small>
                     </button>
                 </div>
                 <div class="col-6">
-                    <button class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold">
+                    <button class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold hover-elevate">
                         TRẢ GÓP 0%
                         <small class="d-block fw-normal" style="font-size: 0.75rem;">Duyệt hồ sơ trong 5 phút</small>
                     </button>
                 </div>
                 <div class="col-6">
-                    <button class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold">
+                    <button class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold hover-elevate">
                         TRẢ GÓP QUA THẺ
                         <small class="d-block fw-normal" style="font-size: 0.75rem;">Visa, Mastercard, JCB</small>
                     </button>
                 </div>
             </div>
             
-            <button class="btn btn-light border w-100 rounded-pill py-3 fw-bold text-dark hover-gray"><i class="bi bi-cart-plus me-2 fs-5 align-middle"></i>THÊM VÀO GIỎ HÀNG</button>
+            <button class="btn btn-light border w-100 rounded-pill py-3 fw-bold text-dark hover-elevate shadow-sm"><i class="bi bi-cart-plus me-2 fs-5 align-middle"></i>THÊM VÀO GIỎ HÀNG</button>
         </div>
     </div>
 </div>
@@ -210,21 +210,24 @@
         <!-- Render 4 mock products -->
         <?php for($i=1; $i<=4; $i++): ?>
         <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="<?= $i * 100 ?>">
-            <div class="product-card h-100 p-0 text-start position-relative">
-                <span class="badge bg-danger position-absolute top-0 start-0 m-3 z-1">-10%</span>
-                <div class="p-4 bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                    <img src="DUONG_DAN_ANH_SP_<?= $i ?>.jpg" class="img-fluid mix-blend-multiply transition-transform hover-scale" alt="Product <?= $i ?>" style="max-height: 180px;">
+            <div class="product-card-premium h-100 d-flex flex-column">
+                <div class="position-absolute top-0 end-0 m-3 z-3">
+                    <div class="product-badge bg-danger shadow-sm px-3 py-1 rounded-pill text-white fw-bold" style="font-size:0.8rem;">-10%</div>
                 </div>
-                <div class="p-4 bg-white">
+                <div class="card-img-wrap bg-light border-bottom" style="border-color:#f1f5f9 !important;">
+                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=2080&auto=format&fit=crop" alt="iPhone 15 Pro Max">
+                    <button class="btn-quick-add hover-elevate">Thêm vào giỏ</button>
+                </div>
+                <div class="product-info p-4 flex-grow-1 d-flex flex-column">
                     <p class="text-muted small fw-bold mb-1">APPLE</p>
                     <h5 class="fw-bold mb-3 product-title text-truncate">iPhone 15 Pro Max 256GB</h5>
-                    <div class="d-flex justify-content-between align-items-end">
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="text-dark fw-bold fs-5 d-block">29.990.000đ</span>
+                            <span class="fw-bold fs-5 text-dark d-block">29.990.000đ</span>
                             <span class="text-muted text-decoration-line-through small">34.990.000đ</span>
                         </div>
-                        <button class="btn btn-light rounded-circle text-primary hover-primary-bg transition-all" style="width: 40px; height: 40px;">
-                            <i class="bi bi-cart-plus fs-5"></i>
+                        <button class="btn btn-light rounded-circle icon-btn hover-elevate shadow-sm" style="width: 40px; height: 40px; display:flex; align-items:center; justify-content:center; border:1px solid #e2e8f0;">
+                            <i class="bi bi-cart-plus fs-5 text-primary"></i>
                         </button>
                     </div>
                 </div>

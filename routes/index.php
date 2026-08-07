@@ -5,6 +5,9 @@ $action = $_GET['action'] ?? '/';
 
 match ($action) {
     '/' => (new HomeController)->index(),
+    'about' => (new HomeController)->about(),
+    'news'  => (new HomeController)->news(),
+    'support' => (new HomeController)->support(),
 
     'login'         => (new AuthController)->login(),
     'post-login'    => (new AuthController)->postLogin(),

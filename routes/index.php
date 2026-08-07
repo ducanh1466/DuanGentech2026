@@ -8,6 +8,10 @@ match ($action) {
     'about' => (new HomeController)->about(),
     'news'  => (new HomeController)->news(),
     'support' => (new HomeController)->support(),
+    'products' => (new HomeController)->products(),
+    'product-detail' => (new HomeController)->productDetail(),
+    'cart' => (new HomeController)->cart(),
+    'checkout' => (new HomeController)->checkout(),
 
     'login'         => (new AuthController)->login(),
     'post-login'    => (new AuthController)->postLogin(),

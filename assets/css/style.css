@@ -1288,73 +1288,135 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================
-   AUTH PAGES (Login / Register)
+   AUTH PAGES (Login / Register) - SPLIT SCREEN
    ========================================== */
-.auth-page {
-    min-height: 80vh;
+.split-auth-container {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-main);
+}
+
+.split-auth-left {
+    flex: 1;
+    display: none;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    /* Animated subtle zoom on load */
+    animation: authImageZoom 20s infinite alternate ease-in-out;
+}
+
+@keyframes authImageZoom {
+    0% { background-size: 100% auto; }
+    100% { background-size: 110% auto; }
+}
+
+@media (min-width: 992px) {
+    .split-auth-left {
+        display: block;
+    }
+}
+
+.split-auth-left::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 100%);
+}
+
+.split-auth-right {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
+    background: #ffffff;
 }
 
 .auth-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-xl);
-    padding: 40px;
     width: 100%;
     max-width: 440px;
-    box-shadow: var(--shadow-xl);
+    /* Premium subtle entrance animation */
+    animation: authCardFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes authCardFadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 .auth-card .auth-title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 800;
-    text-align: center;
     margin-bottom: 8px;
+    color: #111;
 }
 
 .auth-card .auth-subtitle {
-    text-align: center;
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-bottom: 28px;
+    font-size: 0.95rem;
+    margin-bottom: 30px;
 }
 
 .auth-card .form-control {
-    border: 2px solid var(--border-color);
+    border: 1px solid #e0e0e0;
     border-radius: var(--radius-md);
-    padding: 12px 14px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
+    padding: 14px 16px;
+    background: #f9f9f9;
+    color: #333;
+    transition: all 0.3s ease;
 }
 
 .auth-card .form-control:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-light);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.15);
+}
+
+.auth-card .input-group-text {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+}
+
+.auth-card .form-control:focus + .input-group-text,
+.auth-card .input-group:focus-within .input-group-text {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: #fff;
 }
 
 .auth-card .form-label {
-    font-weight: 500;
+    font-weight: 600;
     font-size: 0.9rem;
-    color: var(--text-secondary);
+    color: #444;
 }
 
 .auth-card .btn-auth {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-card .btn-auth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(var(--accent-rgb), 0.3);
 }
 
 .auth-divider {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 20px 0;
-    color: var(--text-muted);
+    margin: 25px 0;
+    color: #999;
     font-size: 0.85rem;
 }
 
@@ -1363,7 +1425,20 @@ h1, h2, h3, h4, h5, h6 {
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--border-color);
+    background: #eee;
+}
+
+.auth-social-btn {
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #333;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.auth-social-btn:hover {
+    background: #f8f9fa;
+    border-color: #d0d0d0;
 }
 
 /* ==========================================

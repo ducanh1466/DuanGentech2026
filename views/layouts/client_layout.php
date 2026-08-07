@@ -100,9 +100,25 @@
                                 3
                             </span>
                         </a>
-                        <a href="#" class="btn btn-light rounded-circle icon-btn">
-                            <i class="bi bi-person fs-5"></i>
-                        </a>
+                        <?php if (isset($_SESSION['user'])): ?>
+                            <div class="dropdown d-inline-block">
+                                <a href="#" class="btn btn-light rounded-circle icon-btn" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-check-fill fs-5 text-primary"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm mt-2 rounded-3">
+                                    <li><h6 class="dropdown-header">Xin chào, <?= htmlspecialchars($_SESSION['user']['full_name'] ?? 'User') ?></h6></li>
+                                    <?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] == 1): ?>
+                                        <li><a class="dropdown-item" href="<?= BASE_URL ?? '/' ?>?action=admin">Trang quản trị</a></li>
+                                    <?php endif; ?>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="<?= BASE_URL ?? '/' ?>?action=logout"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                                </ul>
+                            </div>
+                        <?php else: ?>
+                            <a href="<?= BASE_URL ?? '/' ?>?action=login" class="btn btn-light rounded-circle icon-btn position-relative hover-primary-bg transition-all">
+                                <i class="bi bi-person fs-5"></i>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

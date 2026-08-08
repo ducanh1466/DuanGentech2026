@@ -44,6 +44,17 @@ class HomeController
 
     public function products()
     {
+        require_once PATH_MODEL . 'ProductModel.php';
+        $productModel = new ProductModel();
+        
+        // Setup pagination
+        $limit = 12;
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $offset = ($page - 1) * $limit;
+        
+        $products = $productModel->getProductsFiltered('', [], [], [], 0, 0, '', $limit, $offset);
+        $totalProducts = $productModel->countProductsFiltered('', [], [], [], 0, 0);
+        
         $view = 'client/products';
         $title = 'Tất Cả Sản Phẩm - Gentech';
         require_once PATH_VIEW . 'layouts/client_layout.php';
@@ -51,8 +62,29 @@ class HomeController
 
     public function productDetail()
     {
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        if ($id <= 0) {
+            header('Location: ?action=products');
+            exit;
+        }
+
+        require_once PATH_MODEL . 'ProductModel.php';
+        $productModel = new ProductModel();
+        
+        $product = $productModel->getProductById($id);
+        if (!$product) {
+            header('Location: ?action=products');
+            exit;
+        }
+
+        $images = $productModel->getProductImages($id);
+        $attributes = $productModel->getProductAttributes($id);
+        $variantsData = $productModel->getVariantsByProductId($id);
+        $specs = $productModel->getProductSpecs($id);
+        $relatedProducts = $productModel->getProductsByCategory($product['category_id'], 4, $id);
+
         $view = 'client/product_detail';
-        $title = 'Chi Tiết Sản Phẩm - Gentech';
+        $title = $product['product_name'] . ' - Gentech';
         require_once PATH_VIEW . 'layouts/client_layout.php';
     }
 

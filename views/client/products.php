@@ -124,7 +124,7 @@
         <div class="col-lg-9">
             <!-- Toolbar -->
             <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm border">
-                <p class="mb-0 text-muted">Hiển thị <span class="fw-bold text-dark">12</span> trên <span class="fw-bold text-dark">212</span> sản phẩm</p>
+                <p class="mb-0 text-muted">Hiển thị <span class="fw-bold text-dark"><?= count($products) ?></span> trên <span class="fw-bold text-dark"><?= $totalProducts ?></span> sản phẩm</p>
                 <div class="d-flex align-items-center gap-3">
                     <label class="text-muted text-nowrap mb-0 d-none d-md-block">Sắp xếp theo:</label>
                     <select class="form-select border-0 bg-light rounded-pill px-4 fw-medium" style="width: auto; cursor: pointer;">
@@ -138,38 +138,32 @@
 
             <!-- Products -->
             <div class="row g-4">
-                <?php for($i=1; $i<=9; $i++): ?>
-                <div class="col-sm-6 col-lg-4" data-aos="fade-up" data-aos-delay="<?= ($i%3) * 100 ?>">
+                <?php $delay = 0; foreach($products as $product): ?>
+                <div class="col-sm-6 col-lg-4" data-aos="fade-up" data-aos-delay="<?= $delay ?>">
                     <div class="product-card h-100 p-0 text-start position-relative">
                         <!-- Thẻ trạng thái/Khuyến mãi -->
-                        <?php if($i == 1 || $i == 4): ?>
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-3 z-1">-15%</span>
-                        <?php elseif($i == 2): ?>
+                        <?php if(isset($product['status']) && $product['status'] == 'new'): ?>
                             <span class="badge bg-dark position-absolute top-0 start-0 m-3 z-1">Mới</span>
                         <?php endif; ?>
                         
-                        <div class="p-4 bg-light d-flex align-items-center justify-content-center cursor-pointer" style="height: 260px;" onclick="window.location.href='?action=product-detail'">
-                            <!-- ĐIỀN ĐƯỜNG DẪN ẢNH SẢN PHẨM -->
-                            <img src="DUONG_DAN_ANH_SP_<?= $i ?>.jpg" class="img-fluid mix-blend-multiply transition-transform hover-scale" alt="Product <?= $i ?>" style="max-height: 200px;">
+                        <div class="p-4 bg-light d-flex align-items-center justify-content-center cursor-pointer" style="height: 260px;" onclick="window.location.href='?action=product-detail&id=<?= $product['product_id'] ?>'">
+                            <img src="<?= $product['image'] ?>" class="img-fluid mix-blend-multiply transition-transform hover-scale" alt="<?= htmlspecialchars($product['product_name']) ?>" style="max-height: 200px;">
                         </div>
                         <div class="p-4 bg-white">
-                            <p class="text-muted small fw-bold mb-1">APPLE</p>
-                            <h5 class="fw-bold mb-3 product-title text-truncate cursor-pointer hover-primary text-dark" onclick="window.location.href='?action=product-detail'">iPhone 15 Pro Max 256GB</h5>
+                            <p class="text-muted small fw-bold mb-1"><?= strtoupper(htmlspecialchars($product['brand_name'] ?? '')) ?></p>
+                            <h5 class="fw-bold mb-3 product-title text-truncate cursor-pointer hover-primary text-dark" onclick="window.location.href='?action=product-detail&id=<?= $product['product_id'] ?>'"><?= htmlspecialchars($product['product_name']) ?></h5>
                             <div class="d-flex justify-content-between align-items-end">
                                 <div>
-                                    <span class="text-dark fw-bold fs-5 d-block">29.990.000đ</span>
-                                    <?php if($i == 1 || $i == 4): ?>
-                                    <span class="text-muted text-decoration-line-through small">34.990.000đ</span>
-                                    <?php endif; ?>
+                                    <span class="text-dark fw-bold fs-5 d-block"><?= number_format($product['price'] ?? 0, 0, ',', '.') ?>đ</span>
                                 </div>
-                                <button class="btn btn-light rounded-circle text-primary hover-primary-bg transition-all" style="width: 40px; height: 40px;">
+                                <button class="btn btn-light rounded-circle text-primary hover-primary-bg transition-all" style="width: 40px; height: 40px;" onclick="window.location.href='?action=cart-add&id=<?= $product['product_id'] ?>'">
                                     <i class="bi bi-cart-plus fs-5"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <?php endfor; ?>
+                <?php $delay += 100; if($delay > 200) $delay = 0; endforeach; ?>
             </div>
 
             <!-- Pagination -->

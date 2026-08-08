@@ -285,7 +285,7 @@ $all_attributes = $all_attributes ?? [];
             priceInput.addEventListener('input', function (e) {
                 let value = this.value.replace(/[^0-9]/g, '');
                 if (value !== '') {
-                    this.value = parseInt(value, 10).toLocaleString('vi-VN').replace(/,/g, '.');
+                    this.value = parseInt(value, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                 } else {
                     this.value = '';
                 }
@@ -386,7 +386,7 @@ $all_attributes = $all_attributes ?? [];
     function appendVariantRow(id, name, sku, price, stock, attrIds) {
         // Format price
         let formattedPrice = price.toString().replace(/[^0-9]/g, '');
-        if(formattedPrice) formattedPrice = parseInt(formattedPrice, 10).toLocaleString('vi-VN').replace(/,/g, '.');
+        if(formattedPrice) formattedPrice = parseInt(formattedPrice, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
         const tbody = document.getElementById('variantMatrixBody');
         const tr = document.createElement('tr');
@@ -416,7 +416,7 @@ $all_attributes = $all_attributes ?? [];
         newPriceInput.addEventListener('input', function() {
             let value = this.value.replace(/[^0-9]/g, '');
             if (value !== '') {
-                this.value = parseInt(value, 10).toLocaleString('vi-VN').replace(/,/g, '.');
+                this.value = parseInt(value, 10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
             } else {
                 this.value = '';
             }

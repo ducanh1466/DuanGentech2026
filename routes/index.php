@@ -46,6 +46,22 @@ match ($action) {
     'admin-user-status'     => (new AdminController)->changeUserStatus(),
     'admin-orders'          => (new AdminController)->orders(),
     'admin-order-detail'    => (new AdminController)->orderDetail(),
+    
+    // --- ATTRIBUTES ROUTING ---
+    'admin-attributes'      => (new AdminController)->attributes(),
+    'admin-attribute-create' => (new AdminController)->attributeCreate(),
+    'admin-attribute-update' => (new AdminController)->attributeUpdate(),
+    'admin-attribute-delete' => (new AdminController)->attributeDelete(),
+    'admin-attribute-value-create' => (new AdminController)->attributeValueCreate(),
+    'admin-attribute-value-delete' => (new AdminController)->attributeValueDelete(),
+    
+    // --- BANNERS ROUTING ---
+    'admin-banners'         => (new AdminController)->banners(),
+    'admin-banner-form'     => (new AdminController)->bannerForm(), // Form dùng chung cho Create & Update
+    'admin-banner-create'   => (new AdminController)->bannerCreate(),
+    'admin-banner-update'   => (new AdminController)->bannerUpdate(),
+    'admin-banner-delete'   => (new AdminController)->bannerDelete(),
+
     'admin-profile'         => (new AdminController)->profile(),
     'admin-update-profile'  => (new AdminController)->updateProfile(),
     'admin-change-password' => (new AdminController)->changePassword(),

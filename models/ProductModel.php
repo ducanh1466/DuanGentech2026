@@ -237,25 +237,33 @@ class ProductModel extends BaseModel
         ]);
     }
 
-    public function deleteProductImages($product_id)
+    public function deletePrimaryImage($product_id)
     {
-        $sql = "DELETE FROM tb_product_images WHERE product_id = :product_id";
+        $sql = "DELETE FROM tb_product_images WHERE product_id = :product_id AND is_primary = 1";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute(['product_id' => $product_id]);
+    }
+
+    public function deleteGalleryImages($product_id)
+    {
+        $sql = "DELETE FROM tb_product_images WHERE product_id = :product_id AND is_primary = 0";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute(['product_id' => $product_id]);
     }
 
     // --- Các hàm xử lý BIẾN THỂ (VARIANTS) ---
-    // Thêm mới 1 biến thể cho sản phẩm
-    public function insertVariant($product_id, $variant_name, $price, $stock_quantity = 0, $status = 1)
+    public function insertVariant($product_id, $variant_name, $price, $stock_quantity = 0, $sku = null, $image_url = null, $status = 1)
     {
-        $sql = "INSERT INTO tb_product_variants (product_id, variant_name, price, stock_quantity, status) 
-                VALUES (:product_id, :variant_name, :price, :stock_quantity, :status)";
+        $sql = "INSERT INTO tb_product_variants (product_id, variant_name, price, stock_quantity, sku, image_url, status) 
+                VALUES (:product_id, :variant_name, :price, :stock_quantity, :sku, :image_url, :status)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'product_id' => $product_id,
             'variant_name' => $variant_name,
             'price' => $price,
             'stock_quantity' => $stock_quantity,
+            'sku' => $sku,
+            'image_url' => $image_url,
             'status' => $status
         ]);
         return $this->pdo->lastInsertId();
@@ -263,7 +271,7 @@ class ProductModel extends BaseModel
 
     public function insertDefaultVariant($product_id, $price, $stock_quantity = 0)
     {
-        return $this->insertVariant($product_id, 'Mặc định', (int) $price, (int) $stock_quantity, 1);
+        return $this->insertVariant($product_id, 'Mặc định', (int) $price, (int) $stock_quantity, null, null, 1);
     }
 
     public function insertVariantAttribute($variant_id, $attribute_value_id)
@@ -276,17 +284,19 @@ class ProductModel extends BaseModel
         ]);
     }
 
-    public function updateVariant($variant_id, $variant_name, $price, $stock_quantity)
+    public function updateVariant($variant_id, $variant_name, $price, $stock_quantity, $sku = null, $image_url = null)
     {
         $sql = "UPDATE tb_product_variants 
-                SET variant_name = :variant_name, price = :price, stock_quantity = :stock_quantity 
+                SET variant_name = :variant_name, price = :price, stock_quantity = :stock_quantity, sku = :sku, image_url = :image_url
                 WHERE variant_id = :variant_id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             'variant_id' => $variant_id,
             'variant_name' => $variant_name,
             'price' => $price,
-            'stock_quantity' => $stock_quantity
+            'stock_quantity' => $stock_quantity,
+            'sku' => $sku,
+            'image_url' => $image_url
         ]);
     }
 
@@ -321,6 +331,40 @@ class ProductModel extends BaseModel
         } catch (PDOException $e) {
             return false;
         }
+    }
+
+    public function deleteVariantAttributesByVariant($variant_id)
+    {
+        $sql = "DELETE FROM tb_variant_attributes WHERE variant_id = :variant_id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute(['variant_id' => $variant_id]);
+    }
+
+    // --- Các hàm xử lý THÔNG SỐ (SPECS) ---
+    public function insertProductSpec($product_id, $spec_name, $spec_value)
+    {
+        $sql = "INSERT INTO tb_product_specs (product_id, spec_name, spec_value) VALUES (:product_id, :spec_name, :spec_value)";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'product_id' => $product_id,
+            'spec_name' => $spec_name,
+            'spec_value' => $spec_value
+        ]);
+    }
+
+    public function getProductSpecs($product_id)
+    {
+        $sql = "SELECT * FROM tb_product_specs WHERE product_id = :product_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['product_id' => $product_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function deleteProductSpecs($product_id)
+    {
+        $sql = "DELETE FROM tb_product_specs WHERE product_id = :product_id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute(['product_id' => $product_id]);
     }
 
     // --- Các hàm phục vụ LỌC SẢN PHẨM (FILTER) ở trang danh sách sản phẩm ---

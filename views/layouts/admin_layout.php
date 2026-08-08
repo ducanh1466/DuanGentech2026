@@ -75,6 +75,18 @@
                             <i class="bi bi-star"></i> Thương hiệu
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= strpos($action ?? '', 'admin-attribute') !== false ? 'active' : '' ?>"
+                            href="<?= BASE_URL ?>?action=admin-attributes">
+                            <i class="bi bi-sliders"></i> Thuộc tính
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= in_array($action ?? '', ['admin-banners', 'admin-banner-form']) ? 'active' : '' ?>"
+                            href="<?= BASE_URL ?>?action=admin-banners">
+                            <i class="bi bi-images"></i> Quản lý Banner
+                        </a>
+                    </li>
                     <?php if ($_SESSION['user']['role'] == 1): ?>
                         <li class="nav-item">
                             <a class="nav-link <?= in_array($action ?? '', ['admin-orders', 'admin-order-detail']) ? 'active' : '' ?>"

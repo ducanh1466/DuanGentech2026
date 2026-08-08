@@ -5,10 +5,17 @@ class HomeController
     public function index()
     {
         require_once PATH_MODEL . 'ProductModel.php';
+        require_once PATH_MODEL . 'BannerModel.php';
+        
         $productModel = new ProductModel();
+        $bannerModel = new BannerModel();
         
         $latestProducts = $productModel->getLatestProducts(8);
         $bestSellers = $productModel->getBestSellingProducts(8);
+        
+        // Fetch banners
+        $heroBanners = $bannerModel->getActiveBannersByPosition('hero_slider');
+        $promoBanners = $bannerModel->getActiveBannersByPosition('promo_banner', 2);
         
         $view = 'client/home';
         require_once PATH_VIEW . 'layouts/client_layout.php';

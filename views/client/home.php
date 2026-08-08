@@ -1,20 +1,34 @@
 <!-- Hero Parallax Section -->
 <div class="container-fluid px-4 mt-3" data-aos="fade-up">
     <div class="hero-parallax-slider shadow-lg">
-        <!-- Slide 1 -->
-        <div class="hero-parallax-item active">
-            <div class="hero-parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=2070&auto=format&fit=crop');"></div>
-            <div class="hero-parallax-overlay"></div>
-            <div class="hero-parallax-content">
-                <span class="badge bg-primary rounded-pill px-3 py-2 mb-4 fs-6 shadow-sm border border-light border-opacity-25" data-aos="fade-up" data-aos-delay="200">Kỷ Nguyên Mới</span>
-                <h1 class="display-3 fw-bold mb-4 text-white" style="letter-spacing: -2px;">GENTECH PRO MAX <span class="text-primary">M3</span></h1>
-                <p class="fs-5 text-light mb-5 opacity-75">Trải nghiệm sức mạnh vô song với chip xử lý thế hệ mới. Đẳng cấp công nghệ nằm trong tay bạn.</p>
-                <div class="d-flex gap-3">
-                    <button class="btn btn-primary rounded-pill px-5 py-3 fw-bold fs-6 shadow-sm hover-elevate border-0" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Mua Ngay</button>
-                    <button class="btn btn-outline-light rounded-pill px-5 py-3 fw-bold fs-6 hover-elevate glassmorphism text-white">Tìm Hiểu Thêm</button>
+        <?php if (!empty($heroBanners)): ?>
+            <?php foreach ($heroBanners as $index => $banner): ?>
+                <div class="hero-parallax-item <?= $index === 0 ? 'active' : '' ?>">
+                    <div class="hero-parallax-bg" style="background-image: url('<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>');"></div>
+                    <div class="hero-parallax-overlay"></div>
+                    <div class="hero-parallax-content">
+                        <!-- Tùy chọn hiển thị text (nếu muốn, có thể lưu thêm mô tả vào bảng banners) -->
+                        <span class="badge bg-primary rounded-pill px-3 py-2 mb-4 fs-6 shadow-sm border border-light border-opacity-25" data-aos="fade-up" data-aos-delay="200"><?= htmlspecialchars($banner['title']) ?></span>
+                        <!-- Nút bấm với link động -->
+                        <div class="d-flex gap-3 mt-4">
+                            <?php if (!empty($banner['link'])): ?>
+                                <a href="<?= htmlspecialchars($banner['link']) ?>" class="btn btn-primary rounded-pill px-5 py-3 fw-bold fs-6 shadow-sm hover-elevate border-0" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">Khám Phá Ngay</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <!-- Fallback nếu không có banner nào -->
+            <div class="hero-parallax-item active">
+                <div class="hero-parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=2070&auto=format&fit=crop');"></div>
+                <div class="hero-parallax-overlay"></div>
+                <div class="hero-parallax-content">
+                    <span class="badge bg-primary rounded-pill px-3 py-2 mb-4 fs-6 shadow-sm border border-light border-opacity-25" data-aos="fade-up" data-aos-delay="200">GENTECH</span>
+                    <h1 class="display-3 fw-bold mb-4 text-white" style="letter-spacing: -2px;">SẢN PHẨM <span class="text-primary">CHÍNH HÃNG</span></h1>
                 </div>
             </div>
-        </div>
+        <?php endif; ?>
         
         <!-- Script to rotate slides (simulated for now, would be handled by JS) -->
         <script>
@@ -141,16 +155,27 @@
 <!-- Banner Khuyến Mãi -->
 <div class="container mt-5 pt-5">
     <div class="row g-4">
-        <div class="col-md-6" data-aos="fade-right">
-            <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
-                <img src="https://images.unsplash.com/photo-1550009158-9effb6628340?q=80&w=1000&auto=format&fit=crop" alt="Banner Khuyến Mãi 1" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
-            </a>
-        </div>
-        <div class="col-md-6" data-aos="fade-left">
-            <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
-                <img src="https://images.unsplash.com/photo-1542393545-10f5cde2c810?q=80&w=1000&auto=format&fit=crop" alt="Banner Khuyến Mãi 2" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
-            </a>
-        </div>
+        <?php if (!empty($promoBanners)): ?>
+            <?php foreach ($promoBanners as $index => $banner): ?>
+                <div class="col-md-6" data-aos="<?= $index % 2 == 0 ? 'fade-right' : 'fade-left' ?>">
+                    <a href="<?= !empty($banner['link']) ? htmlspecialchars($banner['link']) : '#' ?>" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
+                        <img src="<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>" alt="<?= htmlspecialchars($banner['title']) ?>" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
+                    </a>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <!-- Fallback tĩnh nếu admin chưa thêm banner -->
+            <div class="col-md-6" data-aos="fade-right">
+                <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
+                    <img src="<?= BASE_URL ?>assets/uploads/banner/bannersale1.jpg" alt="Banner Khuyến Mãi 1" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
+                </a>
+            </div>
+            <div class="col-md-6" data-aos="fade-left">
+                <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
+                    <img src="<?= BASE_URL ?>assets/uploads/banner/bannersale2.jpg" alt="Banner Khuyến Mãi 2" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
+                </a>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 

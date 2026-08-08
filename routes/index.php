@@ -52,6 +52,7 @@ match ($action) {
     'admin-attribute-create' => (new AdminController)->attributeCreate(),
     'admin-attribute-update' => (new AdminController)->attributeUpdate(),
     'admin-attribute-delete' => (new AdminController)->attributeDelete(),
+    'admin-attribute-detail'       => (new AdminController)->attributeDetail(),
     'admin-attribute-value-create' => (new AdminController)->attributeValueCreate(),
     'admin-attribute-value-delete' => (new AdminController)->attributeValueDelete(),
     

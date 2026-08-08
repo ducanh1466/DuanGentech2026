@@ -1141,6 +1141,41 @@ class AdminController
         exit;
     }
 
+    public function attributeDetail()
+    {
+        $id = $_GET['id'] ?? 0;
+        if (!$id) {
+            header('Location: ' . BASE_URL . '?action=admin-attributes');
+            exit;
+        }
+
+        require_once PATH_MODEL . 'AttributeModel.php';
+        $attrModel = new AttributeModel();
+        
+        // Cần một hàm để lấy 1 thuộc tính và các giá trị của nó
+        // Hoặc lấy tất cả rồi lọc ra
+        $all_attributes = $attrModel->getAllAttributesWithValues();
+        $attribute = null;
+        foreach ($all_attributes as $attr) {
+            if ($attr['attribute_id'] == $id) {
+                $attribute = $attr;
+                break;
+            }
+        }
+        
+        if (!$attribute) {
+            $_SESSION['error'] = 'Không tìm thấy thuộc tính!';
+            header('Location: ' . BASE_URL . '?action=admin-attributes');
+            exit;
+        }
+
+        $title = 'Chi tiết Thuộc tính - DGENTECH Admin';
+        $pageTitle = 'Thuộc tính';
+        $action = 'admin-attributes';
+        $view = 'admin/attribute_detail';
+        require_once PATH_VIEW_ADMIN;
+    }
+
     public function attributeUpdate()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -1187,23 +1222,24 @@ class AdminController
             } else {
                 $_SESSION['error'] = 'Dữ liệu không hợp lệ!';
             }
+            header('Location: ' . BASE_URL . '?action=admin-attribute-detail&id=' . $attr_id);
+            exit;
         }
-        header('Location: ' . BASE_URL . '?action=admin-attributes');
-        exit;
     }
 
     public function attributeValueDelete()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['attribute_value_id'] ?? 0;
+            $attr_id = $_POST['attribute_id'] ?? 0;
             if ($id) {
                 require_once PATH_MODEL . 'AttributeModel.php';
                 $attrModel = new AttributeModel();
                 $attrModel->deleteAttributeValue($id);
                 $_SESSION['success'] = 'Xóa giá trị thành công!';
             }
+            header('Location: ' . BASE_URL . '?action=admin-attribute-detail&id=' . $attr_id);
+            exit;
         }
-        header('Location: ' . BASE_URL . '?action=admin-attributes');
-        exit;
     }
 }

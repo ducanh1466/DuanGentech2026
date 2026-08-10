@@ -80,4 +80,16 @@ class BrandModel extends BaseModel
             throw $e;
         }
     }
+
+    // Lấy các thương hiệu thuộc một danh mục cụ thể (thông qua bảng sản phẩm)
+    public function getBrandsByCategoryId($categoryId)
+    {
+        $sql = "SELECT DISTINCT b.* 
+                FROM {$this->table} b
+                JOIN tb_products p ON b.brand_id = p.brand_id
+                WHERE p.category_id = :category_id AND b.status = 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['category_id' => $categoryId]);
+        return $stmt->fetchAll();
+    }
 }

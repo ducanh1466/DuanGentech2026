@@ -174,8 +174,16 @@ class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $categoryModel = new CategoryModel();
             $id = $_POST['category_id'] ?? 0;
-            $categoryModel->deleteCategory($id);
-            $_SESSION['success'] = 'Xóa danh mục thành công!';
+            try {
+                $categoryModel->deleteCategory($id);
+                $_SESSION['success'] = 'Xóa danh mục thành công!';
+            } catch (\PDOException $e) {
+                if ($e->getCode() == '23000') {
+                    $_SESSION['error'] = 'Không thể xóa danh mục này vì vẫn còn sản phẩm thuộc danh mục!';
+                } else {
+                    $_SESSION['error'] = 'Có lỗi xảy ra khi xóa danh mục!';
+                }
+            }
             header('Location: ' . BASE_URL . '?action=admin-categories');
             exit;
         }
@@ -516,10 +524,18 @@ class AdminController
                     // 2. Xóa Specs
                     $productModel->deleteProductSpecs($id);
 
-                    // 3. Xóa thuộc tính biến thể (Variant attributes)
+                    // Xóa Đánh giá (Reviews) liên quan
+                    $pdo->exec("DELETE FROM tb_reviews WHERE product_id = " . (int)$id);
+
+                    // 3. Xóa thuộc tính biến thể (Variant attributes) và Giỏ hàng
                     $variants = $productModel->getVariantsByProductId($id);
                     foreach ($variants as $var) {
                         $productModel->deleteVariantAttributesByVariant($var['variant_id']);
+                        $pdo->exec("DELETE FROM tb_cart_items WHERE variant_id = " . (int)$var['variant_id']);
+                        
+                        // CẢNH BÁO: Nếu bạn muốn xóa bất chấp sản phẩm đã có trong đơn hàng, hãy bỏ comment dòng dưới.
+                        // Tuy nhiên điều này sẽ làm mất lịch sử đơn hàng của khách.
+                        // $pdo->exec("DELETE FROM tb_order_items WHERE variant_id = " . (int)$var['variant_id']);
                     }
 
                     // 4. Xóa các biến thể (Variants)
@@ -530,9 +546,16 @@ class AdminController
 
                     $pdo->commit();
                     $_SESSION['success'] = 'Xóa sản phẩm thành công!';
+                } catch (\PDOException $e) {
+                    $productModel->getPdo()->rollBack();
+                    if ($e->getCode() == '23000') {
+                        $_SESSION['error'] = 'Không thể xóa sản phẩm này vì nó đã phát sinh đơn hàng! Hãy chuyển trạng thái sản phẩm sang Ngừng kinh doanh thay vì xóa.';
+                    } else {
+                        $_SESSION['error'] = 'Lỗi hệ thống: Không thể xóa sản phẩm.';
+                    }
                 } catch (\Exception $e) {
                     $productModel->getPdo()->rollBack();
-                    $_SESSION['error'] = 'Không thể xóa sản phẩm vì lỗi liên kết dữ liệu hoặc có lỗi xảy ra.';
+                    $_SESSION['error'] = 'Có lỗi xảy ra: ' . $e->getMessage();
                 }
             }
 

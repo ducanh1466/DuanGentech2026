@@ -8,12 +8,13 @@ class AdminController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        if (!isset($_SESSION['user'])) {
-            $_SESSION['user'] = [
-                'role' => 1,
-                'full_name' => 'Admin Test',
-                'email' => 'admin@dgentech.vn'
-            ];
+
+        // Kiểm tra xem đã đăng nhập chưa và có phải là Admin (role = 1) không
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 1) {
+            // Nếu chưa đăng nhập hoặc không phải admin, chuyển hướng về trang đăng nhập
+            // Lưu ý: Thay đổi URL `?act=login` thành URL chuẩn xác của bạn nếu cần
+            header("Location: ?act=login");
+            exit();
         }
     }
 
@@ -525,14 +526,14 @@ class AdminController
                     $productModel->deleteProductSpecs($id);
 
                     // Xóa Đánh giá (Reviews) liên quan
-                    $pdo->exec("DELETE FROM tb_reviews WHERE product_id = " . (int)$id);
+                    $pdo->exec("DELETE FROM tb_reviews WHERE product_id = " . (int) $id);
 
                     // 3. Xóa thuộc tính biến thể (Variant attributes) và Giỏ hàng
                     $variants = $productModel->getVariantsByProductId($id);
                     foreach ($variants as $var) {
                         $productModel->deleteVariantAttributesByVariant($var['variant_id']);
-                        $pdo->exec("DELETE FROM tb_cart_items WHERE variant_id = " . (int)$var['variant_id']);
-                        
+                        $pdo->exec("DELETE FROM tb_cart_items WHERE variant_id = " . (int) $var['variant_id']);
+
                         // CẢNH BÁO: Nếu bạn muốn xóa bất chấp sản phẩm đã có trong đơn hàng, hãy bỏ comment dòng dưới.
                         // Tuy nhiên điều này sẽ làm mất lịch sử đơn hàng của khách.
                         // $pdo->exec("DELETE FROM tb_order_items WHERE variant_id = " . (int)$var['variant_id']);
@@ -1174,7 +1175,7 @@ class AdminController
 
         require_once PATH_MODEL . 'AttributeModel.php';
         $attrModel = new AttributeModel();
-        
+
         // Cần một hàm để lấy 1 thuộc tính và các giá trị của nó
         // Hoặc lấy tất cả rồi lọc ra
         $all_attributes = $attrModel->getAllAttributesWithValues();
@@ -1185,7 +1186,7 @@ class AdminController
                 break;
             }
         }
-        
+
         if (!$attribute) {
             $_SESSION['error'] = 'Không tìm thấy thuộc tính!';
             header('Location: ' . BASE_URL . '?action=admin-attributes');

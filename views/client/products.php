@@ -54,70 +54,112 @@
     <div class="row g-5">
         <!-- Sidebar Filter -->
         <div class="col-lg-3">
-            <div class="bg-white rounded-4 shadow-sm border p-4 sticky-top" style="top: 100px;">
+            <form id="filterForm" method="GET" action="" class="bg-white rounded-4 shadow-sm border p-4 sticky-top" style="top: 100px;">
+                <input type="hidden" name="action" value="products">
+                <?php if(isset($_GET['keyword'])): ?>
+                    <input type="hidden" name="keyword" value="<?= htmlspecialchars($_GET['keyword']) ?>">
+                <?php endif; ?>
+                
                 <h5 class="fw-bold mb-4 border-bottom pb-3">Bộ Lọc Sản Phẩm</h5>
                 
                 <!-- Category Filter -->
                 <div class="mb-4">
                     <h6 class="fw-bold mb-3">Danh Mục</h6>
+                    <?php 
+                    $selectedCats = isset($_GET['categories']) ? (array)$_GET['categories'] : [];
+                    foreach($allCategories as $cat): 
+                        $isChecked = in_array($cat['category_id'], $selectedCats) ? 'checked' : '';
+                    ?>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="cat1" checked>
-                        <label class="form-check-label text-muted" for="cat1">Điện thoại (45)</label>
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="categories[]" value="<?= $cat['category_id'] ?>" id="cat_<?= $cat['category_id'] ?>" <?= $isChecked ?> onchange="submitFilter()">
+                        <label class="form-check-label text-muted" for="cat_<?= $cat['category_id'] ?>"><?= htmlspecialchars($cat['category_name']) ?></label>
                     </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="cat2">
-                        <label class="form-check-label text-muted" for="cat2">Laptop (32)</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="cat3">
-                        <label class="form-check-label text-muted" for="cat3">Tablet (15)</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="cat4">
-                        <label class="form-check-label text-muted" for="cat4">Phụ kiện (120)</label>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <!-- Brand Filter -->
                 <div class="mb-4">
                     <h6 class="fw-bold mb-3">Thương Hiệu</h6>
+                    <?php 
+                    $selectedBrands = isset($_GET['brands']) ? (array)$_GET['brands'] : [];
+                    foreach($allBrands as $brand): 
+                        $isChecked = in_array($brand['brand_id'], $selectedBrands) ? 'checked' : '';
+                    ?>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="brand1">
-                        <label class="form-check-label text-muted" for="brand1">Apple</label>
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="brands[]" value="<?= $brand['brand_id'] ?>" id="brand_<?= $brand['brand_id'] ?>" <?= $isChecked ?> onchange="submitFilter()">
+                        <label class="form-check-label text-muted" for="brand_<?= $brand['brand_id'] ?>"><?= htmlspecialchars($brand['brand_name']) ?></label>
                     </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="brand2">
-                        <label class="form-check-label text-muted" for="brand2">Samsung</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="brand3">
-                        <label class="form-check-label text-muted" for="brand3">Xiaomi</label>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <!-- Price Filter -->
                 <div class="mb-4">
                     <h6 class="fw-bold mb-3">Mức Giá</h6>
+                    <?php
+                        $minP = isset($_GET['price_min']) ? $_GET['price_min'] : '';
+                        $maxP = isset($_GET['price_max']) ? $_GET['price_max'] : '';
+                        $priceOption = $minP . '-' . $maxP;
+                    ?>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="price" id="price1">
+                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="" id="price_all" <?= $priceOption == '-' ? 'checked' : '' ?> onchange="submitFilter()">
+                        <label class="form-check-label text-muted" for="price_all">Tất cả</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="0-5000000" id="price1" <?= $priceOption == '0-5000000' ? 'checked' : '' ?> onchange="submitFilter()">
                         <label class="form-check-label text-muted" for="price1">Dưới 5 triệu</label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="price" id="price2">
+                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="5000000-15000000" id="price2" <?= $priceOption == '5000000-15000000' ? 'checked' : '' ?> onchange="submitFilter()">
                         <label class="form-check-label text-muted" for="price2">Từ 5 - 15 triệu</label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="price" id="price3">
+                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="15000000-25000000" id="price3" <?= $priceOption == '15000000-25000000' ? 'checked' : '' ?> onchange="submitFilter()">
                         <label class="form-check-label text-muted" for="price3">Từ 15 - 25 triệu</label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="price" id="price4">
+                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="25000000-0" id="price4" <?= $priceOption == '25000000-0' ? 'checked' : '' ?> onchange="submitFilter()">
                         <label class="form-check-label text-muted" for="price4">Trên 25 triệu</label>
                     </div>
+                    <!-- Hidden inputs for actual price range to be sent -->
+                    <input type="hidden" name="price_min" id="input_price_min" value="<?= htmlspecialchars($minP) ?>">
+                    <input type="hidden" name="price_max" id="input_price_max" value="<?= htmlspecialchars($maxP) ?>">
                 </div>
                 
-                <button class="btn btn-outline-dark w-100 rounded-pill fw-bold py-2 mt-2">Xóa bộ lọc</button>
-            </div>
+                <!-- Dynamic Attributes Filter -->
+                <?php 
+                $selectedAttrs = isset($_GET['attributes']) ? (array)$_GET['attributes'] : [];
+                foreach($allAttributes as $attrId => $attrData): 
+                ?>
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3"><?= htmlspecialchars($attrData['attribute_name']) ?></h6>
+                    <?php foreach($attrData['values'] as $val): 
+                        $isChecked = in_array($val['attribute_value_id'], $selectedAttrs) ? 'checked' : '';
+                    ?>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="attributes[]" value="<?= $val['attribute_value_id'] ?>" id="attr_<?= $val['attribute_value_id'] ?>" <?= $isChecked ?> onchange="submitFilter()">
+                        <label class="form-check-label text-muted" for="attr_<?= $val['attribute_value_id'] ?>"><?= htmlspecialchars($val['attribute_value']) ?></label>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endforeach; ?>
+
+                <!-- Other Filters -->
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Tình Trạng & Đánh Giá</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="in_stock" value="1" id="in_stock" <?= isset($_GET['in_stock']) ? 'checked' : '' ?> onchange="submitFilter()">
+                        <label class="form-check-label text-muted" for="in_stock">Còn hàng</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input filter-checkbox" type="checkbox" name="min_rating" value="4" id="min_rating" <?= (isset($_GET['min_rating']) && $_GET['min_rating'] == 4) ? 'checked' : '' ?> onchange="submitFilter()">
+                        <label class="form-check-label text-muted" for="min_rating">Từ 4 sao trở lên</label>
+                    </div>
+                </div>
+
+                <a href="?action=products" class="btn btn-outline-dark w-100 rounded-pill fw-bold py-2 mt-2">Xóa bộ lọc</a>
+                <!-- Hidden input for sort -->
+                <input type="hidden" name="sort" id="input_sort" value="<?= htmlspecialchars($_GET['sort'] ?? '') ?>">
+            </form>
         </div>
 
         <!-- Product Grid -->
@@ -127,11 +169,13 @@
                 <p class="mb-0 text-muted">Hiển thị <span class="fw-bold text-dark"><?= count($products) ?></span> trên <span class="fw-bold text-dark"><?= $totalProducts ?></span> sản phẩm</p>
                 <div class="d-flex align-items-center gap-3">
                     <label class="text-muted text-nowrap mb-0 d-none d-md-block">Sắp xếp theo:</label>
-                    <select class="form-select border-0 bg-light rounded-pill px-4 fw-medium" style="width: auto; cursor: pointer;">
-                        <option selected>Mới nhất</option>
-                        <option value="1">Giá tăng dần</option>
-                        <option value="2">Giá giảm dần</option>
-                        <option value="3">Bán chạy nhất</option>
+                    <?php $currentSort = $_GET['sort'] ?? ''; ?>
+                    <select class="form-select border-0 bg-light rounded-pill px-4 fw-medium" id="sortSelect" style="width: auto; cursor: pointer;" onchange="submitFilter()">
+                        <option value="" <?= $currentSort == '' ? 'selected' : '' ?>>Mới nhất</option>
+                        <option value="price_asc" <?= $currentSort == 'price_asc' ? 'selected' : '' ?>>Giá tăng dần</option>
+                        <option value="price_desc" <?= $currentSort == 'price_desc' ? 'selected' : '' ?>>Giá giảm dần</option>
+                        <option value="best_selling" <?= $currentSort == 'best_selling' ? 'selected' : '' ?>>Bán chạy nhất</option>
+                        <option value="top_rated" <?= $currentSort == 'top_rated' ? 'selected' : '' ?>>Đánh giá cao nhất</option>
                     </select>
                 </div>
             </div>
@@ -170,14 +214,28 @@
             <div class="mt-5 pt-4 d-flex justify-content-center border-top">
                 <nav aria-label="Page navigation">
                     <ul class="pagination pagination-lg gap-2">
-                        <li class="page-item disabled">
-                            <a class="page-link rounded-circle border-0 text-dark" href="#" tabindex="-1" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-chevron-left"></i></a>
+                        <?php
+                        $totalPages = ceil($totalProducts / $limit);
+                        // Build query string for pagination links
+                        $queryParams = $_GET;
+                        unset($queryParams['page']);
+                        $queryString = http_build_query($queryParams);
+                        
+                        $prevPage = $page > 1 ? $page - 1 : 1;
+                        $nextPage = $page < $totalPages ? $page + 1 : $totalPages;
+                        ?>
+                        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                            <a class="page-link rounded-circle border-0 text-dark" href="?<?= $queryString ?>&page=<?= $prevPage ?>" tabindex="-1" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-chevron-left"></i></a>
                         </li>
-                        <li class="page-item active"><a class="page-link rounded-circle border-0 shadow-sm" href="#" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background-color: var(--primary-color);">1</a></li>
-                        <li class="page-item"><a class="page-link rounded-circle border-0 text-dark" href="#" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">2</a></li>
-                        <li class="page-item"><a class="page-link rounded-circle border-0 text-dark" href="#" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link rounded-circle border-0 text-dark" href="#" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-chevron-right"></i></a>
+                        
+                        <?php for($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                            <a class="page-link rounded-circle border-0 <?= ($i == $page) ? 'shadow-sm' : 'text-dark' ?>" href="?<?= $queryString ?>&page=<?= $i ?>" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; <?= ($i == $page) ? 'background-color: var(--primary-color);' : '' ?>"><?= $i ?></a>
+                        </li>
+                        <?php endfor; ?>
+                        
+                        <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                            <a class="page-link rounded-circle border-0 text-dark" href="?<?= $queryString ?>&page=<?= $nextPage ?>" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-chevron-right"></i></a>
                         </li>
                     </ul>
                 </nav>
@@ -185,3 +243,35 @@
         </div>
     </div>
 </div>
+
+<script>
+function submitFilter() {
+    var filterForm = document.getElementById('filterForm');
+    var inputPriceMin = document.getElementById('input_price_min');
+    var inputPriceMax = document.getElementById('input_price_max');
+    var inputSort = document.getElementById('input_sort');
+    var sortSelect = document.getElementById('sortSelect');
+    
+    // Xử lý giá trị price_range nếu có
+    var priceRadio = document.querySelector('input[name="price_range"]:checked');
+    if (priceRadio && priceRadio.value) {
+        var parts = priceRadio.value.split('-');
+        if (inputPriceMin) inputPriceMin.value = parts[0];
+        if (inputPriceMax) inputPriceMax.value = parts[1] == '0' ? '' : parts[1];
+    } else {
+        if (inputPriceMin) inputPriceMin.value = '';
+        if (inputPriceMax) inputPriceMax.value = '';
+    }
+
+    // Xử lý sắp xếp
+    if (sortSelect && inputSort) {
+        inputSort.value = sortSelect.value;
+    }
+
+    if (filterForm) {
+        // Fix: Đôi khi form.submit bị đè bởi một element có name="submit"
+        // Dùng phương thức native an toàn hơn:
+        HTMLFormElement.prototype.submit.call(filterForm);
+    }
+}
+</script>

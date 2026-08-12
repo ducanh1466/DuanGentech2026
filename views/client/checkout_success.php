@@ -8,7 +8,7 @@
         
         <div class="d-flex justify-content-center gap-3 mt-4">
             <a href="?action=profile" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-medium">Xem Đơn Hàng Của Tôi</a>
-            <a href="/" class="btn btn-primary rounded-pill px-4 py-2 fw-medium">Tiếp Tục Mua Sắm</a>
+            <a href="<?= BASE_URL ?>" class="btn btn-primary rounded-pill px-4 py-2 fw-medium">Tiếp Tục Mua Sắm</a>
         </div>
     </div>
 </div>

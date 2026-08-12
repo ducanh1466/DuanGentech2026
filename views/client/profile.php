@@ -22,7 +22,6 @@
                         </div>
                         <div>
                             <h4 class="fw-bold mb-1"><?= htmlspecialchars($_SESSION['user']['full_name'] ?? 'Thành viên') ?></h4>
-                            <span class="badge bg-dark rounded-pill fw-normal px-3 py-2"><i class="bi bi-star-fill text-warning me-1"></i>Thành viên hạng Vàng</span>
                         </div>
                     </div>
                 </div>
@@ -69,48 +68,87 @@
         <!-- Order Timeline -->
         <div class="col-lg-7" data-aos="fade-left" data-aos-delay="200">
             <h4 class="fw-bold mb-4">Đơn Hàng Gần Đây</h4>
-            <div class="bg-gray-100 rounded-4 shadow-sm border p-4 p-md-5">
-                <div class="d-flex justify-content-between align-items-center border-bottom border-gray-300 pb-3 mb-4">
-                    <div>
-                        <span class="badge bg-primary rounded-pill px-3 py-2 mb-2">Đang giao</span>
-                        <h5 class="fw-bold mb-0">Đơn hàng #GENTECH-9924</h5>
-                        <p class="text-muted small mb-0 mt-1">Đặt lúc: 14:30 - 05/08/2026</p>
-                    </div>
-                    <div class="text-end">
-                        <h4 class="fw-bold text-danger mb-0">35.880.000đ</h4>
-                        <a href="#" class="text-decoration-none small text-primary fw-medium d-block mt-2">Xem chi tiết đơn hàng</a>
-                    </div>
+            <?php if (empty($recentOrders)): ?>
+                <div class="bg-gray-100 rounded-4 shadow-sm border p-4 p-md-5 text-center">
+                    <img src="assets/images/empty-cart.png" alt="No orders" class="mb-3" style="width: 100px; opacity: 0.5;">
+                    <h5 class="fw-bold text-muted">Bạn chưa có đơn hàng nào</h5>
+                    <p class="text-muted small">Hãy tiếp tục mua sắm để nhận nhiều ưu đãi.</p>
                 </div>
+            <?php else: ?>
+                <?php foreach ($recentOrders as $order): ?>
+                <div class="bg-gray-100 rounded-4 shadow-sm border p-4 p-md-5 mb-4">
+                    <div class="d-flex justify-content-between align-items-center border-bottom border-gray-300 pb-3 mb-4">
+                        <div>
+                            <?php
+                            $statusLabel = 'Chờ xác nhận';
+                            $statusClass = 'bg-warning text-dark';
+                            $step = 1;
+                            
+                            if ($order['status'] == 'processing') {
+                                $statusLabel = 'Chờ lấy hàng';
+                                $statusClass = 'bg-info text-dark';
+                                $step = 2;
+                            } elseif ($order['status'] == 'shipping') {
+                                $statusLabel = 'Đang giao hàng';
+                                $statusClass = 'bg-primary';
+                                $step = 3;
+                            } elseif ($order['status'] == 'completed') {
+                                $statusLabel = 'Đã giao thành công';
+                                $statusClass = 'bg-success';
+                                $step = 4;
+                            } elseif ($order['status'] == 'canceled') {
+                                $statusLabel = 'Đã hủy';
+                                $statusClass = 'bg-danger';
+                                $step = 0;
+                            }
+                            ?>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge <?= $statusClass ?> rounded-pill px-3 py-2"><?= $statusLabel ?></span>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-2 py-1"><i class="bi bi-wallet2 me-1"></i><?= $order['payment_status'] == 'paid' ? 'Đã TT' : 'Chưa TT' ?></span>
+                            </div>
+                            
+                            <h5 class="fw-bold mb-0 text-dark">Đơn hàng #GENTECH-<?= $order['order_id'] ?></h5>
+                            <p class="text-muted small mb-0 mt-1"><i class="bi bi-clock me-1"></i>Đặt lúc: <?= date('H:i - d/m/Y', strtotime($order['order_date'])) ?></p>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="fw-bold text-danger mb-0"><?= number_format($order['total_amount'], 0, ',', '.') ?>đ</h4>
+                            <a href="?action=order-detail&id=<?= $order['order_id'] ?>" class="text-decoration-none small text-primary fw-medium d-block mt-2">Xem chi tiết đơn hàng</a>
+                        </div>
+                    </div>
 
-                <!-- Timeline UI -->
-                <div class="timeline-premium px-md-4">
-                    <div class="timeline-step active">
-                        <div class="timeline-icon"><i class="bi bi-check-lg"></i></div>
-                        <span class="timeline-label">Chờ xác nhận</span>
+                    <!-- Timeline UI -->
+                    <?php if ($order['status'] != 'canceled'): ?>
+                    <div class="timeline-premium px-md-4">
+                        <div class="timeline-step <?= $step >= 1 ? 'active' : '' ?>">
+                            <div class="timeline-icon"><i class="bi bi-check-lg"></i></div>
+                            <span class="timeline-label">Chờ xác nhận</span>
+                        </div>
+                        <div class="timeline-step <?= $step >= 2 ? 'active' : '' ?>">
+                            <div class="timeline-icon"><i class="bi bi-box-seam"></i></div>
+                            <span class="timeline-label">Chờ lấy hàng</span>
+                        </div>
+                        <div class="timeline-step <?= $step >= 3 ? 'active' : '' ?>">
+                            <div class="timeline-icon"><i class="bi bi-truck"></i></div>
+                            <span class="timeline-label">Đang giao hàng</span>
+                        </div>
+                        <div class="timeline-step <?= $step >= 4 ? 'active' : '' ?>">
+                            <div class="timeline-icon"><i class="bi bi-house-door"></i></div>
+                            <span class="timeline-label">Đã giao</span>
+                        </div>
                     </div>
-                    <div class="timeline-step active">
-                        <div class="timeline-icon"><i class="bi bi-box-seam"></i></div>
-                        <span class="timeline-label">Đang lấy hàng</span>
-                    </div>
-                    <div class="timeline-step active">
-                        <div class="timeline-icon"><i class="bi bi-truck"></i></div>
-                        <span class="timeline-label">Đang giao hàng</span>
-                    </div>
-                    <div class="timeline-step">
-                        <div class="timeline-icon"><i class="bi bi-house-door"></i></div>
-                        <span class="timeline-label">Đã giao</span>
-                    </div>
-                </div>
+                    <?php endif; ?>
 
-                <div class="bg-white rounded-3 p-4 border mt-4">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Địa chỉ nhận hàng</h6>
-                    <p class="mb-1 text-dark fw-medium">Phạm Đức Anh - 0987654321</p>
-                    <p class="text-muted small mb-0">Toà nhà Lotte, Số 54 Liễu Giai, Phường Cống Vị, Quận Ba Đình, Hà Nội</p>
+                    <div class="bg-white rounded-3 p-4 border mt-4">
+                        <h6 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Địa chỉ nhận hàng</h6>
+                        <p class="mb-1 text-dark fw-medium"><?= htmlspecialchars($order['recipient_name']) ?> - <?= htmlspecialchars($order['recipient_phone']) ?></p>
+                        <p class="text-muted small mb-0"><?= htmlspecialchars($order['shipping_address']) ?></p>
+                    </div>
                 </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
             
             <div class="mt-4 text-end">
-                <a href="#" class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm">Xem Lịch Sử Mua Hàng <i class="bi bi-arrow-right ms-2"></i></a>
+                <a href="?action=order-history" class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm">Xem Lịch Sử Mua Hàng <i class="bi bi-arrow-right ms-2"></i></a>
             </div>
         </div>
     </div>

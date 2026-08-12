@@ -15,7 +15,8 @@ class ProductModel extends BaseModel
         // Get products with their primary image and minimum variant price
         $baseSql = "SELECT p.*, c.category_name, b.brand_name,
                    (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                   (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
+                   (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
+                   (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id
             FROM {$this->table} p
             LEFT JOIN tb_categories c ON p.category_id = c.category_id
             LEFT JOIN tb_brands b ON p.brand_id = b.brand_id";
@@ -47,7 +48,8 @@ class ProductModel extends BaseModel
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
                        (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
+                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
+                       (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id
                 FROM {$this->table} p
                 LEFT JOIN tb_categories c ON p.category_id = c.category_id
                 LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
@@ -66,6 +68,7 @@ class ProductModel extends BaseModel
         $sql = "SELECT p.*, c.category_name, b.brand_name,
                        (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
+                       (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id,
                        (SELECT SUM(oi.quantity) 
                         FROM tb_order_items oi 
                         LEFT JOIN tb_product_variants pv ON oi.variant_id = pv.variant_id 
@@ -409,7 +412,8 @@ class ProductModel extends BaseModel
     {
         $sqlSelect = $isCount ? "COUNT(DISTINCT p.product_id) as total" : "p.*, c.category_name, b.brand_name,
                            (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                           (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price";
+                           (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
+                           (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id";
                            
         // We use LEFT JOIN for optional data and JOIN for data we need to filter strongly on
         $sql = "SELECT $sqlSelect
@@ -537,5 +541,31 @@ class ProductModel extends BaseModel
         $stmt->execute();
         $result = $stmt->fetch();
         return $result ? $result['total'] : 0;
+    }
+    // Lấy số lượng tồn kho của một biến thể
+    public function getVariantStock($variant_id)
+    {
+        $sql = "SELECT stock_quantity FROM tb_product_variants WHERE variant_id = :variant_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['variant_id' => $variant_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? (int) $result['stock_quantity'] : 0;
+    }
+
+    // Trừ số lượng tồn kho của một biến thể
+    public function reduceVariantStock($variant_id, $quantity)
+    {
+        // Kiểm tra xem số lượng có đủ để trừ hay không để tránh số âm
+        $currentStock = $this->getVariantStock($variant_id);
+        if ($currentStock < $quantity) {
+            return false;
+        }
+
+        $sql = "UPDATE tb_product_variants SET stock_quantity = stock_quantity - :quantity WHERE variant_id = :variant_id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'quantity' => $quantity,
+            'variant_id' => $variant_id
+        ]);
     }
 }

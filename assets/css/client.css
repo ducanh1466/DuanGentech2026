@@ -305,3 +305,55 @@ body {
 html {
     scroll-behavior: smooth;
 }
+
+/* Premium Product Card Hover Styles */
+.product-card-premium {
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.product-card-premium:hover {
+    box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+    transform: translateY(-8px);
+}
+.premium-hover-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transform: translateY(100%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid rgba(255,255,255,0.4);
+}
+.product-card-premium:hover .premium-hover-overlay {
+    transform: translateY(0);
+    opacity: 1;
+}
+.product-card-premium:hover .product-img-main {
+    transform: scale(1.05);
+}
+.btn-premium-add {
+    background: linear-gradient(135deg, #1d1d1f 0%, #434345 100%);
+    border: none;
+    color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-premium-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;
+}
+.hover-primary {
+    transition: color 0.2s ease;
+}
+.product-card-premium:hover .hover-primary {
+    color: var(--primary-color) !important;
+}

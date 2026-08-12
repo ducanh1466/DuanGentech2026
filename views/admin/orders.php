@@ -65,8 +65,19 @@
                                 <?= number_format($order['total_amount'], 0, ',', '.') ?>₫
                             </td>
                             <td>
-                                <?php if (($order['payment_method'] ?? 'cod') === 'bank'): ?>
+                                <?php 
+                                    $pm = $order['payment_method'] ?? 'cod';
+                                    if ($pm === 'bank'): 
+                                ?>
                                     <span class="badge bg-info text-dark"><i class="bi bi-bank"></i> Chuyển khoản</span>
+                                <?php elseif ($pm === 'vnpay'): ?>
+                                    <span class="badge bg-primary"><i class="bi bi-credit-card"></i> VNPay</span>
+                                <?php elseif ($pm === 'momo'): ?>
+                                    <span class="badge" style="background-color: #A50064; color: white;"><i class="bi bi-wallet2"></i> MoMo</span>
+                                <?php elseif ($pm === 'zalopay'): ?>
+                                    <span class="badge" style="background-color: #0068FF; color: white;"><i class="bi bi-wallet2"></i> ZaloPay</span>
+                                <?php elseif ($pm === 'applepay'): ?>
+                                    <span class="badge bg-dark text-white"><i class="bi bi-apple"></i> Apple Pay</span>
                                 <?php else: ?>
                                     <span class="badge bg-secondary"><i class="bi bi-cash"></i> COD</span>
                                 <?php endif; ?>
@@ -75,6 +86,7 @@
                                 <?php
                                 $statusMap = [
                                     'pending' => 'Chờ xử lý',
+                                    'processing' => 'Chờ lấy hàng',
                                     'confirmed' => 'Đã xác nhận',
                                     'shipping' => 'Đang giao',
                                     'completed' => 'Hoàn thành',

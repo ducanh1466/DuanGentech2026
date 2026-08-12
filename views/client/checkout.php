@@ -13,206 +13,297 @@
 
 <!-- Checkout Content -->
 <div class="container py-5 my-3 mb-5">
-    <div class="row g-5">
-        <!-- Billing & Shipping Details -->
-        <div class="col-lg-7" data-aos="fade-right">
-            <!-- Account Notice -->
-            <div class="alert alert-primary bg-primary-subtle border-0 rounded-4 d-flex align-items-center mb-5" role="alert">
-                <i class="bi bi-info-circle-fill fs-4 me-3 text-primary"></i>
-                <div>
-                    Bạn đã có tài khoản? <a href="?action=login" class="alert-link text-decoration-none">Nhấn vào đây để đăng nhập</a> để tích điểm thành viên.
+    <form method="POST" action="?action=checkout-process">
+        <div class="row g-5">
+            <!-- Billing & Shipping Details -->
+            <div class="col-lg-7" data-aos="fade-right">
+                <!-- Shipping Form -->
+                <div class="bg-white rounded-4 shadow-sm border p-4 p-md-5 mb-5">
+                    
+                        <!-- 1. Chi tiết khách hàng -->
+                        <h3 class="fw-bold mb-4 text-dark">Thông tin giao hàng</h3>
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small mb-1 fw-bold">Tên người nhận <span class="text-danger">*</span></label>
+                                <div class="position-relative">
+                                    <input type="text" name="recipient_name" class="form-control border rounded-3 p-2 shadow-none text-dark bg-white" value="<?= htmlspecialchars($user['full_name'] ?? '') ?>" placeholder="Nhập tên người nhận" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small mb-1 fw-bold">Số điện thoại người nhận <span class="text-danger">*</span></label>
+                                <div class="position-relative">
+                                    <input type="tel" name="recipient_phone" class="form-control border rounded-3 p-2 shadow-none text-dark bg-white" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="Nhập số điện thoại" required>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4 mb-0">
+                                <h6 class="fw-bold text-dark mb-0">Địa chỉ nhận hàng</h6>
+                            </div>
+
+                            <div class="col-md-6 mt-3">
+                                <label class="form-label text-muted small mb-1 fw-bold">Tỉnh/Thành phố <span class="text-danger">*</span></label>
+                                <select name="province" id="province" class="form-select border rounded-3 p-2 shadow-none text-dark bg-white" required>
+                                    <option value="">Chọn Tỉnh/Thành phố</option>
+                                </select>
+                                <input type="hidden" name="province_name" id="province_name">
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="form-label text-muted small mb-1 fw-bold">Quận/Huyện <span class="text-danger">*</span></label>
+                                <select name="district" id="district" class="form-select border rounded-3 p-2 shadow-none text-dark bg-white" required disabled>
+                                    <option value="">Chọn Quận/Huyện</option>
+                                </select>
+                                <input type="hidden" name="district_name" id="district_name">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small mb-1 fw-bold">Phường/Xã <span class="text-danger">*</span></label>
+                                <select name="ward" id="ward" class="form-select border rounded-3 p-2 shadow-none text-dark bg-white" required disabled>
+                                    <option value="">Chọn Phường/Xã</option>
+                                </select>
+                                <input type="hidden" name="ward_name" id="ward_name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small mb-1 fw-bold">Địa chỉ nhà <span class="text-danger">*</span></label>
+                                <input type="text" name="street_address" class="form-control border rounded-3 p-2 shadow-none text-dark bg-white" placeholder="Nhập địa chỉ nhà" required>
+                            </div>
+
+                            <div class="col-12 mt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input border-gray-400 cursor-pointer shadow-none" type="checkbox" name="save_address" value="1" id="saveAddress">
+                                    <label class="form-check-label text-primary fw-medium cursor-pointer" for="saveAddress">
+                                        Lưu địa chỉ cho lần mua kế tiếp
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <label class="form-label text-muted small mb-2 fw-bold">Ghi chú (nếu có)</label>
+                                <textarea name="note" class="form-control border rounded-3 p-3 shadow-none text-dark bg-white" rows="3" placeholder="Nhập ghi chú"></textarea>
+                            </div>
+                        </div>
+                    
+                </div>
+
+                <!-- Payment Methods -->
+                <h4 class="fw-bold mb-4">Phương Thức Thanh Toán</h4>
+                <div class="bg-white rounded-4 shadow-sm border p-4 p-md-5">
+                    <div class="d-flex flex-column gap-3">
+                        <!-- COD -->
+                        <label class="border rounded-3 p-3 cursor-pointer hover-bg-light transition-all position-relative d-flex align-items-center">
+                            <input class="form-check-input mt-0 me-3 custom-radio" type="radio" name="payment_method" value="cod" checked style="transform: scale(1.2);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-light rounded p-2 text-dark d-flex justify-content-center align-items-center" style="width:50px;height:50px;">
+                                    <i class="bi bi-cash-coin fs-3"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Thanh toán khi nhận hàng (COD)</h6>
+                                    <p class="text-muted small mb-0">Thanh toán bằng tiền mặt khi giao hàng tới nơi.</p>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- VNPAY (Mock) -->
+                        <label class="border rounded-3 p-3 cursor-pointer hover-bg-light transition-all position-relative d-flex align-items-center">
+                            <input class="form-check-input mt-0 me-3 custom-radio" type="radio" name="payment_method" value="vnpay" style="transform: scale(1.2);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-light rounded p-2 d-flex justify-content-center align-items-center" style="width:50px;height:50px;">
+                                    <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png" alt="VNPay" style="max-width:100%;max-height:100%;object-fit:contain;">
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Thanh toán qua VNPAY</h6>
+                                    <p class="text-muted small mb-0">Chuyển hướng đến cổng thanh toán VNPAY.</p>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- MoMo (Mock) -->
+                        <label class="border rounded-3 p-3 cursor-pointer hover-bg-light transition-all position-relative d-flex align-items-center">
+                            <input class="form-check-input mt-0 me-3 custom-radio" type="radio" name="payment_method" value="momo" style="transform: scale(1.2);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-light rounded p-2 d-flex justify-content-center align-items-center" style="width:50px;height:50px;">
+                                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-MoMo-Square.png" alt="MoMo" style="max-width:100%;max-height:100%;object-fit:contain; border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Thanh toán qua Ví MoMo</h6>
+                                    <p class="text-muted small mb-0">Quét mã QR qua ứng dụng MoMo.</p>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- ZaloPay (Mock) -->
+                        <label class="border rounded-3 p-3 cursor-pointer hover-bg-light transition-all position-relative d-flex align-items-center">
+                            <input class="form-check-input mt-0 me-3 custom-radio" type="radio" name="payment_method" value="zalopay" style="transform: scale(1.2);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-light rounded p-2 d-flex justify-content-center align-items-center" style="width:50px;height:50px;">
+                                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square.png" alt="ZaloPay" style="max-width:100%;max-height:100%;object-fit:contain;">
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Thanh toán qua ZaloPay</h6>
+                                    <p class="text-muted small mb-0">Mở ZaloPay để thanh toán an toàn.</p>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- Apple Pay (Mock) -->
+                        <label class="border rounded-3 p-3 cursor-pointer hover-bg-light transition-all position-relative d-flex align-items-center">
+                            <input class="form-check-input mt-0 me-3 custom-radio" type="radio" name="payment_method" value="applepay" style="transform: scale(1.2);">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-light rounded p-2 d-flex justify-content-center align-items-center" style="width:50px;height:50px;">
+                                    <i class="bi bi-apple fs-2 text-dark"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Thanh toán bằng Apple Pay</h6>
+                                    <p class="text-muted small mb-0">Xác thực nhanh bằng Face ID / Touch ID.</p>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
                 </div>
             </div>
 
-            <!-- Shipping Form -->
-            <div class="bg-white rounded-4 shadow-sm border p-4 p-md-5 mb-5">
-                <form>
-                    <!-- 1. Chi tiết khách hàng -->
-                    <h3 class="fw-bold mb-4 text-dark">1. Chi tiết khách hàng</h3>
-                    <div class="row g-4 mb-5">
-                        <div class="col-12">
-                            <label class="form-label text-muted small mb-1">E-mail <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control border-0 border-bottom rounded-0 px-0 shadow-none fw-medium text-dark" placeholder="phamducanh14a@gmail.com" required>
+            <!-- Order Summary & Checkout Action -->
+            <div class="col-lg-5" data-aos="fade-left" data-aos-delay="200">
+                <div class="bg-gray-100 rounded-4 shadow-float border p-4 p-md-5 sticky-top" style="top: 100px;">
+                    <h4 class="fw-bold mb-4">Tóm Tắt Đơn Hàng</h4>
+                    
+                    <!-- Product List Minimal -->
+                    <div class="d-flex flex-column gap-3 mb-4 pb-4 border-bottom border-gray-300">
+                        <?php foreach ($cartItems as $item): ?>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-white rounded-3 p-1 border position-relative" style="width: 60px; height: 60px;">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark"><?= $item['quantity'] ?></span>
+                                <img src="<?= htmlspecialchars($item['image_url'] ?? 'assets/images/default.png') ?>" class="w-100 h-100 object-fit-contain mix-blend-multiply">
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold mb-1 fs-6 text-truncate" style="max-width: 150px;"><?= htmlspecialchars($item['product_name']) ?></h6>
+                                <p class="text-muted small mb-0"><?= htmlspecialchars($item['variant_name']) ?></p>
+                            </div>
+                            <div class="fw-bold text-dark"><?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>đ</div>
                         </div>
-                        <div class="col-12">
-                            <label class="form-label text-muted small mb-1">Họ và tên <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control border-0 border-bottom rounded-0 px-0 shadow-none fw-medium text-dark" placeholder="Phạm Đức Anh" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Số điện thoại <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control border-0 border-bottom rounded-0 px-0 shadow-none fw-medium text-dark" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Số điện thoại (tùy chọn)</label>
-                            <input type="tel" class="form-control border-0 border-bottom rounded-0 px-0 shadow-none fw-medium text-dark">
+                        <?php endforeach; ?>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-3 text-muted">
+                        <span>Tổng tiền hàng</span>
+                        <span class="text-dark fw-medium"><?= number_format($totalAmount, 0, ',', '.') ?>đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 text-muted border-bottom border-gray-300 pb-4">
+                        <span>Phí vận chuyển</span>
+                        <span class="text-success fw-medium">Miễn phí</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-end mt-4 mb-5">
+                        <span class="fw-bold fs-5 text-dark">Tổng Cộng</span>
+                        <div class="text-end">
+                            <span class="fw-bold text-primary d-block" style="font-size: 2.2rem; line-height: 1;"><?= number_format($totalAmount, 0, ',', '.') ?>đ</span>
+                            <span class="text-muted small">Đã bao gồm VAT</span>
                         </div>
                     </div>
-
-                    <!-- 2. Địa chỉ giao hàng -->
-                    <h3 class="fw-bold mb-3 text-dark">Địa chỉ giao hàng</h3>
-                    <p class="fw-bold text-dark mb-4" style="font-size: 0.9rem;">
-                        Chúng tôi đang trong quá trình cập nhật địa chỉ giao hàng theo đơn vị hành chính mới, vui lòng chọn địa chỉ giao hàng theo đơn vị hành chính cũ trong thời gian cập nhật hệ thống.
+                    
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm hover-scale transition-transform d-flex justify-content-center align-items-center gap-2">
+                        <i class="bi bi-check-circle"></i> ĐẶT HÀNG NGAY
+                    </button>
+                    
+                    <p class="text-center text-muted small mt-4 mb-0">
+                        Bằng việc đặt hàng, bạn đồng ý với <a href="#" class="text-decoration-none">Điều khoản sử dụng</a> và <a href="#" class="text-decoration-none">Chính sách bảo mật</a> của Gentech.
                     </p>
-                    
-                    <h5 class="fw-bold mb-4 text-dark">Địa chỉ mới</h5>
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Số nhà <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control border-0 border-bottom rounded-0 px-0 shadow-none fw-medium text-dark" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Đường phố <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control border-0 border-bottom rounded-0 px-0 shadow-none fw-medium text-dark" required>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Tỉnh/Thành phố <span class="text-danger">*</span></label>
-                            <div class="position-relative">
-                                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y text-muted"></i>
-                                <select class="form-select border-0 border-bottom rounded-0 ps-4 shadow-none fw-medium text-dark" required>
-                                    <option value=""></option>
-                                    <option value="1">Hà Nội</option>
-                                    <option value="2">Hồ Chí Minh</option>
-                                </select>
-                            </div>
-                            <small class="text-danger d-block mt-2">Tỉnh/Thành phố không đúng. Vui lòng nhập Tỉnh/Thành phố đúng.</small>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Huyện <span class="text-danger">*</span></label>
-                            <div class="position-relative">
-                                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y text-muted"></i>
-                                <select class="form-select border-0 border-bottom rounded-0 ps-4 shadow-none fw-medium text-dark" required>
-                                    <option value=""></option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Phường <span class="text-danger">*</span></label>
-                            <div class="position-relative">
-                                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y text-muted"></i>
-                                <select class="form-select border-0 border-bottom rounded-0 ps-4 shadow-none fw-medium text-dark" required>
-                                    <option value=""></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small mb-1">Làng/Khu phố (tùy chọn)</label>
-                            <input type="text" class="form-control border-0 border-bottom rounded-0 px-0 shadow-none fw-medium text-dark">
-                        </div>
-
-                        <div class="col-12 mt-5">
-                            <label class="form-label text-muted small mb-2">Phiếu giao hàng (tùy chọn)</label>
-                            <textarea class="form-control border rounded-3 p-3 shadow-none text-muted" rows="4" placeholder="Vui lòng nhập tiếng Việt không dấu. Ghi rõ tòa nhà, tên căn hộ, số tầng, số phòng (nếu có)"></textarea>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Payment Methods -->
-            <h4 class="fw-bold mb-4">Phương Thức Thanh Toán</h4>
-            <div class="bg-white rounded-4 shadow-sm border p-4 p-md-5">
-                <div class="d-flex flex-column gap-3">
-                    <!-- COD -->
-                    <label class="border rounded-3 p-3 cursor-pointer hover-bg-light transition-all position-relative d-flex align-items-center">
-                        <input class="form-check-input mt-0 me-3 custom-radio" type="radio" name="payment_method" value="cod" checked style="transform: scale(1.2);">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded p-2 text-dark"><i class="bi bi-cash-coin fs-4"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-1">Thanh toán khi nhận hàng (COD)</h6>
-                                <p class="text-muted small mb-0">Thanh toán bằng tiền mặt khi giao hàng tới nơi.</p>
-                            </div>
-                        </div>
-                    </label>
-
-                    <!-- Banking -->
-                    <label class="border rounded-3 p-3 cursor-pointer hover-bg-light transition-all position-relative d-flex align-items-center">
-                        <input class="form-check-input mt-0 me-3 custom-radio" type="radio" name="payment_method" value="banking" style="transform: scale(1.2);">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded p-2 text-primary"><i class="bi bi-bank fs-4"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-1">Chuyển khoản ngân hàng (Quét mã QR)</h6>
-                                <p class="text-muted small mb-0">Xác nhận thanh toán tự động, nhanh chóng.</p>
-                            </div>
-                        </div>
-                    </label>
-
-                    <!-- VNPAY -->
-                    <label class="border rounded-3 p-3 cursor-pointer hover-bg-light transition-all position-relative d-flex align-items-center">
-                        <input class="form-check-input mt-0 me-3 custom-radio" type="radio" name="payment_method" value="vnpay" style="transform: scale(1.2);">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded p-2 text-info"><i class="bi bi-credit-card-2-front fs-4"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-1">Thanh toán qua VNPAY</h6>
-                                <p class="text-muted small mb-0">Sử dụng thẻ ATM, thẻ tín dụng hoặc ứng dụng ngân hàng.</p>
-                            </div>
-                        </div>
-                    </label>
                 </div>
             </div>
         </div>
-
-        <!-- Order Summary & Checkout Action -->
-        <div class="col-lg-5" data-aos="fade-left" data-aos-delay="200">
-            <div class="bg-gray-100 rounded-4 shadow-float border p-4 p-md-5 sticky-top" style="top: 100px;">
-                <h4 class="fw-bold mb-4">Tóm Tắt Đơn Hàng</h4>
-                
-                <!-- Product List Minimal -->
-                <div class="d-flex flex-column gap-3 mb-4 pb-4 border-bottom border-gray-300">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="bg-white rounded-3 p-1 border position-relative" style="width: 60px; height: 60px;">
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">1</span>
-                            <img src="DUONG_DAN_ANH_CART_1.jpg" class="w-100 h-100 object-fit-contain mix-blend-multiply">
-                        </div>
-                        <div class="flex-grow-1">
-                            <h6 class="fw-bold mb-1 fs-6">iPhone 15 Pro Max</h6>
-                            <p class="text-muted small mb-0">Titan Tự Nhiên - 256GB</p>
-                        </div>
-                        <div class="fw-bold text-dark">29.990.000đ</div>
-                    </div>
-                    
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="bg-white rounded-3 p-1 border position-relative" style="width: 60px; height: 60px;">
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">1</span>
-                            <img src="DUONG_DAN_ANH_CART_2.jpg" class="w-100 h-100 object-fit-contain mix-blend-multiply">
-                        </div>
-                        <div class="flex-grow-1">
-                            <h6 class="fw-bold mb-1 fs-6">AirPods Pro 2</h6>
-                            <p class="text-muted small mb-0">Trắng</p>
-                        </div>
-                        <div class="fw-bold text-dark">5.890.000đ</div>
-                    </div>
-                </div>
-                
-                <div class="d-flex justify-content-between mb-3 text-muted">
-                    <span>Tổng tiền hàng</span>
-                    <span class="text-dark fw-medium">35.880.000đ</span>
-                </div>
-                <div class="d-flex justify-content-between mb-3 text-muted">
-                    <span>Phí vận chuyển (Hỏa tốc)</span>
-                    <span class="text-dark fw-medium">50.000đ</span>
-                </div>
-                <div class="d-flex justify-content-between mb-3 text-muted border-bottom border-gray-300 pb-4">
-                    <span>Giảm giá</span>
-                    <span class="text-danger fw-medium">- 50.000đ</span>
-                </div>
-                
-                <div class="d-flex justify-content-between align-items-end mt-4 mb-5">
-                    <span class="fw-bold fs-5 text-dark">Tổng Cộng</span>
-                    <div class="text-end">
-                        <span class="fw-bold text-primary d-block" style="font-size: 2.2rem; line-height: 1;">35.880.000đ</span>
-                        <span class="text-muted small">Đã bao gồm VAT</span>
-                    </div>
-                </div>
-                
-                <button type="button" class="btn btn-premium-gradient w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm hover-elevate transition-transform d-flex justify-content-center align-items-center gap-2">
-                    <i class="bi bi-lock-fill"></i> ĐẶT HÀNG NGAY
-                </button>
-                
-                <p class="text-center text-muted small mt-4 mb-0">
-                    Bằng việc đặt hàng, bạn đồng ý với <a href="#" class="text-decoration-none">Điều khoản sử dụng</a> và <a href="#" class="text-decoration-none">Chính sách bảo mật</a> của Gentech.
-                </p>
-            </div>
-        </div>
-    </div>
+    </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const provinceSelect = document.getElementById('province');
+    const districtSelect = document.getElementById('district');
+    const wardSelect = document.getElementById('ward');
+    
+    const provinceName = document.getElementById('province_name');
+    const districtName = document.getElementById('district_name');
+    const wardName = document.getElementById('ward_name');
+
+    // 1. Lấy danh sách Tỉnh/Thành
+    fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error === 0) {
+                data.data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.full_name;
+                    provinceSelect.appendChild(option);
+                });
+            }
+        })
+        .catch(error => console.error('Error fetching provinces:', error));
+
+    // 2. Lắng nghe Tỉnh/Thành thay đổi -> Lấy Quận/Huyện
+    provinceSelect.addEventListener('change', function() {
+        const idtinh = this.value;
+        // Cập nhật tên ẩn
+        if(idtinh) {
+            provinceName.value = this.options[this.selectedIndex].text;
+        } else {
+            provinceName.value = '';
+        }
+
+        districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+        wardSelect.disabled = true;
+        
+        if (idtinh) {
+            districtSelect.disabled = false;
+            fetch('https://esgoo.net/api-tinhthanh/2/' + idtinh + '.htm')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error === 0) {
+                        data.data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.full_name;
+                            districtSelect.appendChild(option);
+                        });
+                    }
+                });
+        } else {
+            districtSelect.disabled = true;
+        }
+    });
+
+    // 3. Lắng nghe Quận/Huyện thay đổi -> Lấy Phường/Xã
+    districtSelect.addEventListener('change', function() {
+        const idquan = this.value;
+        if(idquan) {
+            districtName.value = this.options[this.selectedIndex].text;
+        } else {
+            districtName.value = '';
+        }
+
+        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+        
+        if (idquan) {
+            wardSelect.disabled = false;
+            fetch('https://esgoo.net/api-tinhthanh/3/' + idquan + '.htm')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error === 0) {
+                        data.data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.full_name;
+                            wardSelect.appendChild(option);
+                        });
+                    }
+                });
+        } else {
+            wardSelect.disabled = true;
+        }
+    });
+
+    // 4. Lắng nghe Phường/Xã thay đổi
+    wardSelect.addEventListener('change', function() {
+        if(this.value) {
+            wardName.value = this.options[this.selectedIndex].text;
+        } else {
+            wardName.value = '';
+        }
+    });
+});
+</script>

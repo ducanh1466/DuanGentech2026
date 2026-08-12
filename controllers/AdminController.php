@@ -3,17 +3,18 @@
 class AdminController
 {
 
-    public function __construct()
+     public function __construct()
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        if (!isset($_SESSION['user'])) {
-            $_SESSION['user'] = [
-                'role' => 1,
-                'full_name' => 'Admin Test',
-                'email' => 'admin@dgentech.vn'
-            ];
+
+        // Kiểm tra xem đã đăng nhập chưa và có phải là Admin (role = 1) không
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 1) {
+            // Nếu chưa đăng nhập hoặc không phải admin, chuyển hướng về trang đăng nhập
+            // Lưu ý: Thay đổi URL `?act=login` thành URL chuẩn xác của bạn nếu cần
+            header("Location: ?act=login");
+            exit();
         }
     }
 

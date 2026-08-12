@@ -133,13 +133,25 @@ class AdminController
             $categoryModel = new CategoryModel();
             $name = trim($_POST['name'] ?? '');
             $description = trim($_POST['description'] ?? '');
+            $image = null; // Default image
+
+            // Handle Image Upload
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = 'assets/uploads/categories/';
+                if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+                $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+                $file_name = uniqid() . '.' . $file_extension;
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $file_name)) {
+                    $image = $file_name;
+                }
+            }
 
             if (empty($name)) {
                 $_SESSION['error'] = 'Tên danh mục không được để trống!';
             } elseif (mb_strlen($name) > 255) {
                 $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
             } else {
-                $categoryModel->insertCategory($name, $description);
+                $categoryModel->insertCategory($name, $description, $image);
                 $_SESSION['success'] = 'Thêm danh mục thành công!';
             }
             header('Location: ' . BASE_URL . '?action=admin-categories');
@@ -155,13 +167,28 @@ class AdminController
             $id = $_POST['category_id'] ?? 0;
             $name = trim($_POST['name'] ?? '');
             $description = trim($_POST['description'] ?? '');
+            
+            // Get existing category to keep old image if no new one is uploaded
+            $existingCat = $categoryModel->getCategoryById($id);
+            $image = $existingCat['icon'] ?? null; // using the same column name 'icon' to avoid db re-alter if possible, but let's assume it's 'icon' or 'image'. We will use 'icon' column to store image filename so we don't need to change DB again if it was already created.
+
+            // Handle Image Upload
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = 'assets/uploads/categories/';
+                if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+                $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+                $file_name = uniqid() . '.' . $file_extension;
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $file_name)) {
+                    $image = $file_name;
+                }
+            }
 
             if (empty($name)) {
                 $_SESSION['error'] = 'Tên danh mục không được để trống!';
             } elseif (mb_strlen($name) > 255) {
                 $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
             } else {
-                $categoryModel->updateCategory($id, $name, $description);
+                $categoryModel->updateCategory($id, $name, $description, $image);
                 $_SESSION['success'] = 'Cập nhật danh mục thành công!';
             }
             header('Location: ' . BASE_URL . '?action=admin-categories');

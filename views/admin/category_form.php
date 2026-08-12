@@ -21,7 +21,7 @@
                 <?php endif; ?>
             </div>
 
-            <form method="POST" action="<?= BASE_URL ?>?action=<?= $id ? 'admin-category-update' : 'admin-category-create' ?>">
+            <form method="POST" action="<?= BASE_URL ?>?action=<?= $id ? 'admin-category-update' : 'admin-category-create' ?>" enctype="multipart/form-data">
                 <?php if ($id): ?>
                     <input type="hidden" name="category_id" value="<?= $id ?>">
                 <?php endif; ?>
@@ -44,6 +44,21 @@
                     <div class="col-md-9">
                         <textarea class="form-control" name="description" rows="4"
                             <?= $isDetail ? 'disabled' : '' ?>><?= htmlspecialchars($category['description'] ?? '') ?></textarea>
+                    </div>
+                </div>
+
+                <div class="row form-horizontal-row align-items-center">
+                    <div class="col-md-3">
+                        <label class="form-horizontal-label">Hình ảnh danh mục</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="file" class="form-control" name="image" accept="image/*" <?= $isDetail ? 'disabled' : '' ?>>
+                        <?php if (!empty($category['icon'])): ?>
+                            <div class="mt-3">
+                                <img src="<?= BASE_URL ?>assets/uploads/categories/<?= htmlspecialchars($category['icon']) ?>" alt="Category Image" style="max-width: 100px; height: auto; border-radius: 8px; border: 1px solid #dee2e6;">
+                            </div>
+                        <?php endif; ?>
+                        <small class="text-muted mt-1 d-block">Chọn hình ảnh đại diện cho danh mục. Định dạng: JPG, PNG, GIF, WebP.</small>
                     </div>
                 </div>
 

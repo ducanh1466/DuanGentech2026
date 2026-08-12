@@ -107,9 +107,7 @@ body {
     position: absolute;
     top: 100%;
     left: 0;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background: #ffffff;
     box-shadow: var(--shadow-heavy);
     border-radius: 1.5rem;
     min-width: 650px;
@@ -275,21 +273,20 @@ body {
 }
 
 .category-box {
-    background: var(--white);
-    border-radius: 1.5rem;
-    padding: 2.5rem 1.5rem;
+    background: transparent;
+    border-radius: 0;
+    padding: 1rem 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-soft);
-    border: 1px solid rgba(210, 210, 215, 0.3);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: none;
+    border: none;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .category-item:hover .category-box {
-    box-shadow: var(--shadow-float);
-    border-color: var(--primary-color);
+    transform: scale(1.05);
 }
 
 .category-box i {

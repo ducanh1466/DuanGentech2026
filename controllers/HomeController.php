@@ -6,9 +6,13 @@ class HomeController
     {
         require_once PATH_MODEL . 'ProductModel.php';
         require_once PATH_MODEL . 'BannerModel.php';
+        require_once PATH_MODEL . 'CategoryModel.php';
         
         $productModel = new ProductModel();
         $bannerModel = new BannerModel();
+        $categoryModel = new CategoryModel();
+
+        $homeCategories = $categoryModel->getAllCategories();
         
         $latestProducts = $productModel->getLatestProducts(8);
         $bestSellers = $productModel->getBestSellingProducts(8);
@@ -53,7 +57,7 @@ class HomeController
         $brandModel = new BrandModel();
         
         // Setup pagination
-        $limit = 12;
+        $limit = 10;
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $offset = ($page - 1) * $limit;
         

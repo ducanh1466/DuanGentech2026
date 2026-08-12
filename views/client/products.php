@@ -54,75 +54,97 @@
     <div class="row g-5">
         <!-- Sidebar Filter -->
         <div class="col-lg-3">
+            <style>
+                .filter-header { cursor: pointer; user-select: none; }
+                .filter-header .toggle-icon { transition: transform 0.3s ease; font-size: 0.9rem; }
+                .filter-header.collapsed .toggle-icon { transform: rotate(-180deg); }
+            </style>
             <form id="filterForm" method="GET" action="" class="bg-white rounded-4 shadow-sm border p-4 sticky-top" style="top: 100px;">
                 <input type="hidden" name="action" value="products">
                 <?php if(isset($_GET['keyword'])): ?>
                     <input type="hidden" name="keyword" value="<?= htmlspecialchars($_GET['keyword']) ?>">
                 <?php endif; ?>
                 
-                <h5 class="fw-bold mb-4 border-bottom pb-3">Bộ Lọc Sản Phẩm</h5>
+                <h5 class="fw-bold mb-4 border-bottom pb-3">Bộ Lọc Tìm Kiếm</h5>
                 
                 <!-- Category Filter -->
-                <div class="mb-4">
-                    <h6 class="fw-bold mb-3">Danh Mục</h6>
-                    <?php 
-                    $selectedCats = isset($_GET['categories']) ? (array)$_GET['categories'] : [];
-                    foreach($allCategories as $cat): 
-                        $isChecked = in_array($cat['category_id'], $selectedCats) ? 'checked' : '';
-                    ?>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="checkbox" name="categories[]" value="<?= $cat['category_id'] ?>" id="cat_<?= $cat['category_id'] ?>" <?= $isChecked ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="cat_<?= $cat['category_id'] ?>"><?= htmlspecialchars($cat['category_name']) ?></label>
+                <div class="mb-4 border-bottom pb-3">
+                    <div class="filter-header d-flex justify-content-between align-items-center mb-3" data-bs-toggle="collapse" data-bs-target="#collapseCat" aria-expanded="true">
+                        <h6 class="fw-bold mb-0">Danh Mục</h6>
+                        <i class="bi bi-chevron-up toggle-icon text-muted"></i>
                     </div>
-                    <?php endforeach; ?>
+                    <div class="collapse show" id="collapseCat">
+                        <?php 
+                        $selectedCats = isset($_GET['categories']) ? (array)$_GET['categories'] : [];
+                        foreach($allCategories as $cat): 
+                            $isChecked = in_array($cat['category_id'], $selectedCats) ? 'checked' : '';
+                        ?>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input filter-checkbox" type="checkbox" name="categories[]" value="<?= $cat['category_id'] ?>" id="cat_<?= $cat['category_id'] ?>" <?= $isChecked ?> onchange="submitFilter()">
+                            <label class="form-check-label text-muted" for="cat_<?= $cat['category_id'] ?>"><?= htmlspecialchars($cat['category_name']) ?></label>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
 
                 <!-- Brand Filter -->
-                <div class="mb-4">
-                    <h6 class="fw-bold mb-3">Thương Hiệu</h6>
-                    <?php 
-                    $selectedBrands = isset($_GET['brands']) ? (array)$_GET['brands'] : [];
-                    foreach($allBrands as $brand): 
-                        $isChecked = in_array($brand['brand_id'], $selectedBrands) ? 'checked' : '';
-                    ?>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="checkbox" name="brands[]" value="<?= $brand['brand_id'] ?>" id="brand_<?= $brand['brand_id'] ?>" <?= $isChecked ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="brand_<?= $brand['brand_id'] ?>"><?= htmlspecialchars($brand['brand_name']) ?></label>
+                <div class="mb-4 border-bottom pb-3">
+                    <div class="filter-header d-flex justify-content-between align-items-center mb-3" data-bs-toggle="collapse" data-bs-target="#collapseBrand" aria-expanded="true">
+                        <h6 class="fw-bold mb-0">Thương Hiệu</h6>
+                        <i class="bi bi-chevron-up toggle-icon text-muted"></i>
                     </div>
-                    <?php endforeach; ?>
+                    <div class="collapse show" id="collapseBrand">
+                        <div class="row g-2">
+                            <?php 
+                            $selectedBrands = isset($_GET['brands']) ? (array)$_GET['brands'] : [];
+                            foreach($allBrands as $brand): 
+                                $isChecked = in_array($brand['brand_id'], $selectedBrands) ? 'checked' : '';
+                            ?>
+                            <div class="col-6">
+                                <input class="btn-check filter-checkbox" type="checkbox" name="brands[]" value="<?= $brand['brand_id'] ?>" id="brand_<?= $brand['brand_id'] ?>" <?= $isChecked ?> onchange="submitFilter()">
+                                <label class="btn btn-outline-secondary w-100 btn-sm text-truncate" for="brand_<?= $brand['brand_id'] ?>"><?= htmlspecialchars($brand['brand_name']) ?></label>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Price Filter -->
-                <div class="mb-4">
-                    <h6 class="fw-bold mb-3">Mức Giá</h6>
-                    <?php
-                        $minP = isset($_GET['price_min']) ? $_GET['price_min'] : '';
-                        $maxP = isset($_GET['price_max']) ? $_GET['price_max'] : '';
-                        $priceOption = $minP . '-' . $maxP;
-                    ?>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="" id="price_all" <?= $priceOption == '-' ? 'checked' : '' ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="price_all">Tất cả</label>
+                <div class="mb-4 border-bottom pb-3">
+                    <div class="filter-header d-flex justify-content-between align-items-center mb-3" data-bs-toggle="collapse" data-bs-target="#collapsePrice" aria-expanded="true">
+                        <h6 class="fw-bold mb-0">Mức Giá</h6>
+                        <i class="bi bi-chevron-up toggle-icon text-muted"></i>
                     </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="0-5000000" id="price1" <?= $priceOption == '0-5000000' ? 'checked' : '' ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="price1">Dưới 5 triệu</label>
+                    <div class="collapse show" id="collapsePrice">
+                        <?php
+                            $minP = isset($_GET['price_min']) ? $_GET['price_min'] : '';
+                            $maxP = isset($_GET['price_max']) ? $_GET['price_max'] : '';
+                            $priceOption = $minP . '-' . $maxP;
+                        ?>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="" id="price_all" <?= $priceOption == '-' ? 'checked' : '' ?> onchange="submitFilter()">
+                            <label class="form-check-label text-muted" for="price_all">Tất cả</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="0-5000000" id="price1" <?= $priceOption == '0-5000000' ? 'checked' : '' ?> onchange="submitFilter()">
+                            <label class="form-check-label text-muted" for="price1">Dưới 5 triệu</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="5000000-15000000" id="price2" <?= $priceOption == '5000000-15000000' ? 'checked' : '' ?> onchange="submitFilter()">
+                            <label class="form-check-label text-muted" for="price2">Từ 5 - 15 triệu</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="15000000-25000000" id="price3" <?= $priceOption == '15000000-25000000' ? 'checked' : '' ?> onchange="submitFilter()">
+                            <label class="form-check-label text-muted" for="price3">Từ 15 - 25 triệu</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="25000000-0" id="price4" <?= $priceOption == '25000000-0' ? 'checked' : '' ?> onchange="submitFilter()">
+                            <label class="form-check-label text-muted" for="price4">Trên 25 triệu</label>
+                        </div>
+                        <!-- Hidden inputs for actual price range to be sent -->
+                        <input type="hidden" name="price_min" id="input_price_min" value="<?= htmlspecialchars($minP) ?>">
+                        <input type="hidden" name="price_max" id="input_price_max" value="<?= htmlspecialchars($maxP) ?>">
                     </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="5000000-15000000" id="price2" <?= $priceOption == '5000000-15000000' ? 'checked' : '' ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="price2">Từ 5 - 15 triệu</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="15000000-25000000" id="price3" <?= $priceOption == '15000000-25000000' ? 'checked' : '' ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="price3">Từ 15 - 25 triệu</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="radio" name="price_range" value="25000000-0" id="price4" <?= $priceOption == '25000000-0' ? 'checked' : '' ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="price4">Trên 25 triệu</label>
-                    </div>
-                    <!-- Hidden inputs for actual price range to be sent -->
-                    <input type="hidden" name="price_min" id="input_price_min" value="<?= htmlspecialchars($minP) ?>">
-                    <input type="hidden" name="price_max" id="input_price_max" value="<?= htmlspecialchars($maxP) ?>">
                 </div>
                 
                 <!-- Dynamic Attributes Filter -->
@@ -130,29 +152,39 @@
                 $selectedAttrs = isset($_GET['attributes']) ? (array)$_GET['attributes'] : [];
                 foreach($allAttributes as $attrId => $attrData): 
                 ?>
-                <div class="mb-4">
-                    <h6 class="fw-bold mb-3"><?= htmlspecialchars($attrData['attribute_name']) ?></h6>
-                    <?php foreach($attrData['values'] as $val): 
-                        $isChecked = in_array($val['attribute_value_id'], $selectedAttrs) ? 'checked' : '';
-                    ?>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="checkbox" name="attributes[]" value="<?= $val['attribute_value_id'] ?>" id="attr_<?= $val['attribute_value_id'] ?>" <?= $isChecked ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="attr_<?= $val['attribute_value_id'] ?>"><?= htmlspecialchars($val['attribute_value']) ?></label>
+                <div class="mb-4 border-bottom pb-3">
+                    <div class="filter-header d-flex justify-content-between align-items-center mb-3" data-bs-toggle="collapse" data-bs-target="#collapseAttr<?= $attrId ?>" aria-expanded="true">
+                        <h6 class="fw-bold mb-0"><?= htmlspecialchars($attrData['attribute_name']) ?></h6>
+                        <i class="bi bi-chevron-up toggle-icon text-muted"></i>
                     </div>
-                    <?php endforeach; ?>
+                    <div class="collapse show" id="collapseAttr<?= $attrId ?>">
+                        <?php foreach($attrData['values'] as $val): 
+                            $isChecked = in_array($val['attribute_value_id'], $selectedAttrs) ? 'checked' : '';
+                        ?>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input filter-checkbox" type="checkbox" name="attributes[]" value="<?= $val['attribute_value_id'] ?>" id="attr_<?= $val['attribute_value_id'] ?>" <?= $isChecked ?> onchange="submitFilter()">
+                            <label class="form-check-label text-muted" for="attr_<?= $val['attribute_value_id'] ?>"><?= htmlspecialchars($val['attribute_value']) ?></label>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
                 <?php endforeach; ?>
 
                 <!-- Other Filters -->
                 <div class="mb-4">
-                    <h6 class="fw-bold mb-3">Tình Trạng & Đánh Giá</h6>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="checkbox" name="in_stock" value="1" id="in_stock" <?= isset($_GET['in_stock']) ? 'checked' : '' ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="in_stock">Còn hàng</label>
+                    <div class="filter-header d-flex justify-content-between align-items-center mb-3" data-bs-toggle="collapse" data-bs-target="#collapseOther" aria-expanded="true">
+                        <h6 class="fw-bold mb-0">Tình Trạng & Đánh Giá</h6>
+                        <i class="bi bi-chevron-up toggle-icon text-muted"></i>
                     </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input filter-checkbox" type="checkbox" name="min_rating" value="4" id="min_rating" <?= (isset($_GET['min_rating']) && $_GET['min_rating'] == 4) ? 'checked' : '' ?> onchange="submitFilter()">
-                        <label class="form-check-label text-muted" for="min_rating">Từ 4 sao trở lên</label>
+                    <div class="collapse show" id="collapseOther">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input filter-checkbox" type="checkbox" name="in_stock" value="1" id="in_stock" <?= isset($_GET['in_stock']) ? 'checked' : '' ?> onchange="submitFilter()">
+                            <label class="form-check-label text-muted" for="in_stock">Còn hàng</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input filter-checkbox" type="checkbox" name="min_rating" value="4" id="min_rating" <?= (isset($_GET['min_rating']) && $_GET['min_rating'] == 4) ? 'checked' : '' ?> onchange="submitFilter()">
+                            <label class="form-check-label text-muted" for="min_rating">Từ 4 sao trở lên</label>
+                        </div>
                     </div>
                 </div>
 

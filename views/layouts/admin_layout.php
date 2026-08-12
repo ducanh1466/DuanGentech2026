@@ -84,7 +84,7 @@
                     <li class="nav-item">
                         <a class="nav-link <?= in_array($action ?? '', ['admin-banners', 'admin-banner-form']) ? 'active' : '' ?>"
                             href="<?= BASE_URL ?>?action=admin-banners">
-                            <i class="bi bi-images"></i> Quản lý Banner
+                            <i class="bi bi-images"></i> Banner
                         </a>
                     </li>
                     <?php if ($_SESSION['user']['role'] == 1): ?>

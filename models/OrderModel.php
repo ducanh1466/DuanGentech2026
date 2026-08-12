@@ -65,6 +65,21 @@ class OrderModel extends BaseModel
         return $stmt->fetchAll();
     }
 
+    // Lấy lịch sử mua hàng lọc theo trạng thái
+    public function getOrdersByUserIdAndStatus($user_id, $status = '')
+    {
+        if (empty($status) || $status === 'all') {
+            return $this->getOrdersByUserId($user_id);
+        }
+        $sql = "SELECT * FROM {$this->table} WHERE user_id = :user_id AND status = :status ORDER BY order_id DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'user_id' => $user_id,
+            'status' => $status
+        ]);
+        return $stmt->fetchAll();
+    }
+
     // Tạo mới 1 đơn hàng vào CSDL (Khi khách thực hiện thao tác đặt hàng/thanh toán)
     public function insertOrder($user_id, $discount_id = null, $total_amount, $status = 'pending', $recipient_name, $recipient_phone, $shipping_address, $note = null, $payment_method = 'cod', $payment_status = 'unpaid')
     {
@@ -156,5 +171,16 @@ class OrderModel extends BaseModel
             rsort($years);
         }
         return $years;
+    }
+
+    // Cập nhật trạng thái thanh toán của đơn hàng
+    public function updatePaymentStatus($orderId, $status)
+    {
+        $sql = "UPDATE {$this->table} SET payment_status = :status WHERE order_id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'status' => $status,
+            'id' => $orderId
+        ]);
     }
 }

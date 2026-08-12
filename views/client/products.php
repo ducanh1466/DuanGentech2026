@@ -216,25 +216,40 @@
             <div class="row g-4">
                 <?php $delay = 0; foreach($products as $product): ?>
                 <div class="col-sm-6 col-lg-4" data-aos="fade-up" data-aos-delay="<?= $delay ?>">
-                    <div class="product-card h-100 p-0 text-start position-relative">
-                        <!-- Thẻ trạng thái/Khuyến mãi -->
-                        <?php if(isset($product['status']) && $product['status'] == 'new'): ?>
-                            <span class="badge bg-dark position-absolute top-0 start-0 m-3 z-1">Mới</span>
-                        <?php endif; ?>
-                        
-                        <div class="p-4 bg-light d-flex align-items-center justify-content-center cursor-pointer" style="height: 260px;" onclick="window.location.href='?action=product-detail&id=<?= $product['product_id'] ?>'">
-                            <img src="<?= $product['image'] ?>" class="img-fluid mix-blend-multiply transition-transform hover-scale" alt="<?= htmlspecialchars($product['product_name']) ?>" style="max-height: 200px;">
+                    <div class="product-card-premium h-100 d-flex flex-column position-relative overflow-hidden">
+                        <div class="card-img-wrap bg-light position-relative">
+                            <!-- Thẻ trạng thái/Khuyến mãi -->
+                            <?php if(isset($product['status']) && $product['status'] == 'new'): ?>
+                                <span class="badge bg-danger shadow-sm px-3 py-2 rounded-pill fw-bold position-absolute" style="top: 12px; left: 12px; z-index: 10; font-size:0.75rem; letter-spacing: 1px;"><i class="bi bi-stars"></i> MỚI</span>
+                            <?php endif; ?>
+                            
+                            <a href="<?= BASE_URL ?>?action=product-detail&id=<?= $product['product_id'] ?>" class="d-block w-100 h-100" style="padding: 1.5rem;">
+                                <img src="<?= $product['image'] ?>" alt="<?= htmlspecialchars($product['product_name']) ?>" style="object-fit: contain; width: 100%; height: 200px; transition: transform 0.5s ease;" class="product-img-main">
+                            </a>
+                            
+                            <!-- Premium Hover Overlay -->
+                            <div class="premium-hover-overlay">
+                                <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form w-100 px-3">
+                                    <input type="hidden" name="variant_id" value="<?= htmlspecialchars($product['default_variant_id'] ?? 0) ?>">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" name="action_type" value="add_to_cart" class="btn btn-dark w-100 rounded-pill py-3 fw-bold btn-premium-add shadow-lg d-flex justify-content-center align-items-center gap-2">
+                                        <i class="bi bi-cart-plus fs-5"></i> THÊM VÀO GIỎ
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="p-4 bg-white">
-                            <p class="text-muted small fw-bold mb-1"><?= strtoupper(htmlspecialchars($product['brand_name'] ?? '')) ?></p>
-                            <h5 class="fw-bold mb-3 product-title text-truncate cursor-pointer hover-primary text-dark" onclick="window.location.href='?action=product-detail&id=<?= $product['product_id'] ?>'"><?= htmlspecialchars($product['product_name']) ?></h5>
-                            <div class="d-flex justify-content-between align-items-end">
-                                <div>
-                                    <span class="text-dark fw-bold fs-5 d-block"><?= number_format($product['price'] ?? 0, 0, ',', '.') ?>đ</span>
-                                </div>
-                                <button class="btn btn-light rounded-circle text-primary hover-primary-bg transition-all" style="width: 40px; height: 40px;" onclick="window.location.href='?action=cart-add&id=<?= $product['product_id'] ?>'">
-                                    <i class="bi bi-cart-plus fs-5"></i>
-                                </button>
+                        <div class="product-info p-4 flex-grow-1 d-flex flex-column bg-white">
+                            <p class="text-muted mb-2 text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">
+                                <?= htmlspecialchars($product['brand_name'] ?? 'Thương hiệu') ?>
+                            </p>
+                            <a href="<?= BASE_URL ?>?action=product-detail&id=<?= $product['product_id'] ?>" class="text-decoration-none text-dark mb-3">
+                                <h5 class="fw-bold mb-0 text-dark hover-primary lh-base" style="font-size:1.05rem; letter-spacing: -0.2px;">
+                                    <?= htmlspecialchars($product['product_name']) ?>
+                                </h5>
+                            </a>
+                            
+                            <div class="mt-auto">
+                                <span class="text-dark fw-bold fs-5 d-block"><?= number_format($product['price'] ?? 0, 0, ',', '.') ?>đ</span>
                             </div>
                         </div>
                     </div>

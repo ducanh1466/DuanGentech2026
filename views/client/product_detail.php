@@ -109,29 +109,35 @@
                 </ul>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="row g-3 mb-4">
-                <div class="col-12">
-                    <button class="btn btn-premium-gradient w-100 py-3 d-flex flex-column align-items-center justify-content-center">
-                        <span class="fs-5">MUA NGAY</span>
-                        <small class="fw-normal" style="font-size: 0.85rem; opacity: 0.9;">Giao hàng miễn phí tận nơi</small>
-                    </button>
+            <!-- Action Buttons Form -->
+            <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form">
+                <!-- Chỗ này thực tế cần dùng JS để lấy variant_id chuẩn dựa vào lựa chọn Màu sắc/Dung lượng, hiện tại tạm fix lấy variant đầu tiên -->
+                <input type="hidden" name="variant_id" value="<?= !empty($variantsData) ? htmlspecialchars($variantsData[0]['variant_id']) : 0 ?>">
+                <input type="hidden" name="quantity" value="1">
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <button type="submit" name="action_type" value="buy_now" class="btn btn-premium-gradient w-100 py-3 d-flex flex-column align-items-center justify-content-center">
+                            <span class="fs-5">MUA NGAY</span>
+                            <small class="fw-normal" style="font-size: 0.85rem; opacity: 0.9;">Giao hàng miễn phí tận nơi</small>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold hover-elevate">
+                            TRẢ GÓP 0%
+                            <small class="d-block fw-normal" style="font-size: 0.75rem;">Duyệt hồ sơ trong 5 phút</small>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold hover-elevate">
+                            TRẢ GÓP QUA THẺ
+                            <small class="d-block fw-normal" style="font-size: 0.75rem;">Visa, Mastercard, JCB</small>
+                        </button>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <button class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold hover-elevate">
-                        TRẢ GÓP 0%
-                        <small class="d-block fw-normal" style="font-size: 0.75rem;">Duyệt hồ sơ trong 5 phút</small>
-                    </button>
-                </div>
-                <div class="col-6">
-                    <button class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold hover-elevate">
-                        TRẢ GÓP QUA THẺ
-                        <small class="d-block fw-normal" style="font-size: 0.75rem;">Visa, Mastercard, JCB</small>
-                    </button>
-                </div>
-            </div>
-            
-            <button class="btn btn-light border w-100 rounded-pill py-3 fw-bold text-dark hover-elevate shadow-sm"><i class="bi bi-cart-plus me-2 fs-5 align-middle"></i>THÊM VÀO GIỎ HÀNG</button>
+                
+                <button type="submit" name="action_type" value="add_to_cart" class="btn btn-light border w-100 rounded-pill py-3 fw-bold text-dark hover-elevate shadow-sm"><i class="bi bi-cart-plus me-2 fs-5 align-middle"></i>THÊM VÀO GIỎ HÀNG</button>
+            </form>
         </div>
     </div>
 </div>

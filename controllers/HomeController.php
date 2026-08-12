@@ -135,8 +135,76 @@ class HomeController
 
     public function profile()
     {
+        if (!isset($_SESSION['user'])) {
+            header('Location: ?action=login');
+            exit;
+        }
+
+        require_once PATH_MODEL . 'OrderModel.php';
+        $orderModel = new OrderModel();
+        
+        $userId = $_SESSION['user']['user_id'];
+        
+        // Lấy 1 đơn hàng gần nhất
+        $recentOrdersList = $orderModel->getOrdersByUserId($userId);
+        $recentOrders = array_slice($recentOrdersList, 0, 1); // Lấy 1 đơn mới nhất
+        
         $view = 'client/profile';
         $title = 'Hồ Sơ Cá Nhân - Gentech';
+        require_once PATH_VIEW . 'layouts/client_layout.php';
+    }
+
+    public function orderHistory()
+    {
+        if (!isset($_SESSION['user'])) {
+            header('Location: ?action=login');
+            exit;
+        }
+
+        require_once PATH_MODEL . 'OrderModel.php';
+        $orderModel = new OrderModel();
+        
+        $userId = $_SESSION['user']['user_id'];
+        $statusFilter = $_GET['status'] ?? 'all';
+        
+        $orders = $orderModel->getOrdersByUserIdAndStatus($userId, $statusFilter);
+        
+        $view = 'client/order_history';
+        $title = 'Lịch Sử Mua Hàng - Gentech';
+        require_once PATH_VIEW . 'layouts/client_layout.php';
+    }
+
+    public function orderDetail()
+    {
+        if (!isset($_SESSION['user'])) {
+            header('Location: ?action=login');
+            exit;
+        }
+
+        $orderId = $_GET['id'] ?? 0;
+        if (!$orderId) {
+            header('Location: ?action=order-history');
+            exit;
+        }
+
+        require_once PATH_MODEL . 'OrderModel.php';
+        require_once PATH_MODEL . 'OrderDetailModel.php';
+        
+        $orderModel = new OrderModel();
+        $orderDetailModel = new OrderDetailModel();
+        
+        $order = $orderModel->getOrderById($orderId);
+        
+        // Kiểm tra xem đơn hàng có thuộc về user hiện tại không
+        if (!$order || $order['user_id'] != $_SESSION['user']['user_id']) {
+            header('Location: ?action=order-history');
+            exit;
+        }
+        
+        $orderDetails = $orderDetailModel->getDetailsByOrderId($orderId);
+        
+        $view = 'client/order_detail';
+        $title = 'Chi Tiết Đơn Hàng - Gentech';
         require_once PATH_VIEW . 'layouts/client_layout.php';
     }
 }

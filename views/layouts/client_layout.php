@@ -1,4 +1,14 @@
 <!DOCTYPE html>
+<?php
+$headerCartCount = 0;
+if (isset($_SESSION['user'])) {
+    require_once PATH_MODEL . 'CartModel.php';
+    $layoutCartModel = new CartModel();
+    $layoutCartId = $layoutCartModel->getOrCreateCartId($_SESSION['user']['user_id']);
+    $layoutCartItems = $layoutCartModel->getCartItems($layoutCartId);
+    $headerCartCount = count($layoutCartItems);
+}
+?>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -83,12 +93,12 @@
                             <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
                             <input type="text" class="form-control rounded-pill ps-5 bg-light border-0" placeholder="Tìm kiếm...">
                         </div>
-                        <button class="btn btn-light rounded-circle icon-btn position-relative hover-primary-bg transition-all border-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart">
+                        <a href="<?= BASE_URL ?? '/' ?>?action=cart" class="btn btn-light rounded-circle icon-btn position-relative hover-primary-bg transition-all border-0">
                             <i class="bi bi-cart3 fs-5"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm">
-                                3
+                            <span id="header-cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm">
+                                <?= $headerCartCount ?>
                             </span>
-                        </button>
+                        </a>
                         <?php if (isset($_SESSION['user'])): ?>
                             <div class="dropdown d-inline-block">
                                 <a href="#" class="btn btn-light rounded-circle icon-btn" data-bs-toggle="dropdown">
@@ -301,6 +311,67 @@
     <script src="<?= BASE_JS ?? 'assets/js/' ?>client.js?v=<?= time() ?>"></script>
     <!-- AOS Animation JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Modal Thông báo thêm giỏ hàng thành công (Premium Version) -->
+    <style>
+        /* Premium Modal Styling */
+        #cartModal .modal-content {
+            background: rgba(25, 25, 28, 0.85) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+            border-radius: 24px !important;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        #cartModal.show .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .premium-icon-wrap {
+            width: 84px;
+            height: 84px;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(21, 128, 61, 0.05));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto;
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.15), inset 0 0 15px rgba(34, 197, 94, 0.1);
+        }
+        .btn-premium-light {
+            background: rgba(255, 255, 255, 0.95);
+            color: #111;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,1);
+        }
+        .btn-premium-light:hover {
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+        }
+    </style>
+    
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+            <div class="modal-content text-center py-5 px-4">
+                <div class="modal-body p-0">
+                    <div class="premium-icon-wrap position-relative">
+                        <i class="bi bi-cart3 text-success" style="font-size: 2.2rem; filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.5));"></i>
+                        <div class="position-absolute d-flex align-items-center justify-content-center bg-success text-white" style="width: 24px; height: 24px; border-radius: 50%; bottom: 10px; right: 10px; border: 2px solid #1a1a1c;">
+                            <i class="bi bi-check" style="font-size: 1.2rem; margin-top: 1px;"></i>
+                        </div>
+                    </div>
+                    <h4 class="text-white mb-2 fw-semibold" style="letter-spacing: -0.5px;">Thành công!</h4>
+                    <p class="text-gray-400 mb-4" style="font-size: 0.95rem;">Sản phẩm đã được đưa vào giỏ hàng.</p>
+                    <a href="<?= BASE_URL ?? '/' ?>?action=cart" class="btn btn-premium-light w-100 rounded-pill py-3 fw-bold fs-6">Xem giỏ hàng ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         AOS.init({
             duration: 800,
@@ -308,6 +379,99 @@
             offset: 50,
             easing: 'ease-out-cubic'
         });
+
+        // Xử lý AJAX thêm vào giỏ hàng
+        document.addEventListener('DOMContentLoaded', function() {
+            const addForms = document.querySelectorAll('.ajax-add-to-cart-form');
+            addForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (e.submitter && e.submitter.value === 'buy_now') {
+                        return; // Để form submit bình thường và chuyển trang
+                    }
+                    
+                    e.preventDefault();
+                    
+                    // Thêm trạng thái loading cho nút bấm
+                    const submitBtn = e.submitter || this.querySelector('button[type="submit"]');
+                    const originalBtnContent = submitBtn.innerHTML;
+                    if(submitBtn) {
+                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ĐANG THÊM...';
+                        submitBtn.disabled = true;
+                    }
+                    
+                    const formData = new FormData(this);
+                    formData.append('action_type', 'add_to_cart');
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(submitBtn) {
+                            submitBtn.innerHTML = originalBtnContent;
+                            submitBtn.disabled = false;
+                        }
+                        
+                        if (data.status === 'success') {
+                            // Hiện Toast
+                            const toastEl = document.getElementById('cartToast');
+                            if(toastEl) {
+                                const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+                                toast.show();
+                            }
+                            
+                            // Cập nhật và tạo hiệu ứng nảy cho số lượng giỏ hàng
+                            const cartBadge = document.getElementById('header-cart-badge');
+                            if (cartBadge && data.cart_count !== undefined) {
+                                cartBadge.innerText = data.cart_count;
+                                cartBadge.classList.add('animate-bounce');
+                                setTimeout(() => {
+                                    cartBadge.classList.remove('animate-bounce');
+                                }, 500);
+                            }
+                        } else {
+                            alert(data.message || 'Có lỗi xảy ra');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        if(submitBtn) {
+                            submitBtn.innerHTML = originalBtnContent;
+                            submitBtn.disabled = false;
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+    <!-- Toast Notification cho Giỏ Hàng -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+        <div id="cartToast" class="toast align-items-center text-white bg-dark border-0 rounded-4 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-medium px-4 py-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill text-success fs-5"></i> 
+                    Sản phẩm đã được thêm vào giỏ hàng!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .animate-bounce {
+            animation: badgeBounce 0.5s ease;
+        }
+        @keyframes badgeBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+    </style>
     </script>
 </body>
 </html>

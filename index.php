@@ -1,6 +1,9 @@
 <?php 
 
 session_start();
+if (function_exists('opcache_reset')) {
+    opcache_reset();
+}
 
 spl_autoload_register(function ($class) {    
     $fileName = "$class.php";

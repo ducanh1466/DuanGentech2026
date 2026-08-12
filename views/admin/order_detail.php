@@ -17,6 +17,10 @@
                 $statusClass = 'pending';
                 $statusText = 'Chờ xử lý';
                 switch ($order['status']) {
+                    case 'processing':
+                        $statusClass = 'processing';
+                        $statusText = 'Chờ lấy hàng';
+                        break;
                     case 'confirmed':
                         $statusClass = 'completed';
                         $statusText = 'Đã xác nhận';
@@ -40,7 +44,15 @@
                 </span>
             </div>
             <div class="info-row"><span class="label">Thanh toán</span><span class="value">
-                    <?= ($order['payment_method'] ?? 'cod') === 'bank' ? 'Chuyển khoản' : 'COD' ?>
+                    <?php 
+                    $payment = $order['payment_method'] ?? 'cod';
+                    if ($payment === 'bank') echo 'Chuyển khoản';
+                    elseif ($payment === 'vnpay') echo 'VNPay';
+                    elseif ($payment === 'momo') echo 'MoMo';
+                    elseif ($payment === 'zalopay') echo 'ZaloPay';
+                    elseif ($payment === 'applepay') echo 'Apple Pay';
+                    else echo 'COD';
+                    ?>
                 </span>
             </div>
         </div>
@@ -77,6 +89,7 @@
             <select class="form-select" name="status"
                 style="border:2px solid var(--border-color);border-radius:var(--radius-md);padding:10px;background:var(--bg-primary);color:var(--text-primary);">
                 <option value="pending" <?= $order['status'] == 'pending' ? 'selected' : '' ?>>Chờ xử lý</option>
+                <option value="processing" <?= $order['status'] == 'processing' ? 'selected' : '' ?>>Chờ lấy hàng</option>
                 <option value="confirmed" <?= $order['status'] == 'confirmed' ? 'selected' : '' ?>>Đã xác nhận</option>
                 <option value="shipping" <?= $order['status'] == 'shipping' ? 'selected' : '' ?>>Đang giao hàng
                 </option>

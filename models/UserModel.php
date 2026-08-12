@@ -108,6 +108,24 @@ class UserModel extends BaseModel
             $id
         ]);
     }
+
+    // Cập nhật profile từ Checkout
+    public function updateUserCheckoutProfile($id, $full_name, $phone, $address)
+    {
+        $sql = "UPDATE tb_users
+                SET
+                full_name = ?,
+                phone = ?,
+                address = ?
+                WHERE user_id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            $full_name,
+            $phone,
+            $address,
+            $id
+        ]);
+    }
     // Xóa người dùng
     public function deleteUser($id)
     {

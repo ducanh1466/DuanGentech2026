@@ -41,25 +41,27 @@ class CategoryModel extends BaseModel
     }
 
     // Thêm mới một danh mục vào CSDL
-    public function insertCategory($category_name, $description = null)
+    public function insertCategory($category_name, $description = null, $icon = null)
     {
-        $sql = "INSERT INTO {$this->table} (category_name, description) VALUES (:category_name, :description)";
+        $sql = "INSERT INTO {$this->table} (category_name, description, icon) VALUES (:category_name, :description, :icon)";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             'category_name' => $category_name,
-            'description' => $description
+            'description' => $description,
+            'icon' => $icon
         ]);
     }
 
     // Cập nhật thông tin danh mục
-    public function updateCategory($id, $category_name, $description = null)
+    public function updateCategory($id, $category_name, $description = null, $icon = null)
     {
-        $sql = "UPDATE {$this->table} SET category_name = :category_name, description = :description WHERE category_id = :id";
+        $sql = "UPDATE {$this->table} SET category_name = :category_name, description = :description, icon = :icon WHERE category_id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             'id' => $id,
             'category_name' => $category_name,
-            'description' => $description
+            'description' => $description,
+            'icon' => $icon
         ]);
     }
 

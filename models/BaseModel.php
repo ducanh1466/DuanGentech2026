@@ -26,7 +26,7 @@ class BaseModel
     // Hàm dùng chung để lấy dữ liệu có phân trang và tìm kiếm
     public function fetchWithPagination($baseSql, $params = [], $searchColumns = [], $keyword = '', $orderBy = '', $limit = 0, $offset = 0)
     {
-        if (!empty($keyword) && !empty($searchColumns)) {
+        if ($keyword !== '' && !empty($searchColumns)) {
             $conditions = [];
             foreach ($searchColumns as $col) {
                 $conditions[] = "$col LIKE :keyword";
@@ -61,7 +61,7 @@ class BaseModel
     // Hàm dùng chung để đếm tổng số bản ghi khi có tìm kiếm
     public function countTotalFiltered($baseSql, $params = [], $searchColumns = [], $keyword = '')
     {
-        if (!empty($keyword) && !empty($searchColumns)) {
+        if ($keyword !== '' && !empty($searchColumns)) {
             $conditions = [];
             foreach ($searchColumns as $col) {
                 $conditions[] = "$col LIKE :keyword";

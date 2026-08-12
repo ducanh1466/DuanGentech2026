@@ -1947,8 +1947,9 @@ h1, h2, h3, h4, h5, h6 {
 /* 2. Hero Parallax Slider */
 .hero-parallax-slider {
     position: relative;
-    height: 80vh;
-    min-height: 600px;
+    height: 55vh;
+    min-height: 400px;
+    max-height: 550px;
     overflow: hidden;
     border-radius: 24px;
     margin-top: 1rem;

@@ -49,51 +49,22 @@
         <p class="text-muted fs-5">Lựa chọn sản phẩm phù hợp với nhu cầu của bạn.</p>
     </div>
     <div class="row justify-content-center">
-        <!-- Category 1 -->
-        <div class="col-6 col-md-3 col-lg-2 mb-4" data-aos="fade-up" data-aos-delay="100">
-            <a href="#" class="text-decoration-none text-dark category-item d-block">
-                <div class="category-box">
-                    <i class="bi bi-phone"></i>
-                    <h6 class="fw-bold mb-0 mt-2">Điện Thoại</h6>
-                </div>
-            </a>
-        </div>
-        <!-- Category 2 -->
-        <div class="col-6 col-md-3 col-lg-2 mb-4" data-aos="fade-up" data-aos-delay="200">
-            <a href="#" class="text-decoration-none text-dark category-item d-block">
-                <div class="category-box">
-                    <i class="bi bi-laptop"></i>
-                    <h6 class="fw-bold mb-0 mt-2">Laptop</h6>
-                </div>
-            </a>
-        </div>
-        <!-- Category 3 -->
-        <div class="col-6 col-md-3 col-lg-2 mb-4" data-aos="fade-up" data-aos-delay="300">
-            <a href="#" class="text-decoration-none text-dark category-item d-block">
-                <div class="category-box">
-                    <i class="bi bi-smartwatch"></i>
-                    <h6 class="fw-bold mb-0 mt-2">Smartwatch</h6>
-                </div>
-            </a>
-        </div>
-        <!-- Category 4 -->
-        <div class="col-6 col-md-3 col-lg-2 mb-4" data-aos="fade-up" data-aos-delay="400">
-            <a href="#" class="text-decoration-none text-dark category-item d-block">
-                <div class="category-box">
-                    <i class="bi bi-headphones"></i>
-                    <h6 class="fw-bold mb-0 mt-2">Âm Thanh</h6>
-                </div>
-            </a>
-        </div>
-        <!-- Category 5 -->
-        <div class="col-6 col-md-3 col-lg-2 mb-4" data-aos="fade-up" data-aos-delay="500">
-            <a href="#" class="text-decoration-none text-dark category-item d-block">
-                <div class="category-box">
-                    <i class="bi bi-mouse"></i>
-                    <h6 class="fw-bold mb-0 mt-2">Phụ Kiện</h6>
-                </div>
-            </a>
-        </div>
+        <?php if (!empty($homeCategories)): ?>
+            <?php foreach ($homeCategories as $index => $cat): ?>
+            <div class="col-6 col-md-3 col-lg-2 mb-4" data-aos="fade-up" data-aos-delay="<?= ($index % 5 + 1) * 100 ?>">
+                <a href="<?= BASE_URL ?>?action=products&category_id=<?= $cat['category_id'] ?>" class="text-decoration-none text-dark category-item d-block">
+                    <div class="category-box">
+                        <?php if (!empty($cat['icon'])): ?>
+                            <img src="<?= BASE_URL ?>assets/uploads/categories/<?= htmlspecialchars($cat['icon']) ?>" alt="<?= htmlspecialchars($cat['category_name']) ?>" style="height: 85px; width: auto; object-fit: contain; margin-bottom: 12px; transition: transform 0.3s ease;">
+                        <?php else: ?>
+                            <i class="bi bi-image text-muted" style="font-size: 2.5rem; display: block; margin-bottom: 12px;"></i>
+                        <?php endif; ?>
+                        <h6 class="mb-0 mt-2 text-dark" style="font-weight: 600; font-size: 0.95rem; letter-spacing: -0.3px;"><?= htmlspecialchars($cat['category_name']) ?></h6>
+                    </div>
+                </a>
+            </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 

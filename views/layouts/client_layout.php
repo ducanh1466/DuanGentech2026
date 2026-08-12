@@ -46,26 +46,20 @@
                             <div class="dropdown-menu mega-menu mt-0 border-0 shadow-sm rounded-4 p-4">
                                 <div class="row">
                                     <?php
-                                    // Fetch top 3 categories for the menu
+                                    // Fetch categories for the menu
                                     require_once PATH_MODEL . 'CategoryModel.php';
-                                    require_once PATH_MODEL . 'BrandModel.php';
                                     $layoutCatModel = new CategoryModel();
-                                    $layoutBrandModel = new BrandModel();
-                                    $headerCategories = $layoutCatModel->getAllCategories('', 3);
+                                    $headerCategories = $layoutCatModel->getAllCategories();
                                     
                                     foreach ($headerCategories as $cat):
-                                        $catBrands = $layoutBrandModel->getBrandsByCategoryId($cat['category_id']);
                                     ?>
-                                    <div class="col-md-4">
-                                        <h6 class="fw-bold mb-3"><a href="<?= BASE_URL ?? '/' ?>?action=products&category_id=<?= $cat['category_id'] ?>" class="text-dark text-decoration-none"><?= htmlspecialchars($cat['category_name']) ?></a></h6>
-                                        <ul class="list-unstyled">
-                                            <?php foreach ($catBrands as $brand): ?>
-                                            <li><a class="dropdown-item px-0" href="<?= BASE_URL ?? '/' ?>?action=products&category_id=<?= $cat['category_id'] ?>&brand_id=<?= $brand['brand_id'] ?>"><?= htmlspecialchars($brand['brand_name']) ?></a></li>
-                                            <?php endforeach; ?>
-                                        </ul>
+                                    <div class="col-md-4 mb-3">
+                                        <a href="<?= BASE_URL ?? '/' ?>?action=products&category_id=<?= $cat['category_id'] ?>" class="text-dark text-decoration-none hover-primary" style="font-weight: 500; font-size: 1.05rem;">
+                                            <?= htmlspecialchars($cat['category_name']) ?>
+                                        </a>
                                     </div>
                                     <?php endforeach; ?>
-                                    
+
                                     <div class="col-12 mt-3 pt-3 border-top text-center">
                                         <a href="<?= BASE_URL ?? '/' ?>?action=products" class="text-primary fw-bold text-decoration-none hover-primary">Xem tất cả sản phẩm <i class="bi bi-arrow-right"></i></a>
                                     </div>

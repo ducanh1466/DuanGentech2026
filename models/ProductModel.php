@@ -405,64 +405,102 @@ class ProductModel extends BaseModel
     }
 
     // Hàm nội bộ: Xây dựng câu truy vấn SQL động dựa trên các tiêu chí lọc
-    // (Từ khóa, Danh mục, Thương hiệu, Thuộc tính, Khoảng giá, Sắp xếp)
-    private function buildFilterQuery($keyword, $categories, $brands, $attributeValues, $minPrice, $maxPrice, $sort, $isCount = false)
+    private function buildFilterQuery($filters, $isCount = false)
     {
-        if ($isCount) {
-            $sql = "SELECT COUNT(*) as total FROM tb_products p WHERE (p.status = 'active' OR p.status = 1)";
-        } else {
-            $sql = "SELECT p.*, c.category_name, b.brand_name,
+        $sqlSelect = $isCount ? "COUNT(DISTINCT p.product_id) as total" : "p.*, c.category_name, b.brand_name,
                            (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                           (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
-                    FROM tb_products p
-                    LEFT JOIN tb_categories c ON p.category_id = c.category_id
-                    LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
-                    WHERE (p.status = 'active' OR p.status = 1)";
-        }
+                           (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price";
+                           
+        // We use LEFT JOIN for optional data and JOIN for data we need to filter strongly on
+        $sql = "SELECT $sqlSelect
+                FROM tb_products p
+                LEFT JOIN tb_categories c ON p.category_id = c.category_id
+                LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
+                WHERE (p.status = 'active' OR p.status = 1)";
 
         $params = [];
 
-        if (!empty($keyword)) {
+        if (!empty($filters['keyword'])) {
             $sql .= " AND p.product_name LIKE :keyword";
-            $params['keyword'] = "%{$keyword}%";
+            $params['keyword'] = "%{$filters['keyword']}%";
         }
 
-        if (!empty($categories)) {
-            $catIds = implode(',', array_map('intval', $categories));
+        if (!empty($filters['categories'])) {
+            $catIds = implode(',', array_map('intval', $filters['categories']));
             $sql .= " AND p.category_id IN ($catIds)";
         }
 
-        if (!empty($brands)) {
-            $brandIds = implode(',', array_map('intval', $brands));
+        if (!empty($filters['brands'])) {
+            $brandIds = implode(',', array_map('intval', $filters['brands']));
             $sql .= " AND p.brand_id IN ($brandIds)";
         }
 
-        if (!empty($attributeValues)) {
-            $attrIds = implode(',', array_map('intval', $attributeValues));
-            $sql .= " AND p.product_id IN (
-                SELECT pv.product_id 
-                FROM tb_product_variants pv
-                JOIN tb_variant_attributes va ON pv.variant_id = va.variant_id
-                WHERE va.attribute_value_id IN ($attrIds)
-            )";
+        // Logic AND đa chiều cho thuộc tính: Sản phẩm phải có chứa tất cả các thuộc tính được yêu cầu
+        if (!empty($filters['attributeValues'])) {
+            // Group attribute values by their parent attribute_id (to support OR within same attribute, AND across different)
+            // But since the UI usually passes a flat array of attribute_value_ids, a strict AND is often implemented by counting matches
+            // We assume the user wants products matching ALL selected attribute values (AND logic across different attributes)
+            // Note: If they select two RAMs, they usually want OR. To handle this properly, we group them by attribute.
+            // For simplicity here, we will just use EXISTS for each selected attribute value id, which means AND logic.
+            // If grouped array is passed like ['attribute_id' => [val_id1, val_id2]], we can do IN for each group.
+            
+            if (is_array(current($filters['attributeValues']))) {
+                // Grouped format: [attr_id_1 => [val_id_1, val_id_2], attr_id_2 => [val_id_3]]
+                foreach ($filters['attributeValues'] as $attrId => $valIds) {
+                    if (empty($valIds)) continue;
+                    $valIdsStr = implode(',', array_map('intval', $valIds));
+                    $sql .= " AND EXISTS (
+                        SELECT 1 FROM tb_product_variants pv
+                        JOIN tb_variant_attributes va ON pv.variant_id = va.variant_id
+                        WHERE pv.product_id = p.product_id AND va.attribute_value_id IN ($valIdsStr)
+                    )";
+                }
+            } else {
+                // Flat array fallback
+                $attrIds = implode(',', array_map('intval', $filters['attributeValues']));
+                $sql .= " AND EXISTS (
+                    SELECT 1 FROM tb_product_variants pv
+                    JOIN tb_variant_attributes va ON pv.variant_id = va.variant_id
+                    WHERE pv.product_id = p.product_id AND va.attribute_value_id IN ($attrIds)
+                )";
+            }
         }
 
-        if ($minPrice > 0) {
+        if (isset($filters['minPrice']) && $filters['minPrice'] > 0) {
             $sql .= " AND (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) >= :minPrice";
-            $params['minPrice'] = $minPrice;
+            $params['minPrice'] = $filters['minPrice'];
         }
-        if ($maxPrice > 0) {
+        if (isset($filters['maxPrice']) && $filters['maxPrice'] > 0) {
             $sql .= " AND (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) <= :maxPrice";
-            $params['maxPrice'] = $maxPrice;
+            $params['maxPrice'] = $filters['maxPrice'];
+        }
+
+        if (isset($filters['minWarranty']) && $filters['minWarranty'] > 0) {
+            $sql .= " AND p.warranty_period >= :minWarranty";
+            $params['minWarranty'] = $filters['minWarranty'];
+        }
+
+        if (isset($filters['inStock']) && $filters['inStock']) {
+            $sql .= " AND (SELECT SUM(stock_quantity) FROM tb_product_variants WHERE product_id = p.product_id) > 0";
+        }
+
+        if (isset($filters['minRating']) && $filters['minRating'] > 0) {
+            $sql .= " AND (SELECT AVG(rating) FROM tb_reviews WHERE product_id = p.product_id) >= :minRating";
+            $params['minRating'] = $filters['minRating'];
         }
 
         if (!$isCount) {
+            $sort = $filters['sort'] ?? '';
             if ($sort == 'price_asc') {
                 $sql .= " ORDER BY price ASC";
             } elseif ($sort == 'price_desc') {
                 $sql .= " ORDER BY price DESC";
+            } elseif ($sort == 'best_selling') {
+                 $sql .= " ORDER BY (SELECT SUM(oi.quantity) FROM tb_order_items oi LEFT JOIN tb_product_variants pv ON oi.variant_id = pv.variant_id WHERE pv.product_id = p.product_id) DESC, p.product_id DESC";
+            } elseif ($sort == 'top_rated') {
+                $sql .= " ORDER BY (SELECT AVG(rating) FROM tb_reviews WHERE product_id = p.product_id) DESC, p.product_id DESC";
             } else {
-                $sql .= " ORDER BY p.product_id DESC";
+                $sql .= " ORDER BY p.product_id DESC"; // Default: Newest
             }
         }
 
@@ -470,9 +508,9 @@ class ProductModel extends BaseModel
     }
 
     // Lấy danh sách sản phẩm sau khi đã áp dụng các tiêu chí lọc (có phân trang)
-    public function getProductsFiltered($keyword, $categories, $brands, $attributeValues, $minPrice, $maxPrice, $sort, $limit, $offset)
+    public function getProductsFiltered($filters, $limit, $offset)
     {
-        list($sql, $params) = $this->buildFilterQuery($keyword, $categories, $brands, $attributeValues, $minPrice, $maxPrice, $sort);
+        list($sql, $params) = $this->buildFilterQuery($filters);
 
         $sql .= " LIMIT :limit OFFSET :offset";
 
@@ -488,9 +526,9 @@ class ProductModel extends BaseModel
     }
 
     // Đếm tổng số lượng sản phẩm thỏa mãn điều kiện lọc (để tính toán số trang phân trang)
-    public function countProductsFiltered($keyword, $categories, $brands, $attributeValues, $minPrice, $maxPrice)
+    public function countProductsFiltered($filters)
     {
-        list($sql, $params) = $this->buildFilterQuery($keyword, $categories, $brands, $attributeValues, $minPrice, $maxPrice, '', true);
+        list($sql, $params) = $this->buildFilterQuery($filters, true);
 
         $stmt = $this->pdo->prepare($sql);
         foreach ($params as $key => $value) {

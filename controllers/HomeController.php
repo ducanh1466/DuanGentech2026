@@ -45,15 +45,42 @@ class HomeController
     public function products()
     {
         require_once PATH_MODEL . 'ProductModel.php';
+        require_once PATH_MODEL . 'CategoryModel.php';
+        require_once PATH_MODEL . 'BrandModel.php';
+        
         $productModel = new ProductModel();
+        $categoryModel = new CategoryModel();
+        $brandModel = new BrandModel();
         
         // Setup pagination
         $limit = 12;
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $offset = ($page - 1) * $limit;
         
-        $products = $productModel->getProductsFiltered('', [], [], [], 0, 0, '', $limit, $offset);
-        $totalProducts = $productModel->countProductsFiltered('', [], [], [], 0, 0);
+        // Parse filters from URL
+        $filters = [
+            'keyword' => $_GET['keyword'] ?? '',
+            'categories' => isset($_GET['categories']) && is_array($_GET['categories']) ? $_GET['categories'] : [],
+            'brands' => isset($_GET['brands']) && is_array($_GET['brands']) ? $_GET['brands'] : [],
+            'attributeValues' => isset($_GET['attributes']) && is_array($_GET['attributes']) ? $_GET['attributes'] : [], // Changed from attributeValues to attributes in GET for shorter URL
+            'minPrice' => isset($_GET['price_min']) ? (float)$_GET['price_min'] : 0,
+            'maxPrice' => isset($_GET['price_max']) ? (float)$_GET['price_max'] : 0,
+            'minRating' => isset($_GET['min_rating']) ? (int)$_GET['min_rating'] : 0,
+            'inStock' => isset($_GET['in_stock']) ? true : false,
+            'minWarranty' => isset($_GET['min_warranty']) ? (int)$_GET['min_warranty'] : 0,
+            'sort' => $_GET['sort'] ?? ''
+        ];
+
+        // Ensure grouped attribute array if submitted as group (e.g. attributes[attr_id][]=value_id)
+        // If it's a flat array, the model handles it gracefully as AND condition.
+        
+        $products = $productModel->getProductsFiltered($filters, $limit, $offset);
+        $totalProducts = $productModel->countProductsFiltered($filters);
+        
+        // Fetch data for filter sidebar
+        $allCategories = $categoryModel->getAllCategories();
+        $allBrands = $brandModel->getAllBrands();
+        $allAttributes = $productModel->getAttributesForFilter();
         
         $view = 'client/products';
         $title = 'Tất Cả Sản Phẩm - Gentech';

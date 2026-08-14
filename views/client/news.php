@@ -1,69 +1,142 @@
-<!-- News Header -->
-<div class="container mt-4" data-aos="fade-up">
-    <div class="hero-section text-center d-flex flex-column align-items-center justify-content-center" style="padding: 4rem 2rem;">
-        <h1 class="hero-title mb-3" data-aos="fade-up" data-aos-delay="100" style="font-size: 4rem;">Tin Tức & <span class="text-primary">Sự Kiện</span></h1>
-        <p class="hero-subtitle mx-auto" data-aos="fade-up" data-aos-delay="200" style="max-width: 600px;">Cập nhật những xu hướng công nghệ mới nhất và các tin tức nổi bật từ Gentech.</p>
+<!-- News Header & Pill Nav -->
+<div class="container mt-4 pt-4" data-aos="fade-up">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold mb-3" style="font-size: 4rem; letter-spacing: -2px;">Tin Tức & <span class="text-primary">Góc Nhìn</span></h1>
+        <p class="text-muted fs-5 mx-auto" style="max-width: 600px;">Khám phá thế giới công nghệ qua lăng kính chuyên sâu của Gentech.</p>
+    </div>
+    
+    <!-- Pill Navigation (Sticky) -->
+    <div class="d-flex justify-content-center flex-wrap gap-2 mb-5 sticky-top bg-white py-3" style="z-index: 1020;">
+        <a href="?action=news" class="btn btn-dark rounded-pill px-4 shadow-sm">Tất cả</a>
+        <?php if (!empty($categories)): ?>
+            <?php foreach ($categories as $cat): ?>
+                <a href="?action=news&category=<?= htmlspecialchars($cat['slug']) ?>" class="btn btn-outline-secondary rounded-pill px-4 border-0 bg-light text-dark fw-medium btn-pill-hover">
+                    <?= htmlspecialchars($cat['name']) ?>
+                </a>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 
-<!-- Featured News -->
-<div class="container mt-5 pt-4">
-    <div class="row g-4 align-items-center">
-        <div class="col-lg-7" data-aos="fade-right">
-            <a href="#" class="d-block rounded-4 overflow-hidden shadow-soft hover-zoom position-relative">
-                <!-- ĐIỀN ĐƯỜNG DẪN ẢNH TIN TỨC NỔI BẬT VÀO ĐÂY -->
-                <img src="DUONG_DAN_ANH_TIN_TUC_NOI_BAT.jpg" alt="Tin tức nổi bật" class="w-100 img-fluid" style="object-fit: cover; min-height: 400px; background-color: #f1f5f9;">
-                <div class="position-absolute top-0 start-0 m-4">
-                    <span class="badge bg-primary px-3 py-2 fs-6 rounded-pill">Mới nhất</span>
+<!-- Asymmetrical Editorial Layout -->
+<div class="container mb-5 pb-4">
+    <?php if (!empty($featuredNews)): ?>
+    <!-- Featured Hero Article -->
+    <div class="row mb-4" data-aos="fade-up">
+        <div class="col-12">
+            <a href="?action=news-detail&slug=<?= htmlspecialchars($featuredNews['slug']) ?>" class="card text-white border-0 rounded-4 overflow-hidden editorial-card featured-card shadow-lg d-block text-decoration-none">
+                <img src="<?= htmlspecialchars($featuredNews['image_url'] ?? 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1200&auto=format&fit=crop') ?>" class="card-img h-100 object-fit-cover parallax-img" data-speed="0.1" alt="<?= htmlspecialchars($featuredNews['title']) ?>">
+                <div class="card-img-overlay d-flex flex-column justify-content-end p-4 p-md-5" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);">
+                    <div class="editorial-content">
+                        <div class="d-flex align-items-center flex-wrap gap-3 mb-3">
+                            <span class="badge bg-primary px-3 py-2 rounded-pill fs-6">Tâm điểm</span>
+                            <?php if ($featuredNews['category_name']): ?>
+                                <span class="badge bg-light text-dark px-3 py-2 rounded-pill fs-6"><?= htmlspecialchars($featuredNews['category_name']) ?></span>
+                            <?php endif; ?>
+                            <span class="text-light fw-medium"><i class="bi bi-calendar3 me-1"></i> <?= date('d/m/Y', strtotime($featuredNews['created_at'])) ?></span>
+                            <span class="text-light fw-medium"><i class="bi bi-eye me-1"></i> <?= number_format($featuredNews['views']) ?></span>
+                        </div>
+                        <h2 class="card-title fw-bold mb-3 display-5" style="letter-spacing: -1px;"><?= htmlspecialchars($featuredNews['title']) ?></h2>
+                        <p class="card-text fs-5 text-gray-300 mb-4 d-none d-md-block" style="max-width: 800px;"><?= htmlspecialchars($featuredNews['summary']) ?></p>
+                        <div class="read-more-btn fw-bold text-white d-inline-flex align-items-center gap-2">Đọc toàn bộ bài viết <i class="bi bi-arrow-right"></i></div>
+                    </div>
                 </div>
             </a>
         </div>
-        <div class="col-lg-5" data-aos="fade-left">
-            <p class="text-muted fw-medium mb-2">Công nghệ • 12 Tháng 8, 2026</p>
-            <h2 class="fw-bold mb-3" style="letter-spacing: -1px; line-height: 1.3;">Apple ra mắt dòng sản phẩm mới với chip M4 cực kỳ mạnh mẽ</h2>
-            <p class="text-muted fs-5 mb-4">Sự kiện thường niên của gã khổng lồ công nghệ đã đem đến vô số bất ngờ với dòng vi xử lý kiến trúc hoàn toàn mới, hứa hẹn hiệu năng đột phá cho dân chuyên nghiệp.</p>
-            <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold">Đọc tiếp <i class="bi bi-arrow-right ms-2"></i></a>
-        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Standard Grid Cards -->
+    <div class="row g-4">
+        <?php if (!empty($activeNews)): ?>
+            <?php foreach($activeNews as $index => $item): ?>
+                <?php 
+                    // Dynamic rendering to make the layout asymmetrical just like before
+                    // First item is large left, second is small right, rest are standard grid
+                    if ($index == 0 && count($activeNews) > 1): 
+                ?>
+                    <!-- Card 1 (Large left) -->
+                    <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                        <a href="?action=news-detail&slug=<?= htmlspecialchars($item['slug']) ?>" class="card border-0 rounded-4 overflow-hidden editorial-card shadow-sm h-100 d-block text-decoration-none bg-dark">
+                            <div class="position-relative overflow-hidden h-100" style="min-height: 400px;">
+                                <img src="<?= htmlspecialchars($item['image_url'] ?? 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=800&auto=format&fit=crop') ?>" class="w-100 h-100 object-fit-cover position-absolute" alt="<?= htmlspecialchars($item['title']) ?>">
+                                <?php if ($item['category_name']): ?>
+                                <div class="position-absolute top-0 start-0 m-3 z-1">
+                                    <span class="badge bg-dark bg-opacity-75 px-3 py-2 rounded-pill"><?= htmlspecialchars($item['category_name']) ?></span>
+                                </div>
+                                <?php endif; ?>
+                                <div class="editorial-overlay p-4 p-md-5 d-flex flex-column justify-content-end text-white z-1">
+                                    <div class="editorial-reveal">
+                                        <h3 class="fw-bold mb-2"><?= htmlspecialchars($item['title']) ?></h3>
+                                        <p class="mb-3 text-gray-300 d-none d-md-block"><?= htmlspecialchars($item['summary']) ?></p>
+                                        <span class="fw-bold text-primary">Khám phá ngay <i class="bi bi-arrow-right"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <?php elseif ($index == 1): ?>
+                    <!-- Card 2 (Small right) -->
+                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                        <a href="?action=news-detail&slug=<?= htmlspecialchars($item['slug']) ?>" class="card border-0 rounded-4 overflow-hidden editorial-card shadow-sm h-100 d-block text-decoration-none bg-dark">
+                            <div class="position-relative overflow-hidden h-100" style="min-height: 400px;">
+                                <img src="<?= htmlspecialchars($item['image_url'] ?? 'https://images.unsplash.com/photo-1505156868547-9b49f4df4e04?q=80&w=600&auto=format&fit=crop') ?>" class="w-100 h-100 object-fit-cover position-absolute" alt="<?= htmlspecialchars($item['title']) ?>">
+                                <div class="editorial-overlay p-4 d-flex flex-column justify-content-end text-white z-1">
+                                    <div class="editorial-reveal">
+                                        <h4 class="fw-bold mb-2"><?= htmlspecialchars($item['title']) ?></h4>
+                                        <p class="mb-3 text-gray-300"><?= htmlspecialchars($item['summary']) ?></p>
+                                        <span class="fw-bold text-primary">Đọc thêm <i class="bi bi-arrow-right"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <!-- Standard Card -->
+                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="<?= ($index % 3 + 1) * 100 ?>">
+                        <a href="?action=news-detail&slug=<?= htmlspecialchars($item['slug']) ?>" class="card border-0 rounded-4 overflow-hidden editorial-card shadow-sm h-100 d-block text-decoration-none">
+                            <div class="position-relative overflow-hidden bg-light" style="height: 250px;">
+                                <img src="<?= htmlspecialchars($item['image_url'] ?? 'https://images.unsplash.com/photo-1595225476474-87563907a212?q=80&w=600&auto=format&fit=crop') ?>" class="w-100 h-100 object-fit-cover" alt="<?= htmlspecialchars($item['title']) ?>">
+                                <?php if ($item['category_name']): ?>
+                                <div class="position-absolute top-0 start-0 m-3 z-1">
+                                    <span class="badge bg-dark bg-opacity-75 px-3 py-2 rounded-pill"><?= htmlspecialchars($item['category_name']) ?></span>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="p-4 bg-white d-flex flex-column h-100">
+                                <h5 class="fw-bold mb-2 text-dark" style="line-height: 1.4;"><?= htmlspecialchars($item['title']) ?></h5>
+                                <p class="text-muted mb-4 flex-grow-1"><?= htmlspecialchars($item['summary']) ?></p>
+                                <span class="text-primary fw-bold read-more-btn">Đọc chi tiết <i class="bi bi-arrow-right ms-1"></i></span>
+                            </div>
+                        </a>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-journal-x text-muted mb-3 d-block" style="font-size: 3rem;"></i>
+                <h4 class="text-muted">Chưa có bài viết nào được xuất bản.</h4>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
-<!-- News Grid -->
-<div class="container mt-5 pt-5 mb-5">
-    <div class="row g-5">
-        <?php for($i=1; $i<=6; $i++): ?>
-        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="<?= $i * 100 ?>">
-            <div class="product-card p-0 overflow-hidden d-flex flex-column h-100">
-                <a href="#" class="d-block overflow-hidden" style="height: 220px; background-color: #f1f5f9;">
-                    <!-- ĐIỀN ĐƯỜNG DẪN ẢNH TIN TỨC VÀO ĐÂY -->
-                    <img src="DUONG_DAN_ANH_TIN_TUC_<?= $i ?>.jpg" alt="Tin tức <?= $i ?>" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                </a>
-                <div class="p-4 d-flex flex-column flex-grow-1">
-                    <p class="text-muted small fw-medium mb-2">Đánh giá • 10 Tháng 8, 2026</p>
-                    <h5 class="fw-bold mb-3" style="line-height: 1.4;">Top 5 Laptop mỏng nhẹ đáng mua nhất dành cho dân văn phòng năm 2026</h5>
-                    <p class="text-muted mb-4 flex-grow-1" style="font-size: 0.95rem;">Lựa chọn một chiếc laptop vừa mỏng nhẹ, pin trâu lại có thiết kế đẹp chưa bao giờ là dễ dàng. Cùng Gentech điểm qua...</p>
-                    <div>
-                        <a href="#" class="text-primary fw-bold text-decoration-none">Đọc chi tiết <i class="bi bi-arrow-right ms-1"></i></a>
-                    </div>
-                </div>
-            </div>
+<!-- Newsletter Glassmorphism Section -->
+<div class="container mb-5 pb-5">
+    <div class="rounded-4 overflow-hidden position-relative p-4 p-md-5 shadow-float" data-aos="fade-up" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+        <!-- Abstract glowing shapes behind glass -->
+        <div class="position-absolute" style="width: 250px; height: 250px; background: rgba(0, 113, 227, 0.25); filter: blur(60px); top: -50px; right: 5%; border-radius: 50%; z-index: 0;"></div>
+        <div class="position-absolute" style="width: 250px; height: 250px; background: rgba(236, 72, 153, 0.15); filter: blur(60px); bottom: -50px; left: 5%; border-radius: 50%; z-index: 0;"></div>
+        
+        <div class="glass-newsletter mx-auto p-4 p-md-5 rounded-4 border position-relative z-1 text-center shadow-sm" style="max-width: 800px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-color: rgba(255,255,255,0.8);">
+            <i class="bi bi-envelope-paper text-primary mb-3 d-block" style="font-size: 3rem;"></i>
+            <h2 class="fw-bold mb-3" style="letter-spacing: -1px;">Đừng bỏ lỡ nhịp đập công nghệ</h2>
+            <p class="text-muted fs-5 mb-4 mx-auto" style="max-width: 500px;">Đăng ký nhận bản tin hàng tuần từ Gentech để cập nhật các bài viết mới nhất và ưu đãi độc quyền.</p>
+            
+            <form class="d-flex flex-column flex-sm-row gap-2 mx-auto" style="max-width: 500px;">
+                <input type="email" class="form-control rounded-pill px-4 py-3 bg-white border-0 shadow-sm flex-grow-1" placeholder="Nhập địa chỉ email của bạn..." required>
+                <button type="submit" class="btn btn-primary rounded-pill px-4 py-3 fw-bold shadow-sm" style="min-width: 140px;">Đăng ký</button>
+            </form>
         </div>
-        <?php endfor; ?>
-    </div>
-    
-    <!-- Pagination -->
-    <div class="mt-5 d-flex justify-content-center" data-aos="fade-up">
-        <nav aria-label="Page navigation">
-            <ul class="pagination pagination-lg gap-2">
-                <li class="page-item disabled">
-                    <a class="page-link rounded-circle border-0 text-dark" href="#" tabindex="-1" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-chevron-left"></i></a>
-                </li>
-                <li class="page-item active"><a class="page-link rounded-circle border-0 shadow-sm" href="#" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background-color: var(--primary-color);">1</a></li>
-                <li class="page-item"><a class="page-link rounded-circle border-0 text-dark" href="#" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">2</a></li>
-                <li class="page-item"><a class="page-link rounded-circle border-0 text-dark" href="#" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">3</a></li>
-                <li class="page-item">
-                    <a class="page-link rounded-circle border-0 text-dark" href="#" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="bi bi-chevron-right"></i></a>
-                </li>
-            </ul>
-        </nav>
     </div>
 </div>

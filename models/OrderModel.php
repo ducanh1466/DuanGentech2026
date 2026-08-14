@@ -20,12 +20,18 @@ class OrderModel extends BaseModel
         return $stmt->fetchAll();
     }
 
-    // Phân trang đơn hàng
-    public function getOrdersPaginated($limit = 10, $offset = 0, $keyword = '')
+    public function getOrdersPaginated($limit = 10, $offset = 0, $keyword = '', $status = '')
     {
+        $sql = "SELECT o.*, u.full_name as user_full_name FROM {$this->table} o LEFT JOIN tb_users u ON o.user_id = u.user_id";
+        $params = [];
+        if ($status !== '') {
+            $sql .= " WHERE o.status = :status";
+            $params['status'] = $status;
+        }
+
         return $this->fetchWithPagination(
-            "SELECT o.*, u.full_name as user_full_name FROM {$this->table} o LEFT JOIN tb_users u ON o.user_id = u.user_id",
-            [],
+            $sql,
+            $params,
             ['o.order_id', 'u.full_name', 'o.recipient_phone'],
             $keyword,
             "o.order_id DESC",
@@ -34,11 +40,18 @@ class OrderModel extends BaseModel
         );
     }
 
-    public function countTotalOrdersFiltered($keyword = '')
+    public function countTotalOrdersFiltered($keyword = '', $status = '')
     {
+        $sql = "SELECT COUNT(*) as total FROM {$this->table} o LEFT JOIN tb_users u ON o.user_id = u.user_id";
+        $params = [];
+        if ($status !== '') {
+            $sql .= " WHERE o.status = :status";
+            $params['status'] = $status;
+        }
+
         return $this->countTotalFiltered(
-            "SELECT COUNT(*) as total FROM {$this->table} o LEFT JOIN tb_users u ON o.user_id = u.user_id",
-            [],
+            $sql,
+            $params,
             ['o.order_id', 'u.full_name', 'o.recipient_phone'],
             $keyword
         );

@@ -8,11 +8,18 @@ class BrandModel extends BaseModel
         $this->table = 'tb_brands';
     }
 
-    public function getAllBrands($keyword = '', $limit = 0, $offset = 0)
+    public function getAllBrands($keyword = '', $limit = 0, $offset = 0, $status = '')
     {
+        $sql = "SELECT * FROM {$this->table}";
+        $params = [];
+        if ($status !== '') {
+            $sql .= " WHERE status = :status";
+            $params['status'] = $status;
+        }
+
         return $this->fetchWithPagination(
-            "SELECT * FROM {$this->table}",
-            [],
+            $sql,
+            $params,
             ['brand_name'],
             $keyword,
             "brand_id DESC",
@@ -21,11 +28,18 @@ class BrandModel extends BaseModel
         );
     }
 
-    public function countTotalBrands($keyword = '')
+    public function countTotalBrandsFiltered($keyword = '', $status = '')
     {
+        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
+        $params = [];
+        if ($status !== '') {
+            $sql .= " WHERE status = :status";
+            $params['status'] = $status;
+        }
+
         return $this->countTotalFiltered(
-            "SELECT COUNT(*) as total FROM {$this->table}",
-            [],
+            $sql,
+            $params,
             ['brand_name'],
             $keyword
         );

@@ -2,7 +2,7 @@
     <div class="card-header-custom">
         <h6><i class="bi bi-tags me-2"></i>Quản lý danh mục</h6>
         <div class="d-flex gap-2 align-items-center flex-wrap">
-            <form method="GET" class="d-flex">
+            <form method="GET" class="d-flex gap-2 m-0 p-0 align-items-center">
                 <input type="hidden" name="action" value="admin-categories">
                 <input type="hidden" name="limit" value="<?= $limit ?? 10 ?>">
                 <div class="position-relative">

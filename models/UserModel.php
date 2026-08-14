@@ -10,11 +10,18 @@ class UserModel extends BaseModel
         return $stmt->fetchColumn();
     }
     // Lấy tất cả người dùng (hỗ trợ tìm kiếm)
-    public function getAllUsers($keyword = '', $limit = 0, $offset = 0)
+    public function getAllUsers($keyword = '', $limit = 0, $offset = 0, $status = '')
     {
+        $sql = "SELECT * FROM tb_users";
+        $params = [];
+        if ($status !== '') {
+            $sql .= " WHERE role = :status";
+            $params['status'] = $status;
+        }
+        
         return $this->fetchWithPagination(
-            "SELECT * FROM tb_users",
-            [],
+            $sql,
+            $params,
             ['full_name', 'email', 'phone'],
             $keyword,
             "user_id DESC",
@@ -23,11 +30,18 @@ class UserModel extends BaseModel
         );
     }
 
-    public function countTotalUsersFiltered($keyword = '')
+    public function countTotalUsersFiltered($keyword = '', $status = '')
     {
+        $sql = "SELECT COUNT(*) as total FROM tb_users";
+        $params = [];
+        if ($status !== '') {
+            $sql .= " WHERE role = :status";
+            $params['status'] = $status;
+        }
+
         return $this->countTotalFiltered(
-            "SELECT COUNT(*) as total FROM tb_users",
-            [],
+            $sql,
+            $params,
             ['full_name', 'email', 'phone'],
             $keyword
         );

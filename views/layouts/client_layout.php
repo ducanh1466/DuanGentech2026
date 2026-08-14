@@ -472,6 +472,5 @@ if (isset($_SESSION['user'])) {
             100% { transform: scale(1); }
         }
     </style>
-    </script>
 </body>
 </html>

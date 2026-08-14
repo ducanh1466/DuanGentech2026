@@ -357,3 +357,312 @@ html {
 .product-card-premium:hover .hover-primary {
     color: var(--primary-color) !important;
 }
+
+/* Marquee Styles */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+.marquee-container::before,
+.marquee-container::after {
+    position: absolute;
+    top: 0;
+    width: 150px;
+    height: 100%;
+    content: "";
+    z-index: 2;
+}
+
+.marquee-container::before {
+    left: 0;
+    background: linear-gradient(to right, white 0%, transparent 100%);
+}
+
+.marquee-container::after {
+    right: 0;
+    background: linear-gradient(to left, white 0%, transparent 100%);
+}
+
+.marquee-content {
+    display: inline-block;
+    animation: marquee 25s linear infinite;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Gallery Hover Styles */
+.hover-zoom-gallery {
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* Product Info */
+.product-info h5 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+.product-price {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+}
+
+/* Utilities */
+.btn {
+    letter-spacing: -0.3px;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    border: none;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-primary:hover {
+    background: #005bb5;
+    box-shadow: var(--shadow-float);
+    transform: translateY(-2px);
+}
+
+.btn-outline-dark {
+    border-width: 1.5px;
+    border-color: var(--text-main);
+    color: var(--text-main);
+}
+.btn-outline-dark:hover {
+    background: var(--text-main);
+    color: var(--white);
+}
+
+.hover-zoom {
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-zoom:hover {
+    transform: scale(1.03);
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Category Items */
+.category-item {
+    text-align: center;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.category-item:hover {
+    transform: translateY(-8px);
+}
+
+.category-box {
+    background: transparent;
+    border-radius: 0;
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    border: none;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.category-item:hover .category-box {
+    transform: scale(1.05);
+}
+
+.category-box i {
+    font-size: 3rem;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    transition: all 0.4s ease;
+}
+
+.category-item:hover .category-box i {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Premium Product Card Hover Styles */
+.product-card-premium {
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.product-card-premium:hover {
+    box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+    transform: translateY(-8px);
+}
+.premium-hover-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transform: translateY(100%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid rgba(255,255,255,0.4);
+}
+.product-card-premium:hover .premium-hover-overlay {
+    transform: translateY(0);
+    opacity: 1;
+}
+.product-card-premium:hover .product-img-main {
+    transform: scale(1.05);
+}
+.btn-premium-add {
+    background: linear-gradient(135deg, #1d1d1f 0%, #434345 100%);
+    border: none;
+    color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-premium-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;
+}
+.hover-primary {
+    transition: color 0.2s ease;
+}
+.product-card-premium:hover .hover-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Marquee Styles */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+.marquee-container::before,
+.marquee-container::after {
+    position: absolute;
+    top: 0;
+    width: 150px;
+    height: 100%;
+    content: "";
+    z-index: 2;
+}
+
+.marquee-container::before {
+    left: 0;
+    background: linear-gradient(to right, white 0%, transparent 100%);
+}
+
+.marquee-container::after {
+    right: 0;
+    background: linear-gradient(to left, white 0%, transparent 100%);
+}
+
+.marquee-content {
+    display: inline-block;
+    animation: marquee 25s linear infinite;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Gallery Hover Styles */
+.hover-zoom-gallery {
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-item:hover .hover-zoom-gallery {
+    transform: scale(1.1);
+}
+
+/* Text gray classes */
+.text-gray-300 {
+    color: #d1d5db !important;
+}
+
+/* Premium Sweep & Expand Button Effects */
+.btn-sweep-hover {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-sweep-hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: sweepLight 4s infinite;
+    z-index: 0;
+}
+
+@keyframes sweepLight {
+    0% { left: -100%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
+}
+
+.btn-text-expand {
+    display: inline-block;
+    transition: letter-spacing 0.3s ease;
+}
+
+.btn-icon-slide {
+    transition: transform 0.3s ease, background-color 0.3s;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+}
+
+.btn-sweep-hover:hover {
+    box-shadow: 0 10px 25px rgba(0, 113, 227, 0.5) !important;
+    transform: translateY(-3px);
+}
+
+.btn-sweep-hover:hover .btn-text-expand {
+    letter-spacing: 0.5px;
+}
+
+.btn-sweep-hover:hover .btn-icon-slide {
+    transform: translateX(4px);
+    background-color: rgba(255,255,255,0.2);
+}
+
+/* --- MAGNETIC BUTTON OVERRIDES --- */
+.btn, .icon-btn, .btn-outline-dark, .btn-primary {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s, box-shadow 0.3s, color 0.3s !important;
+    will-change: transform;
+}

@@ -35,13 +35,35 @@
             </div>
         </div>
         <div class="col-lg-6" data-aos="fade-left">
-            <div class="rounded-4 overflow-hidden shadow-float position-relative">
-                <!-- ĐIỀN ĐƯỜNG DẪN ẢNH ABOUT 1 VÀO ĐÂY -->
-                <img src="DUONG_DAN_ANH_ABOUT_1.jpg" alt="Về Gentech" class="img-fluid w-100" style="object-fit: cover; min-height: 500px; background-color: #f1f5f9;">
-                <div class="position-absolute bottom-0 start-0 w-100 p-4" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+            <div class="rounded-4 overflow-hidden shadow-float position-relative" style="height: 500px;">
+                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=800&auto=format&fit=crop" alt="Về Gentech" class="w-100 parallax-img" data-speed="0.15" style="object-fit: cover; min-height: 130%; height: 130%; position: absolute; top: -15%; z-index: 0; background-color: #f1f5f9; will-change: transform;">
+                <div class="position-absolute bottom-0 start-0 w-100 p-4" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); z-index: 1;">
                     <h4 class="text-white fw-bold mb-0">Không gian mua sắm chuẩn 5 sao</h4>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Partners / Brands Marquee -->
+<div class="py-5 bg-white border-top border-bottom overflow-hidden mt-5">
+    <div class="container mb-4 text-center">
+        <span class="text-muted fw-bold text-uppercase tracking-wider" style="letter-spacing: 2px; font-size: 0.85rem;">Đối tác chiến lược toàn cầu</span>
+    </div>
+    <div class="marquee-container">
+        <div class="marquee-content d-flex align-items-center gap-5">
+            <!-- Logos -->
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" class="mx-4" style="height: 35px; filter: opacity(0.4);">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Samsung_wordmark.svg" alt="Samsung" class="mx-4" style="height: 25px; filter: grayscale(100%) opacity(0.5);">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg" alt="Sony" class="mx-4" style="height: 30px; filter: grayscale(100%) opacity(0.5);">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/ASUS_Logo.svg" alt="Asus" class="mx-4" style="height: 35px; filter: grayscale(100%) opacity(0.5);">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg" alt="Dell" class="mx-4" style="height: 40px; filter: grayscale(100%) opacity(0.5);">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/HP_logo_2012.svg" alt="HP" class="mx-4" style="height: 40px; filter: grayscale(100%) opacity(0.5);">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/Lenovo_logo_2015.svg" alt="Lenovo" class="mx-4" style="height: 30px; filter: grayscale(100%) opacity(0.5);">
+            <!-- Repeat for marquee loop effect -->
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" class="mx-4" style="height: 35px; filter: opacity(0.4);">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Samsung_wordmark.svg" alt="Samsung" class="mx-4" style="height: 25px; filter: grayscale(100%) opacity(0.5);">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg" alt="Sony" class="mx-4" style="height: 30px; filter: grayscale(100%) opacity(0.5);">
         </div>
     </div>
 </div>
@@ -106,6 +128,31 @@
     </div>
 </div>
 
+<!-- Store Gallery / Premium Virtual Tour -->
+<div class="container-fluid px-0 mt-5 pt-5">
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold mb-3" style="font-size: 2.5rem; letter-spacing: -1px;">Không Gian Mua Sắm 5 Sao</h2>
+        <p class="text-muted fs-5">Trải nghiệm dịch vụ đẳng cấp tại các showroom của Gentech.</p>
+    </div>
+    <div class="row g-0">
+        <div class="col-md-4">
+            <div class="gallery-item position-relative overflow-hidden" style="height: 450px;">
+                <img src="https://images.unsplash.com/photo-1556656793-08538906a9f8?q=80&w=800&auto=format&fit=crop" class="w-100 h-100 object-fit-cover hover-zoom-gallery" alt="Gentech Store">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="gallery-item position-relative overflow-hidden" style="height: 450px;">
+                <img src="https://images.unsplash.com/photo-1601524909162-ae8725290836?q=80&w=800&auto=format&fit=crop" class="w-100 h-100 object-fit-cover hover-zoom-gallery" alt="Gentech Store">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="gallery-item position-relative overflow-hidden" style="height: 450px;">
+                <img src="https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?q=80&w=800&auto=format&fit=crop" class="w-100 h-100 object-fit-cover hover-zoom-gallery" alt="Gentech Store">
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Core Values -->
 <div class="container mt-5 pt-5 pb-4">
     <div class="text-center mb-5" data-aos="fade-up">
@@ -145,6 +192,51 @@
     </div>
 </div>
 
+<!-- Awards & Recognitions -->
+<div class="py-5 mt-5" style="background-color: #f8fafc; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+    <div class="container my-4">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="fw-bold mb-3" style="font-size: 2.5rem; letter-spacing: -1px;">Thành Tựu & Giải Thưởng</h2>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-3 col-6 text-center" data-aos="fade-up" data-aos-delay="100">
+                <i class="bi bi-trophy-fill text-warning mb-3" style="font-size: 3.5rem;"></i>
+                <h5 class="fw-bold mb-2">Top 10</h5>
+                <p class="text-muted small mb-0">Nhà bán lẻ công nghệ xuất sắc nhất 2025</p>
+            </div>
+            <div class="col-md-3 col-6 text-center" data-aos="fade-up" data-aos-delay="200">
+                <i class="bi bi-award-fill text-primary mb-3" style="font-size: 3.5rem;"></i>
+                <h5 class="fw-bold mb-2">Kim Cương</h5>
+                <p class="text-muted small mb-0">Đối tác chiến lược của Apple & Asus</p>
+            </div>
+            <div class="col-md-3 col-6 text-center" data-aos="fade-up" data-aos-delay="300">
+                <i class="bi bi-star-fill text-danger mb-3" style="font-size: 3.5rem;"></i>
+                <h5 class="fw-bold mb-2">99%</h5>
+                <p class="text-muted small mb-0">Khách hàng hài lòng về dịch vụ 5 sao</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sustainability & CSR -->
+<div class="container mt-5 pt-5">
+    <div class="row align-items-center rounded-4 overflow-hidden shadow-float" style="background: var(--dark-bg); color: var(--white);" data-aos="fade-up">
+        <div class="col-md-5 p-0 position-relative overflow-hidden" style="min-height: 450px;">
+            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop" class="w-100 parallax-img" data-speed="0.15" style="object-fit: cover; min-height: 130%; height: 130%; position: absolute; top: -15%; left: 0; will-change: transform;" alt="Sustainability">
+        </div>
+        <div class="col-md-7 p-5 p-lg-5">
+            <span class="badge bg-success mb-3 px-3 py-2 rounded-pill fs-6">Phát triển bền vững</span>
+            <h2 class="fw-bold mb-4 text-white" style="font-size: 2.2rem; letter-spacing: -1px;">Hành động vì một tương lai xanh</h2>
+            <p class="text-gray-300 fs-5 mb-4" style="line-height: 1.6;">Gentech cam kết giảm thiểu rác thải điện tử thông qua chương trình "Thu cũ đổi mới - Tái chế xanh". Mọi thiết bị cũ đều được thu gom và xử lý theo tiêu chuẩn quốc tế để bảo vệ môi trường.</p>
+            <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
+                <li class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success fs-4 me-3"></i> <span class="fs-6">Sử dụng 100% bao bì có thể tái chế sinh học</span></li>
+                <li class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success fs-4 me-3"></i> <span class="fs-6">Giảm 30% lượng khí thải carbon từ chuỗi cung ứng</span></li>
+                <li class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success fs-4 me-3"></i> <span class="fs-6">Trích 1% lợi nhuận hằng năm cho các quỹ bảo vệ môi trường</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 <!-- Leadership Team -->
 <div class="container mt-5 pt-5 mb-5">
     <div class="text-center mb-5" data-aos="fade-up">
@@ -155,8 +247,7 @@
         <!-- Member 1 -->
         <div class="col-md-4 col-sm-6 text-center" data-aos="fade-up" data-aos-delay="100">
             <div class="rounded-circle overflow-hidden mx-auto mb-4 shadow-float" style="width: 180px; height: 180px; background-color: #f1f5f9;">
-                <!-- ĐIỀN ĐƯỜNG DẪN ẢNH LÃNH ĐẠO 1 -->
-                <img src="DUONG_DAN_ANH_TEAM_1.jpg" alt="CEO" class="w-100 h-100" style="object-fit: cover;">
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400&auto=format&fit=crop" alt="CEO" class="w-100 h-100" style="object-fit: cover;">
             </div>
             <h4 class="fw-bold mb-1">Nguyễn Văn A</h4>
             <p class="text-primary fw-medium mb-3">Nhà Sáng Lập & CEO</p>
@@ -165,8 +256,7 @@
         <!-- Member 2 -->
         <div class="col-md-4 col-sm-6 text-center" data-aos="fade-up" data-aos-delay="200">
             <div class="rounded-circle overflow-hidden mx-auto mb-4 shadow-float" style="width: 180px; height: 180px; background-color: #f1f5f9;">
-                <!-- ĐIỀN ĐƯỜNG DẪN ẢNH LÃNH ĐẠO 2 -->
-                <img src="DUONG_DAN_ANH_TEAM_2.jpg" alt="CTO" class="w-100 h-100" style="object-fit: cover;">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop" alt="COO" class="w-100 h-100" style="object-fit: cover;">
             </div>
             <h4 class="fw-bold mb-1">Trần Thị B</h4>
             <p class="text-primary fw-medium mb-3">Giám Đốc Vận Hành (COO)</p>
@@ -175,15 +265,59 @@
     </div>
 </div>
 
+<!-- Press & Media -->
+<div class="container mt-5 pt-5">
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold mb-3" style="font-size: 2.5rem; letter-spacing: -1px;">Báo Chí Nói Gì Về Chúng Tôi</h2>
+        <p class="text-muted fs-5">Những đánh giá khách quan từ các trang tin công nghệ uy tín.</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="p-4 bg-white rounded-4 shadow-sm border h-100 position-relative">
+                <i class="bi bi-quote position-absolute text-light opacity-50" style="font-size: 5rem; top: -10px; left: 10px; z-index: 0;"></i>
+                <div class="position-relative z-1">
+                    <h4 class="fw-bold mb-3 text-primary" style="font-family: Georgia, serif; font-style: italic;">"Công Nghệ Mới"</h4>
+                    <p class="text-muted fst-italic lh-lg">"Gentech đang tái định nghĩa lại cách người Việt mua sắm đồ công nghệ. Không chỉ là một thiết bị, họ mang đến một trải nghiệm thượng lưu."</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="p-4 bg-white rounded-4 shadow-sm border h-100 position-relative">
+                <i class="bi bi-quote position-absolute text-light opacity-50" style="font-size: 5rem; top: -10px; left: 10px; z-index: 0;"></i>
+                <div class="position-relative z-1">
+                    <h4 class="fw-bold mb-3 text-danger" style="font-family: Georgia, serif; font-style: italic;">"Tin Công Nghệ"</h4>
+                    <p class="text-muted fst-italic lh-lg">"Dịch vụ hậu mãi chuẩn 5 sao của Gentech chính là tiêu chuẩn mới mà các nhà bán lẻ khác cần phải học hỏi và vươn tới."</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="p-4 bg-white rounded-4 shadow-sm border h-100 position-relative">
+                <i class="bi bi-quote position-absolute text-light opacity-50" style="font-size: 5rem; top: -10px; left: 10px; z-index: 0;"></i>
+                <div class="position-relative z-1">
+                    <h4 class="fw-bold mb-3 text-success" style="font-family: Georgia, serif; font-style: italic;">"Doanh Nhân 24h"</h4>
+                    <p class="text-muted fst-italic lh-lg">"Bước chuyển mình ấn tượng của Gentech từ một cửa hàng nhỏ năm 2016 trở thành chuỗi bán lẻ công nghệ cao cấp hàng đầu Việt Nam."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Call to Action -->
 <div class="container mt-5 pt-5 pb-5 mb-5">
-    <div class="bg-dark rounded-4 p-5 text-center text-white position-relative overflow-hidden shadow-float" data-aos="fade-up">
-        <div class="position-relative z-1 py-4">
-            <h2 class="fw-bold mb-4" style="font-size: 2.5rem; letter-spacing: -1px;">Sẵn sàng trải nghiệm?</h2>
-            <p class="fs-5 text-gray-300 mb-5 mx-auto" style="max-width: 600px;">Hãy đến hệ thống cửa hàng của Gentech để tự mình tận hưởng không gian mua sắm chuẩn quốc tế.</p>
-            <a href="?action=contact" class="btn btn-primary rounded-pill px-5 py-3 fw-bold fs-5 shadow-sm">Tìm cửa hàng gần nhất</a>
+    <div class="rounded-4 p-5 text-center text-white position-relative overflow-hidden shadow-float" data-aos="fade-up" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(255,255,255,0.05);">
+        <!-- Abstract Glow Elements -->
+        <div class="position-absolute" style="width: 300px; height: 300px; background: rgba(0, 113, 227, 0.4); filter: blur(100px); top: -100px; left: -100px; border-radius: 50%; z-index: 0;"></div>
+        <div class="position-absolute" style="width: 300px; height: 300px; background: rgba(56, 189, 248, 0.15); filter: blur(100px); bottom: -100px; right: -100px; border-radius: 50%; z-index: 0;"></div>
+        
+        <div class="position-relative z-1 py-5">
+            <h2 class="fw-bold mb-4 text-white" style="font-size: 2.8rem; letter-spacing: -1px;">Sẵn sàng trải nghiệm?</h2>
+            <p class="fs-5 mb-5 mx-auto" style="max-width: 600px; color: #cbd5e1;">Hãy đến hệ thống cửa hàng của Gentech để tự mình tận hưởng không gian mua sắm công nghệ chuẩn quốc tế.</p>
+            <a href="?action=support" class="btn btn-primary rounded-pill px-5 py-3 fw-bold fs-5 shadow-lg d-inline-flex align-items-center gap-2 btn-sweep-hover position-relative overflow-hidden">
+                <span class="position-relative z-1 btn-text-expand">Tìm cửa hàng gần nhất</span>
+                <i class="bi bi-arrow-right position-relative z-1 btn-icon-slide"></i>
+            </a>
         </div>
         <!-- Background Decor -->
-        <i class="bi bi-geo-alt-fill position-absolute text-white opacity-10" style="font-size: 250px; right: -20px; bottom: -50px; transform: rotate(-15deg);"></i>
+        <i class="bi bi-geo-alt-fill position-absolute text-white" style="font-size: 300px; right: -40px; bottom: -80px; transform: rotate(-15deg); opacity: 0.03; z-index: 0; pointer-events: none;"></i>
     </div>
 </div>

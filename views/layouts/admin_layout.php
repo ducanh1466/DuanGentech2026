@@ -43,7 +43,6 @@
             </div>
 
             <nav class="sidebar-nav">
-                <?php if ($_SESSION['user']['role'] == 1): ?>
                     <div class="nav-label">Hệ Thống</div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
@@ -53,53 +52,89 @@
                             </a>
                         </li>
                     </ul>
-                <?php endif; ?>
 
                 <div class="nav-label">Quản Trị Hệ Thống</div>
                 <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link <?= in_array($action ?? '', ['admin-products', 'admin-product-create', 'admin-product-edit']) ? 'active' : '' ?>"
-                            href="<?= BASE_URL ?>?action=admin-products">
-                            <i class="bi bi-box-seam"></i> Sản phẩm
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= ($action ?? '') === 'admin-categories' ? 'active' : '' ?>"
-                            href="<?= BASE_URL ?>?action=admin-categories">
-                            <i class="bi bi-tags"></i> Danh mục
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= ($action ?? '') === 'admin-brands' ? 'active' : '' ?>"
-                            href="<?= BASE_URL ?>?action=admin-brands">
-                            <i class="bi bi-star"></i> Thương hiệu
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= strpos($action ?? '', 'admin-attribute') !== false ? 'active' : '' ?>"
-                            href="<?= BASE_URL ?>?action=admin-attributes">
-                            <i class="bi bi-sliders"></i> Thuộc tính
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= in_array($action ?? '', ['admin-banners', 'admin-banner-form']) ? 'active' : '' ?>"
-                            href="<?= BASE_URL ?>?action=admin-banners">
-                            <i class="bi bi-images"></i> Banner
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= strpos($action ?? '', 'admin-news') !== false ? 'active' : '' ?>"
-                            href="<?= BASE_URL ?>?action=admin-news">
-                            <i class="bi bi-newspaper"></i> Tin tức
-                        </a>
-                    </li>
-                    <?php if ($_SESSION['user']['role'] == 1): ?>
+                    <?php 
+                        $role = $_SESSION['user']['role']; 
+                        $permissionsStr = $_SESSION['user']['permissions'] ?? '[]';
+                        $permissions = json_decode($permissionsStr, true);
+                        if (!is_array($permissions)) $permissions = [];
+                    ?>
+                    
+                    <?php if ($role == 1 || in_array('products', $permissions)): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= in_array($action ?? '', ['admin-products', 'admin-product-create', 'admin-product-edit']) ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-products">
+                                <i class="bi bi-box-seam"></i> Sản phẩm
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    
+                    <?php if ($role == 1 || in_array('categories', $permissions)): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($action ?? '') === 'admin-categories' ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-categories">
+                                <i class="bi bi-tags"></i> Danh mục
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    
+                    <?php if ($role == 1 || in_array('brands', $permissions)): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($action ?? '') === 'admin-brands' ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-brands">
+                                <i class="bi bi-star"></i> Thương hiệu
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    
+                    <?php if ($role == 1 || in_array('attributes', $permissions)): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos($action ?? '', 'admin-attribute') !== false ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-attributes">
+                                <i class="bi bi-sliders"></i> Thuộc tính
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if ($role == 1 || in_array('orders', $permissions)): ?>
                         <li class="nav-item">
                             <a class="nav-link <?= in_array($action ?? '', ['admin-orders', 'admin-order-detail']) ? 'active' : '' ?>"
                                 href="<?= BASE_URL ?>?action=admin-orders">
                                 <i class="bi bi-receipt"></i> Đơn hàng
                             </a>
                         </li>
+                    <?php endif; ?>
+
+                    <?php if ($role == 1 || in_array('contacts', $permissions)): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos($action ?? '', 'admin-contact') !== false ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-contacts">
+                                <i class="bi bi-headset"></i> Phản ánh
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if ($role == 1 || in_array('banners', $permissions)): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= in_array($action ?? '', ['admin-banners', 'admin-banner-form']) ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-banners">
+                                <i class="bi bi-images"></i> Banner
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if ($role == 1 || in_array('news', $permissions)): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos($action ?? '', 'admin-news') !== false ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-news">
+                                <i class="bi bi-newspaper"></i> Tin tức
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php if ($role == 1): ?>
                         <li class="nav-item">
                             <a class="nav-link <?= ($action ?? '') === 'admin-users' ? 'active' : '' ?>"
                                 href="<?= BASE_URL ?>?action=admin-users">
@@ -112,15 +147,13 @@
                 <?php if ($_SESSION['user']['role'] == 1): ?>
                     <div class="nav-label">Tùy Chọn </div>
                     <ul class="nav flex-column">
-                    <?php else: ?>
-                        <ul class="nav flex-column">
-                        <?php endif; ?>
                         <li class="nav-item">
                             <a class="nav-link" href="<?= BASE_URL ?>">
                                 <i class="bi bi-globe"></i> Xem website
                             </a>
                         </li>
                     </ul>
+                <?php endif; ?>
             </nav>
 
         </aside>

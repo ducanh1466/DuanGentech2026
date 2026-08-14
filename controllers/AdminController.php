@@ -9,11 +9,74 @@ class AdminController
             session_start();
         }
 
-        // Kiểm tra xem đã đăng nhập chưa và có phải là Admin (role = 1) không
-        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 1) {
-            // Nếu chưa đăng nhập hoặc không phải admin, chuyển hướng về trang đăng nhập
-            // Lưu ý: Thay đổi URL `?act=login` thành URL chuẩn xác của bạn nếu cần
+        // Kiểm tra xem đã đăng nhập chưa và có quyền vào admin không (role 1, 2, 3, 4)
+        if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], [1, 2, 3, 4])) {
             header("Location: ?act=login");
+            exit();
+        }
+
+        $action = $_GET['action'] ?? 'admin';
+        $role = $_SESSION['user']['role'];
+        
+        // Luôn cho phép các hành động chung
+        $common_allowed = [
+            'admin', 'admin-profile', 'admin-update-profile', 'admin-change-password', 'admin-update-password'
+        ];
+        if (in_array($action, $common_allowed)) {
+            return;
+        }
+
+        // CNTT (role 1) full quyền
+        if ($role == 1) {
+            return;
+        }
+
+        // Lấy danh sách quyền từ session
+        $permissionsStr = $_SESSION['user']['permissions'] ?? '[]';
+        $permissions = json_decode($permissionsStr, true);
+        if (!is_array($permissions)) {
+            $permissions = [];
+        }
+
+        $is_allowed = false;
+        
+        // Kiểm tra quyền theo từng module
+        if (in_array('products', $permissions)) {
+            $allowed_product = ['admin-products', 'admin-product-create', 'admin-product-store', 'admin-product-edit', 'admin-product-update', 'admin-product-delete', 'admin-product-toggle'];
+            if (in_array($action, $allowed_product)) $is_allowed = true;
+        }
+        if (in_array('categories', $permissions)) {
+            $allowed_category = ['admin-categories', 'admin-category-form', 'admin-category-store', 'admin-category-update', 'admin-category-delete', 'admin-category-status'];
+            if (in_array($action, $allowed_category)) $is_allowed = true;
+        }
+        if (in_array('brands', $permissions)) {
+            $allowed_brand = ['admin-brands', 'admin-brand-form', 'admin-brand-store', 'admin-brand-update', 'admin-brand-delete', 'admin-brand-status'];
+            if (in_array($action, $allowed_brand)) $is_allowed = true;
+        }
+        if (in_array('attributes', $permissions)) {
+            $allowed_attribute = ['admin-attributes', 'admin-attribute-create', 'admin-attribute-store', 'admin-attribute-edit', 'admin-attribute-update', 'admin-attribute-delete'];
+            if (in_array($action, $allowed_attribute)) $is_allowed = true;
+        }
+        if (in_array('orders', $permissions)) {
+            $allowed_order = ['admin-orders', 'admin-order-detail'];
+            if (in_array($action, $allowed_order)) $is_allowed = true;
+        }
+        if (in_array('contacts', $permissions)) {
+            $allowed_contact = ['admin-contacts', 'admin-contact-status', 'admin-contact-department', 'admin-contact-bulk', 'admin-contact-logs'];
+            if (in_array($action, $allowed_contact)) $is_allowed = true;
+        }
+        if (in_array('news', $permissions)) {
+            $allowed_news = ['admin-news', 'admin-news-form', 'admin-news-store', 'admin-news-update', 'admin-news-delete', 'admin-news-status',
+                             'admin-news-categories', 'admin-news-category-form', 'admin-news-category-store', 'admin-news-category-update', 'admin-news-category-delete', 'admin-news-category-status'];
+            if (in_array($action, $allowed_news)) $is_allowed = true;
+        }
+        if (in_array('banners', $permissions)) {
+            $allowed_banner = ['admin-banners', 'admin-banner-form', 'admin-banner-store', 'admin-banner-update', 'admin-banner-delete', 'admin-banner-status'];
+            if (in_array($action, $allowed_banner)) $is_allowed = true;
+        }
+
+        if (!$is_allowed) {
+            header("Location: " . BASE_URL . "?action=admin");
             exit();
         }
     }
@@ -732,6 +795,9 @@ class AdminController
             header('Location: ' . BASE_URL . '?action=admin-user-create');
             exit;
         }
+        $permissions = isset($_POST['permissions']) ? json_encode($_POST['permissions']) : null;
+        if ($role == 0) $permissions = null;
+
         $password = password_hash($password, PASSWORD_DEFAULT);
         $userModel->insertUser(
             $full_name,
@@ -740,7 +806,8 @@ class AdminController
             $phone,
             $address,
             $role,
-            $status
+            $status,
+            $permissions
         );
         $_SESSION['success'] = 'Thêm người dùng thành công!';
         header('Location: ' . BASE_URL . '?action=admin-users');
@@ -795,6 +862,9 @@ class AdminController
             header('Location: ' . BASE_URL . '?action=admin-user-edit&id=' . $id);
             exit;
         }
+        $permissions = isset($_POST['permissions']) ? json_encode($_POST['permissions']) : null;
+        if ($role == 0) $permissions = null;
+
         $userModel->updateUser(
             $id,
             $full_name,
@@ -802,7 +872,8 @@ class AdminController
             $phone,
             $address,
             $role,
-            $status
+            $status,
+            $permissions
         );
         $_SESSION['success'] = 'Cập nhật người dùng thành công!';
         header('Location: ' . BASE_URL . '?action=admin-users');
@@ -837,11 +908,7 @@ class AdminController
     }
     public function orders()
     {
-        // Kiểm tra quyền, chỉ admin chính (role 1) mới được quản lý đơn hàng
-        if ($_SESSION['user']['role'] != 1) {
-            header('Location: ' . BASE_URL . '?action=admin-products');
-            exit;
-        }
+
         $orderModel = new OrderModel();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -871,11 +938,7 @@ class AdminController
     // Chức năng: Hiển thị chi tiết một đơn hàng cụ thể
     public function orderDetail()
     {
-        // Kiểm tra quyền
-        if ($_SESSION['user']['role'] != 1) {
-            header('Location: ' . BASE_URL . '?action=admin-products');
-            exit;
-        }
+
         $orderModel = new OrderModel();
         $id = $_GET['id'] ?? 0;
 
@@ -1527,6 +1590,124 @@ class AdminController
             
             $_SESSION['success'] = 'Xóa danh mục thành công!';
             header('Location: ' . BASE_URL . '?action=admin-news-categories');
+            exit;
+        }
+    }
+
+    public function contacts()
+    {
+        require_once PATH_MODEL . 'ContactModel.php';
+        $contactModel = new ContactModel();
+
+        $keyword = trim($_GET['keyword'] ?? '');
+        $status = $_GET['status'] ?? '';
+        $startDate = $_GET['start_date'] ?? '';
+        $endDate = $_GET['end_date'] ?? '';
+        
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        if ($page < 1) $page = 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
+        if (!in_array($limit, [10, 20, 50, 100])) $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $department = $_GET['department'] ?? '';
+        $role = $_SESSION['user']['role'] ?? 1;
+
+        if ($role == 2) {
+            $department = 'CSKH'; // CSKH chỉ thấy đơn CSKH
+        } elseif ($role == 3) {
+            $department = 'KyThuat'; // Kỹ thuật chỉ thấy đơn Kỹ Thuật
+        }
+
+        $contacts = $contactModel->getAllContacts($limit, $offset, $keyword, $status, $startDate, $endDate, $department);
+        $totalContacts = $contactModel->countTotalContactsFiltered($keyword, $status, $startDate, $endDate, $department);
+        $totalPages = ceil($totalContacts / $limit);
+
+        $view = 'admin/contacts';
+        require_once PATH_VIEW . 'layouts/admin_layout.php';
+    }
+
+    public function changeContactStatus()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'ContactModel.php';
+            $contactModel = new ContactModel();
+            
+            $id = $_POST['contact_id'] ?? 0;
+            $status = $_POST['status'] ?? '';
+            $note = $_POST['note'] ?? '';
+            $userId = $_SESSION['user']['user_id'] ?? null;
+            
+            if ($id && in_array($status, ['pending', 'rejected', 'processing', 'resolved', 'closed', 'reprocess'])) {
+                $contactModel->updateStatus($id, $status);
+                $contactModel->addLog($id, $userId, "change_status: $status", $note);
+                $_SESSION['success'] = 'Cập nhật trạng thái thành công!';
+            } else {
+                $_SESSION['error'] = 'Cập nhật trạng thái thất bại. Thông tin không hợp lệ.';
+            }
+            
+            header('Location: ' . BASE_URL . '?action=admin-contacts');
+            exit;
+        }
+    }
+
+    public function changeContactDepartment()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'ContactModel.php';
+            $contactModel = new ContactModel();
+            
+            $id = $_POST['contact_id'] ?? 0;
+            $department = $_POST['department'] ?? '';
+            $note = $_POST['note'] ?? '';
+            $userId = $_SESSION['user']['user_id'] ?? null;
+            
+            if ($id && in_array($department, ['CSKH', 'KyThuat'])) {
+                $contactModel->updateDepartment($id, $department);
+                $contactModel->addLog($id, $userId, "change_department: $department", $note);
+                $_SESSION['success'] = 'Chuyển phòng ban thành công!';
+            } else {
+                $_SESSION['error'] = 'Chuyển phòng ban thất bại.';
+            }
+            
+            header('Location: ' . BASE_URL . '?action=admin-contacts');
+            exit;
+        }
+    }
+
+    public function bulkUpdateContacts()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'ContactModel.php';
+            $contactModel = new ContactModel();
+            
+            $ids = $_POST['contact_ids'] ?? [];
+            $action = $_POST['bulk_action'] ?? '';
+            $userId = $_SESSION['user']['user_id'] ?? null;
+            
+            if (!empty($ids) && in_array($action, ['pending', 'processing', 'rejected', 'resolved', 'closed', 'reprocess'])) {
+                foreach ($ids as $id) {
+                    $contactModel->updateStatus($id, $action);
+                    $contactModel->addLog($id, $userId, "bulk_change_status: $action", "Cập nhật hàng loạt");
+                }
+                $_SESSION['success'] = 'Cập nhật hàng loạt thành công!';
+            } else {
+                $_SESSION['error'] = 'Vui lòng chọn ít nhất 1 dòng và hành động hợp lệ.';
+            }
+            
+            header('Location: ' . BASE_URL . '?action=admin-contacts');
+            exit;
+        }
+    }
+    
+    public function getContactLogsAjax()
+    {
+        if (isset($_GET['id'])) {
+            require_once PATH_MODEL . 'ContactModel.php';
+            $contactModel = new ContactModel();
+            $logs = $contactModel->getLogsByContactId($_GET['id']);
+            header('Content-Type: application/json');
+            echo json_encode($logs);
             exit;
         }
     }

@@ -48,7 +48,7 @@
                 </div>
                 <h4 class="fw-bold mb-2">Live Chat</h4>
                 <p class="text-muted mb-3 fs-6">Trò chuyện trực tiếp cùng chuyên viên.</p>
-                <button class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold w-100 mt-1">Bắt đầu Chat</button>
+                <a href="https://zalo.me/0977337596" target="_blank" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold w-100 mt-1">Bắt đầu Chat</a>
             </div>
         </div>
     </div>
@@ -107,45 +107,161 @@
     </div>
 </div>
 
-<!-- Contact Form -->
+<!-- Premium Contact Form -->
+<style>
+.support-form-input {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+.support-form-input:focus {
+    background-color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    outline: none;
+}
+.support-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+.support-btn {
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border: none;
+    color: #fff;
+    width: 100%;
+}
+.support-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(13, 110, 253, 0.2);
+    color: #fff;
+}
+.support-card {
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    border: none;
+    overflow: hidden;
+    background: #fff;
+}
+.support-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+    margin-bottom: 1.5rem;
+}
+</style>
+
 <div class="container mt-5 pt-5 pb-5 mb-5">
-    <div class="row align-items-center bg-white rounded-4 shadow-float overflow-hidden" data-aos="fade-up">
-        <div class="col-lg-5 p-0 d-none d-lg-block">
-            <!-- ĐIỀN ĐƯỜNG DẪN ẢNH HỖ TRỢ VÀO ĐÂY -->
-            <img src="DUONG_DAN_ANH_SUPPORT.jpg" alt="Liên hệ hỗ trợ" class="w-100 h-100" style="object-fit: cover; min-height: 500px; background-color: #f1f5f9;">
-        </div>
-        <div class="col-lg-7 p-5">
-            <h2 class="fw-bold mb-3" style="font-size: 2.2rem; letter-spacing: -1px;">Gửi yêu cầu hỗ trợ</h2>
-            <p class="text-muted mb-4">Điền thông tin vào mẫu bên dưới, đội ngũ Gentech sẽ liên hệ lại với bạn sớm nhất.</p>
-            
-            <form>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-medium text-dark">Họ và tên</label>
-                        <input type="text" class="form-control rounded-3 py-2 bg-light border-0" placeholder="Nguyễn Văn A">
+    <div class="row justify-content-center" data-aos="fade-up">
+        <div class="col-lg-10">
+            <div class="support-card">
+                <div class="row g-0">
+                    <!-- Image Section -->
+                    <div class="col-lg-5 d-none d-lg-block position-relative">
+                        <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1000&auto=format&fit=crop" alt="Liên hệ hỗ trợ" class="w-100 h-100" style="object-fit: cover;">
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7));"></div>
+                        <div class="position-absolute bottom-0 start-0 p-5 text-white">
+                            <h3 class="fw-bold mb-3">Chúng tôi ở đây để giúp bạn!</h3>
+                            <p class="mb-0 text-white-50" style="font-size: 1.05rem;">Dịch vụ chăm sóc khách hàng 24/7. Cam kết phản hồi nhanh chóng và giải quyết triệt để vấn đề của bạn.</p>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-medium text-dark">Số điện thoại</label>
-                        <input type="tel" class="form-control rounded-3 py-2 bg-light border-0" placeholder="0912 345 678">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label fw-medium text-dark">Chủ đề cần hỗ trợ</label>
-                        <select class="form-select rounded-3 py-2 bg-light border-0">
-                            <option>Tư vấn mua hàng</option>
-                            <option>Hỗ trợ kỹ thuật & Bảo hành</option>
-                            <option>Góp ý dịch vụ</option>
-                            <option>Khác</option>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label fw-medium text-dark">Nội dung chi tiết</label>
-                        <textarea class="form-control rounded-3 py-2 bg-light border-0" rows="4" placeholder="Mô tả vấn đề bạn đang gặp phải..."></textarea>
-                    </div>
-                    <div class="col-12 mt-4">
-                        <button type="submit" class="btn btn-primary rounded-pill px-5 py-3 fw-bold w-100 shadow-sm">Gửi Yêu Cầu <i class="bi bi-send ms-2"></i></button>
+                    
+                    <!-- Form Section -->
+                    <div class="col-lg-7 p-5">
+                        <div class="text-center mb-4">
+                            <div class="support-icon-wrapper">
+                                <i class="bi bi-envelope-paper-heart fs-2"></i>
+                            </div>
+                            <h2 class="fw-bold" style="font-size: 2.2rem; letter-spacing: -1px; color: #1e293b;">Gửi Yêu Cầu Hỗ Trợ</h2>
+                            <p class="text-muted">Xin vui lòng điền thông tin chi tiết bên dưới.</p>
+                        </div>
+                        
+                        <?php if (isset($_SESSION['success'])): ?>
+                            <div class="alert alert-success alert-dismissible fade show" style="border-radius: 12px;" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i> <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (isset($_SESSION['error'])): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" style="border-radius: 12px;" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i> <?= $_SESSION['error']; unset($_SESSION['error']); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="support-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <input type="text" name="fullname" class="support-form-input" placeholder="Ví dụ: Nguyễn Văn A" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="support-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="tel" name="phone" class="support-form-input" placeholder="Ví dụ: 0912 345 678" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="support-label">Mã đơn hàng <span class="text-muted fw-normal">(Tùy chọn)</span></label>
+                                    <input type="text" name="order_id" class="support-form-input" placeholder="Ví dụ: ORD-12345">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="support-label">Độ ưu tiên</label>
+                                    <select name="priority" class="support-form-input">
+                                        <option value="normal">Bình thường</option>
+                                        <option value="urgent">Khẩn cấp</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="support-label">Tên máy / Model sản phẩm</label>
+                                    <input type="text" name="product_model" class="support-form-input" placeholder="Ví dụ: Laptop Dell XPS 13, iPhone 15...">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="support-label">Số Serial / IMEI</label>
+                                    <input type="text" name="serial_number" class="support-form-input" placeholder="Ví dụ: SN123456789">
+                                </div>
+                                <div class="col-12">
+                                    <label class="support-label">Chủ đề cần hỗ trợ <span class="text-danger">*</span></label>
+                                    <select name="type" class="support-form-input" required>
+                                        <option value="Tư vấn & Hỏi đáp">Tư vấn & Hỏi đáp</option>
+                                        <option value="Hỗ trợ kỹ thuật / Bảo hành">Hỗ trợ kỹ thuật / Bảo hành (Báo hỏng)</option>
+                                        <option value="Tra cứu & Giục giao đơn hàng">Tra cứu & Giục giao đơn hàng</option>
+                                        <option value="Khiếu nại dịch vụ">Khiếu nại dịch vụ</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="support-label">Nội dung chi tiết <span class="text-danger">*</span></label>
+                                    <textarea name="message" class="support-form-input" rows="4" placeholder="Mô tả rõ vấn đề bạn đang gặp phải để chúng tôi hỗ trợ nhanh nhất..." required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="support-label">Đính kèm hình ảnh/video lỗi</label>
+                                    <input type="file" name="attached_file" class="support-form-input" accept="image/*,video/*">
+                                </div>
+                                <div class="col-12 mt-4 pt-2">
+                                    <button type="submit" class="support-btn">Gửi Yêu Cầu Ngay <i class="bi bi-send ms-2"></i></button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

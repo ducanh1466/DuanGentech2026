@@ -64,7 +64,8 @@ class UserModel extends BaseModel
         $phone,
         $address,
         $role,
-        $status
+        $status,
+        $permissions = null
     ) {
         $sql = "INSERT INTO tb_users
                 (
@@ -75,11 +76,12 @@ class UserModel extends BaseModel
                     address,
                     role,
                     status,
+                    permissions,
                     registered_at
                 )
                 VALUES
                 (
-                    ?,?,?,?,?,?,?,NOW()
+                    ?,?,?,?,?,?,?,?,NOW()
                 )";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
@@ -89,7 +91,8 @@ class UserModel extends BaseModel
             $phone,
             $address,
             $role,
-            $status
+            $status,
+            $permissions
         ]);
     }
     // Cập nhật người dùng
@@ -100,7 +103,8 @@ class UserModel extends BaseModel
         $phone,
         $address,
         $role,
-        $status
+        $status,
+        $permissions = null
     ) {
         $sql = "UPDATE tb_users
                 SET
@@ -109,7 +113,8 @@ class UserModel extends BaseModel
                 phone = ?,
                 address = ?,
                 role = ?,
-                status = ?
+                status = ?,
+                permissions = ?
                 WHERE user_id = ?";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
@@ -119,6 +124,7 @@ class UserModel extends BaseModel
             $address,
             $role,
             $status,
+            $permissions,
             $id
         ]);
     }

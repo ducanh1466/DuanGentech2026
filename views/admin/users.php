@@ -93,11 +93,19 @@
                             <td>
                                 <?php if ($user['role'] == 1) : ?>
                                     <span class="badge bg-danger">
-                                        Admin
+                                        CNTT
                                     </span>
                                 <?php elseif ($user['role'] == 2) : ?>
+                                    <span class="badge bg-info text-dark">
+                                        CSKH
+                                    </span>
+                                <?php elseif ($user['role'] == 3) : ?>
+                                    <span class="badge bg-warning text-dark">
+                                        Vận hành dịch vụ
+                                    </span>
+                                <?php elseif ($user['role'] == 4) : ?>
                                     <span class="badge bg-success">
-                                        Nhân viên
+                                        Marketing
                                     </span>
                                 <?php else : ?>
                                     <span class="badge bg-primary">

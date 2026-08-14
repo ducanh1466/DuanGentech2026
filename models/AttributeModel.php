@@ -8,38 +8,73 @@ class AttributeModel extends BaseModel
         parent::__construct();
     }
 
-    /**
-     * Lấy tất cả thuộc tính kèm theo các giá trị của nó
-     */
-    public function getAllAttributesWithValues()
+    public function getAllAttributesWithValues($limit = 10, $offset = 0, $keyword = '')
     {
-        $sql = "SELECT a.attribute_id, a.attribute_name, 
-                       av.attribute_value_id, av.attribute_value
-                FROM tb_attributes a
-                LEFT JOIN tb_attribute_values av ON a.attribute_id = av.attribute_id
-                ORDER BY a.attribute_id DESC, av.attribute_value ASC";
-        
-        $stmt = $this->pdo->query($sql);
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $attributes = [];
-        foreach ($results as $row) {
-            $attr_id = $row['attribute_id'];
-            if (!isset($attributes[$attr_id])) {
-                $attributes[$attr_id] = [
-                    'attribute_id' => $attr_id,
-                    'attribute_name' => $row['attribute_name'],
-                    'values' => []
-                ];
-            }
-            if (!empty($row['attribute_value_id'])) {
-                $attributes[$attr_id]['values'][] = [
-                    'attribute_value_id' => $row['attribute_value_id'],
-                    'attribute_value' => $row['attribute_value']
-                ];
-            }
+        // 1. Lấy danh sách các ID thuộc tính (có phân trang)
+        $sql = "SELECT attribute_id, attribute_name FROM tb_attributes";
+        $params = [];
+        if ($keyword !== '') {
+            $sql .= " WHERE attribute_name LIKE :keyword";
+            $params['keyword'] = "%$keyword%";
         }
+        $sql .= " ORDER BY attribute_id DESC";
+        
+        if ($limit > 0) {
+            $sql .= " LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue(":$key", $val);
+        }
+        $stmt->execute();
+        $baseAttrs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($baseAttrs)) return [];
+
+        // 2. Lấy danh sách giá trị của các thuộc tính vừa tìm được
+        $attrIds = array_column($baseAttrs, 'attribute_id');
+        $inQuery = implode(',', array_map('intval', $attrIds));
+        
+        $sqlValues = "SELECT attribute_id, attribute_value_id, attribute_value 
+                      FROM tb_attribute_values 
+                      WHERE attribute_id IN ($inQuery)
+                      ORDER BY attribute_value ASC";
+        $stmtValues = $this->pdo->query($sqlValues);
+        $values = $stmtValues->fetchAll(PDO::FETCH_ASSOC);
+
+        // 3. Ghép data
+        $attributes = [];
+        foreach ($baseAttrs as $attr) {
+            $attr['values'] = [];
+            $attributes[$attr['attribute_id']] = $attr;
+        }
+
+        foreach ($values as $val) {
+            $attributes[$val['attribute_id']]['values'][] = [
+                'attribute_value_id' => $val['attribute_value_id'],
+                'attribute_value' => $val['attribute_value']
+            ];
+        }
+
         return array_values($attributes);
+    }
+
+    public function countTotalAttributesFiltered($keyword = '')
+    {
+        $sql = "SELECT COUNT(*) as total FROM tb_attributes";
+        $params = [];
+        if ($keyword !== '') {
+            $sql .= " WHERE attribute_name LIKE :keyword";
+            $params['keyword'] = "%$keyword%";
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue(":$key", $val);
+        }
+        $stmt->execute();
+        return $stmt->fetch()['total'] ?? 0;
     }
 
     /**

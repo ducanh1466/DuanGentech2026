@@ -87,6 +87,12 @@
                             <i class="bi bi-images"></i> Banner
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= strpos($action ?? '', 'admin-news') !== false ? 'active' : '' ?>"
+                            href="<?= BASE_URL ?>?action=admin-news">
+                            <i class="bi bi-newspaper"></i> Tin tức
+                        </a>
+                    </li>
                     <?php if ($_SESSION['user']['role'] == 1): ?>
                         <li class="nav-item">
                             <a class="nav-link <?= in_array($action ?? '', ['admin-orders', 'admin-order-detail']) ? 'active' : '' ?>"

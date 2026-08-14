@@ -34,8 +34,43 @@ class HomeController
 
     public function news()
     {
+        require_once PATH_MODEL . 'NewsModel.php';
+        require_once PATH_MODEL . 'NewsCategoryModel.php';
+        
+        $newsModel = new NewsModel();
+        $categoryModel = new NewsCategoryModel();
+
+        $featuredNews = $newsModel->getFeaturedNews();
+        $activeNews = $newsModel->getActiveNews(6); // Get latest 6 news
+        $categories = $categoryModel->getActiveCategories();
+
         $view = 'client/news';
         $title = 'Tin Tức - Gentech';
+        require_once PATH_VIEW . 'layouts/client_layout.php';
+    }
+
+    public function newsDetail()
+    {
+        $slug = $_GET['slug'] ?? '';
+        if (!$slug) {
+            header('Location: ?action=news');
+            exit;
+        }
+
+        require_once PATH_MODEL . 'NewsModel.php';
+        $newsModel = new NewsModel();
+        $article = $newsModel->getNewsBySlug($slug);
+
+        if (!$article) {
+            header('Location: ?action=news');
+            exit;
+        }
+
+        // Increment views
+        $newsModel->incrementViews($article['id']);
+
+        $view = 'client/news_detail';
+        $title = $article['title'] . ' - Gentech Tin Tức';
         require_once PATH_VIEW . 'layouts/client_layout.php';
     }
 

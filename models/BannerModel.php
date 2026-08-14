@@ -8,12 +8,41 @@ class BannerModel extends BaseModel
     /**
      * Lấy danh sách tất cả các banner (dùng cho Admin)
      */
-    public function getAllBanners()
+    public function getAllBanners($limit = 10, $offset = 0, $keyword = '', $status = '')
     {
-        $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $sql = "SELECT * FROM {$this->table}";
+        $params = [];
+        if ($status !== '') {
+            $sql .= " WHERE status = :status";
+            $params['status'] = $status;
+        }
+
+        return $this->fetchWithPagination(
+            $sql,
+            $params,
+            ['title'],
+            $keyword,
+            "id DESC",
+            $limit,
+            $offset
+        );
+    }
+
+    public function countTotalBannersFiltered($keyword = '', $status = '')
+    {
+        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
+        $params = [];
+        if ($status !== '') {
+            $sql .= " WHERE status = :status";
+            $params['status'] = $status;
+        }
+
+        return $this->countTotalFiltered(
+            $sql,
+            $params,
+            ['title'],
+            $keyword
+        );
     }
 
     /**

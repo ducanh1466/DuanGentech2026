@@ -10,7 +10,7 @@ class ProductModel extends BaseModel
 
     // Lấy toàn bộ danh sách sản phẩm (Dùng nhiều trong trang quản trị Admin)
     // Bao gồm: tên danh mục, tên thương hiệu, 1 ảnh đại diện và mức giá rẻ nhất trong các biến thể
-    public function getAllProducts($keyword = '', $limit = 0, $offset = 0)
+    public function getAllProducts($keyword = '', $limit = 0, $offset = 0, $status = '')
     {
         // Get products with their primary image and minimum variant price
         $baseSql = "SELECT p.*, c.category_name, b.brand_name,
@@ -20,10 +20,22 @@ class ProductModel extends BaseModel
             FROM {$this->table} p
             LEFT JOIN tb_categories c ON p.category_id = c.category_id
             LEFT JOIN tb_brands b ON p.brand_id = b.brand_id";
+        
+        $params = [];
+        if ($status !== '') {
+            if ($status === '1' || $status === 'active') {
+                $baseSql .= " WHERE (p.status = 'active' OR p.status = '1')";
+            } elseif ($status === '0' || $status === 'inactive') {
+                $baseSql .= " WHERE (p.status = 'inactive' OR p.status = '0')";
+            } else {
+                $baseSql .= " WHERE p.status = :status";
+                $params['status'] = $status;
+            }
+        }
             
         return $this->fetchWithPagination(
             $baseSql,
-            [],
+            $params,
             ['p.product_name'],
             $keyword,
             "p.product_id DESC",
@@ -32,11 +44,24 @@ class ProductModel extends BaseModel
         );
     }
 
-    public function countTotalProducts($keyword = '')
+    public function countTotalProductsFiltered($keyword = '', $status = '')
     {
+        $sql = "SELECT COUNT(*) as total FROM {$this->table} p";
+        $params = [];
+        if ($status !== '') {
+            if ($status === '1' || $status === 'active') {
+                $sql .= " WHERE (p.status = 'active' OR p.status = '1')";
+            } elseif ($status === '0' || $status === 'inactive') {
+                $sql .= " WHERE (p.status = 'inactive' OR p.status = '0')";
+            } else {
+                $sql .= " WHERE p.status = :status";
+                $params['status'] = $status;
+            }
+        }
+
         return $this->countTotalFiltered(
-            "SELECT COUNT(*) as total FROM {$this->table} p",
-            [],
+            $sql,
+            $params,
             ['p.product_name'],
             $keyword
         );

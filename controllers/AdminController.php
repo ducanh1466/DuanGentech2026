@@ -262,9 +262,10 @@ class AdminController
     {
         $productModel = new ProductModel();
         list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+        $status = $_GET['status'] ?? '';
 
-        $products = $productModel->getAllProducts($keyword, $limit, $offset);
-        $totalRecords = $productModel->countTotalProducts($keyword);
+        $products = $productModel->getAllProducts($keyword, $limit, $offset, $status);
+        $totalRecords = $productModel->countTotalProductsFiltered($keyword, $status);
         $totalPages = ceil($totalRecords / $limit);
 
         $title = 'Quản lý sản phẩm - DGENTECH Admin';
@@ -597,9 +598,10 @@ class AdminController
     {
         $brandModel = new BrandModel();
         list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+        $status = $_GET['status'] ?? '';
 
-        $brands = $brandModel->getAllBrands($keyword, $limit, $offset);
-        $totalRecords = $brandModel->countTotalBrands($keyword);
+        $brands = $brandModel->getAllBrands($keyword, $limit, $offset, $status);
+        $totalRecords = $brandModel->countTotalBrandsFiltered($keyword, $status);
         $totalPages = ceil($totalRecords / $limit);
 
         $title = 'Quản lý thương hiệu - DGENTECH Admin';
@@ -672,9 +674,10 @@ class AdminController
     {
         $userModel = new UserModel();
         list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+        $status = $_GET['status'] ?? '';
 
-        $users = $userModel->getAllUsers($keyword, $limit, $offset);
-        $totalRecords = $userModel->countTotalUsersFiltered($keyword);
+        $users = $userModel->getAllUsers($keyword, $limit, $offset, $status);
+        $totalRecords = $userModel->countTotalUsersFiltered($keyword, $status);
         $totalPages = ceil($totalRecords / $limit);
         $title = 'Quản lý người dùng';
         $pageTitle = 'Quản lý người dùng';
@@ -852,9 +855,10 @@ class AdminController
         }
 
         list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+        $status = $_GET['status'] ?? '';
 
-        $orders = $orderModel->getOrdersPaginated($limit, $offset, $keyword);
-        $totalRecords = $orderModel->countTotalOrdersFiltered($keyword);
+        $orders = $orderModel->getOrdersPaginated($limit, $offset, $keyword, $status);
+        $totalRecords = $orderModel->countTotalOrdersFiltered($keyword, $status);
         $totalPages = ceil($totalRecords / $limit);
 
         $title = 'Quản lý đơn hàng - DGENTECH Admin';
@@ -992,7 +996,12 @@ class AdminController
     public function banners()
     {
         $bannerModel = new BannerModel();
-        $banners = $bannerModel->getAllBanners();
+        list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+        $status = $_GET['status'] ?? '';
+        
+        $banners = $bannerModel->getAllBanners($limit, $offset, $keyword, $status);
+        $totalRecords = $bannerModel->countTotalBannersFiltered($keyword, $status);
+        $totalPages = ceil($totalRecords / $limit);
 
         $title = 'Quản lý Banner - DGENTECH Admin';
         $pageTitle = 'Quản lý Banner';
@@ -1166,8 +1175,10 @@ class AdminController
     {
         require_once PATH_MODEL . 'AttributeModel.php';
         $attrModel = new AttributeModel();
-        $attributes = $attrModel->getAllAttributesWithValues();
-
+        list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+        $attributes = $attrModel->getAllAttributesWithValues($limit, $offset, $keyword);
+        $totalRecords = $attrModel->countTotalAttributesFiltered($keyword);
+        $totalPages = ceil($totalRecords / $limit);
         $title = 'Quản lý Thuộc tính - DGENTECH Admin';
         $pageTitle = 'Thuộc tính';
         $action = 'admin-attributes';
@@ -1290,6 +1301,232 @@ class AdminController
                 $_SESSION['success'] = 'Xóa giá trị thành công!';
             }
             header('Location: ' . BASE_URL . '?action=admin-attribute-detail&id=' . $attr_id);
+            exit;
+        }
+    }
+
+    // ==========================================
+    // QUẢN LÝ TIN TỨC (NEWS)
+    // ==========================================
+    public function news()
+    {
+        require_once PATH_MODEL . 'NewsModel.php';
+        $newsModel = new NewsModel();
+        
+        list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+        $status = $_GET['status'] ?? '';
+        
+        $newsList = $newsModel->getAllNews($limit, $offset, $keyword, $status);
+        $totalRecords = $newsModel->countTotalNewsFiltered($keyword, $status);
+        $totalPages = ceil($totalRecords / $limit);
+        
+        $title = 'Quản lý Tin tức - DGENTECH Admin';
+        $pageTitle = 'Tin tức';
+        $action = 'admin-news';
+        $view = 'admin/news';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function newsForm()
+    {
+        require_once PATH_MODEL . 'NewsModel.php';
+        require_once PATH_MODEL . 'NewsCategoryModel.php';
+        
+        $id = $_GET['id'] ?? 0;
+        $news = null;
+
+        if ($id) {
+            $newsModel = new NewsModel();
+            $news = $newsModel->getNewsById($id);
+        }
+
+        $categoryModel = new NewsCategoryModel();
+        $categories = $categoryModel->getActiveCategories();
+
+        $title = ($id ? 'Sửa' : 'Thêm') . ' bài viết - DGENTECH Admin';
+        $pageTitle = 'Tin tức';
+        $action = 'admin-news';
+        $view = 'admin/news_form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function newsCreate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'NewsModel.php';
+            $newsModel = new NewsModel();
+
+            $data = [
+                'title' => trim($_POST['title'] ?? ''),
+                'slug' => trim($_POST['slug'] ?? ''),
+                'summary' => trim($_POST['summary'] ?? ''),
+                'content' => $_POST['content'] ?? '',
+                'category_id' => !empty($_POST['category_id']) ? $_POST['category_id'] : null,
+                'status' => $_POST['status'] ?? 1,
+                'is_featured' => isset($_POST['is_featured']) ? 1 : 0,
+                'image_url' => null
+            ];
+
+            // Upload ảnh
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = 'assets/uploads/news/';
+                if (!is_dir(PATH_ROOT . $upload_dir)) mkdir(PATH_ROOT . $upload_dir, 0777, true);
+                
+                $file_name = time() . '_' . basename($_FILES['image']['name']);
+                $target_file = PATH_ROOT . $upload_dir . $file_name;
+                
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+                    $data['image_url'] = BASE_URL . $upload_dir . $file_name;
+                }
+            }
+
+            $newsModel->createNews($data);
+            $_SESSION['success'] = 'Thêm bài viết thành công!';
+            header('Location: ' . BASE_URL . '?action=admin-news');
+            exit;
+        }
+    }
+
+    public function newsUpdate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'NewsModel.php';
+            $newsModel = new NewsModel();
+
+            $id = $_POST['news_id'] ?? 0;
+            $data = [
+                'title' => trim($_POST['title'] ?? ''),
+                'slug' => trim($_POST['slug'] ?? ''),
+                'summary' => trim($_POST['summary'] ?? ''),
+                'content' => $_POST['content'] ?? '',
+                'category_id' => !empty($_POST['category_id']) ? $_POST['category_id'] : null,
+                'status' => $_POST['status'] ?? 1,
+                'is_featured' => isset($_POST['is_featured']) ? 1 : 0,
+                'image_url' => $_POST['old_image_url'] ?? null
+            ];
+
+            // Upload ảnh mới
+            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+                $upload_dir = 'assets/uploads/news/';
+                if (!is_dir(PATH_ROOT . $upload_dir)) mkdir(PATH_ROOT . $upload_dir, 0777, true);
+                
+                $file_name = time() . '_' . basename($_FILES['image']['name']);
+                $target_file = PATH_ROOT . $upload_dir . $file_name;
+                
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+                    $data['image_url'] = BASE_URL . $upload_dir . $file_name;
+                }
+            }
+
+            $newsModel->updateNews($id, $data);
+            $_SESSION['success'] = 'Cập nhật bài viết thành công!';
+            header('Location: ' . BASE_URL . '?action=admin-news');
+            exit;
+        }
+    }
+
+    public function newsDelete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'NewsModel.php';
+            $newsModel = new NewsModel();
+            
+            $id = $_POST['news_id'] ?? 0;
+            $newsModel->deleteNews($id);
+            
+            $_SESSION['success'] = 'Xóa bài viết thành công!';
+            header('Location: ' . BASE_URL . '?action=admin-news');
+            exit;
+        }
+    }
+
+    // ==========================================
+    // QUẢN LÝ DANH MỤC TIN TỨC (NEWS CATEGORIES)
+    // ==========================================
+    public function newsCategories()
+    {
+        require_once PATH_MODEL . 'NewsCategoryModel.php';
+        $categoryModel = new NewsCategoryModel();
+        list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+        $status = $_GET['status'] ?? '';
+        
+        $categories = $categoryModel->getAllCategories($limit, $offset, $keyword, $status);
+        $totalRecords = $categoryModel->countTotalCategoriesFiltered($keyword, $status);
+        $totalPages = ceil($totalRecords / $limit);
+        $title = 'Danh mục Tin tức - DGENTECH Admin';
+        $pageTitle = 'Danh mục Tin tức';
+        $action = 'admin-news-categories';
+        $view = 'admin/news_categories';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function newsCategoryForm()
+    {
+        require_once PATH_MODEL . 'NewsCategoryModel.php';
+        
+        $id = $_GET['id'] ?? 0;
+        $category = null;
+
+        if ($id) {
+            $categoryModel = new NewsCategoryModel();
+            $category = $categoryModel->getCategoryById($id);
+        }
+
+        $title = ($id ? 'Sửa' : 'Thêm') . ' danh mục - DGENTECH Admin';
+        $pageTitle = 'Danh mục Tin tức';
+        $action = 'admin-news-categories';
+        $view = 'admin/news_category_form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function newsCategoryCreate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'NewsCategoryModel.php';
+            $categoryModel = new NewsCategoryModel();
+
+            $name = trim($_POST['name'] ?? '');
+            $slug = trim($_POST['slug'] ?? '');
+            $status = $_POST['status'] ?? 1;
+
+            $categoryModel->createCategory($name, $slug, $status);
+            
+            $_SESSION['success'] = 'Thêm danh mục thành công!';
+            header('Location: ' . BASE_URL . '?action=admin-news-categories');
+            exit;
+        }
+    }
+
+    public function newsCategoryUpdate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'NewsCategoryModel.php';
+            $categoryModel = new NewsCategoryModel();
+
+            $id = $_POST['category_id'] ?? 0;
+            $name = trim($_POST['name'] ?? '');
+            $slug = trim($_POST['slug'] ?? '');
+            $status = $_POST['status'] ?? 1;
+
+            $categoryModel->updateCategory($id, $name, $slug, $status);
+            
+            $_SESSION['success'] = 'Cập nhật danh mục thành công!';
+            header('Location: ' . BASE_URL . '?action=admin-news-categories');
+            exit;
+        }
+    }
+
+    public function newsCategoryDelete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'NewsCategoryModel.php';
+            $categoryModel = new NewsCategoryModel();
+            
+            $id = $_POST['category_id'] ?? 0;
+            $categoryModel->deleteCategory($id);
+            
+            $_SESSION['success'] = 'Xóa danh mục thành công!';
+            header('Location: ' . BASE_URL . '?action=admin-news-categories');
             exit;
         }
     }

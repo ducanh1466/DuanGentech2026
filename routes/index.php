@@ -7,6 +7,7 @@ match ($action) {
     '/' => (new HomeController)->index(),
     'about' => (new HomeController)->about(),
     'news'  => (new HomeController)->news(),
+    'news-detail' => (new HomeController)->newsDetail(),
     'support' => (new HomeController)->support(),
     'products' => (new HomeController)->products(),
     'product-detail' => (new HomeController)->productDetail(),
@@ -77,4 +78,18 @@ match ($action) {
     'admin-update-profile'  => (new AdminController)->updateProfile(),
     'admin-change-password' => (new AdminController)->changePassword(),
     'admin-update-password' => (new AdminController)->updatePassword(),
+
+    // --- NEWS ROUTING ---
+    'admin-news'            => (new AdminController)->news(),
+    'admin-news-form'       => (new AdminController)->newsForm(),
+    'admin-news-create'     => (new AdminController)->newsCreate(),
+    'admin-news-update'     => (new AdminController)->newsUpdate(),
+    'admin-news-delete'     => (new AdminController)->newsDelete(),
+
+    // --- NEWS CATEGORIES ROUTING ---
+    'admin-news-categories' => (new AdminController)->newsCategories(),
+    'admin-news-category-form' => (new AdminController)->newsCategoryForm(),
+    'admin-news-category-create' => (new AdminController)->newsCategoryCreate(),
+    'admin-news-category-update' => (new AdminController)->newsCategoryUpdate(),
+    'admin-news-category-delete' => (new AdminController)->newsCategoryDelete(),
 };

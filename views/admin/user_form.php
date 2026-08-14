@@ -73,14 +73,71 @@ $id = isset($user['user_id']) ? $user['user_id'] : 0;
 
                 <div class="row form-horizontal-row align-items-center">
                     <div class="col-md-3">
-                        <label class="form-horizontal-label">Vai trò</label>
+                        <label class="form-horizontal-label">Vai trò (Phòng ban)</label>
                     </div>
                     <div class="col-md-9">
-                        <select name="role" class="form-select">
-                            <option value="0" <?= (($user['role'] ?? 0) != 1 && ($user['role'] ?? 0) != 2) ? 'selected' : '' ?>>Khách hàng</option>
-                            <option value="1" <?= (($user['role'] ?? 0) == 1) ? 'selected' : '' ?>>Admin</option>
-                            <option value="2" <?= (($user['role'] ?? 0) == 2) ? 'selected' : '' ?>>Nhân viên</option>
+                        <select name="role" id="roleSelect" class="form-select">
+                            <option value="0" <?= (($user['role'] ?? 0) == 0) ? 'selected' : '' ?>>Khách hàng (Chỉ truy cập Client)</option>
+                            <option value="1" <?= (($user['role'] ?? 0) == 1) ? 'selected' : '' ?>>CNTT (Quản trị toàn quyền)</option>
+                            <option value="2" <?= (($user['role'] ?? 0) == 2) ? 'selected' : '' ?>>CSKH</option>
+                            <option value="3" <?= (($user['role'] ?? 0) == 3) ? 'selected' : '' ?>>Vận hành dịch vụ</option>
+                            <option value="4" <?= (($user['role'] ?? 0) == 4) ? 'selected' : '' ?>>Marketing</option>
                         </select>
+                    </div>
+                </div>
+
+                <?php 
+                $userPermissions = [];
+                if (!empty($user['permissions'])) {
+                    $userPermissions = json_decode($user['permissions'], true) ?? [];
+                }
+                ?>
+                <div class="row form-horizontal-row" id="permissionsGroup" style="<?= (($user['role'] ?? 0) == 0) ? 'display: none;' : '' ?>">
+                    <div class="col-md-3">
+                        <label class="form-horizontal-label mt-2">Vai trò nghiệp vụ (Quyền hạn)</label>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="p-3 border rounded bg-light">
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="products" id="perm_products" <?= in_array('products', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_products">Quản lý Sản phẩm</label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="categories" id="perm_categories" <?= in_array('categories', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_categories">Quản lý Danh mục</label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="brands" id="perm_brands" <?= in_array('brands', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_brands">Quản lý Thương hiệu</label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="attributes" id="perm_attributes" <?= in_array('attributes', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_attributes">Quản lý Thuộc tính</label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="orders" id="perm_orders" <?= in_array('orders', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_orders">Quản lý Đơn hàng</label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="contacts" id="perm_contacts" <?= in_array('contacts', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_contacts">Quản lý Phản ánh</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="news" id="perm_news" <?= in_array('news', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_news">Quản lý Tin tức</label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="banners" id="perm_banners" <?= in_array('banners', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_banners">Quản lý Banner</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted mt-2 d-block"><i class="bi bi-info-circle"></i> Tùy chỉnh quyền hạn riêng cho tài khoản này. Hệ thống sẽ tự động check theo phòng ban khi bạn thay đổi Vai trò.</small>
+                        </div>
                     </div>
                 </div>
 
@@ -128,6 +185,31 @@ $id = isset($user['user_id']) ? $user['user_id'] : 0;
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    const roleSelect = document.getElementById("roleSelect");
+    const permissionsGroup = document.getElementById("permissionsGroup");
+    const permCheckboxes = document.querySelectorAll(".perm-checkbox");
+
+    const rolePermissions = {
+        1: ["products", "categories", "brands", "attributes", "orders", "contacts", "news", "banners"], // CNTT (All)
+        2: ["orders", "contacts"], // CSKH
+        3: ["products", "categories", "brands", "attributes", "orders", "contacts"], // Vận hành
+        4: ["news", "banners"] // Marketing
+    };
+
+    roleSelect.addEventListener("change", function() {
+        const val = parseInt(this.value);
+        if (val === 0) {
+            permissionsGroup.style.display = "none";
+            permCheckboxes.forEach(cb => cb.checked = false);
+        } else {
+            permissionsGroup.style.display = "flex";
+            const perms = rolePermissions[val] || [];
+            permCheckboxes.forEach(cb => {
+                cb.checked = perms.includes(cb.value);
+            });
+        }
+    });
+
     const form = document.querySelector("form");
     form.addEventListener("submit", function (e) {
         let fullName = document.querySelector("[name='full_name']").value.trim();
@@ -154,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let phoneRegex = /^0\d{9}$/;
         if (!phoneRegex.test(phone)) {
-            alert("Số điện thoại phải bắt đầu bằng số 0 và gồm đúng 10 chữ số");
+            alert("Số điện thoại phải là số, bắt đầu bằng 0 và có 10 chữ số");
             e.preventDefault();
             return;
         }

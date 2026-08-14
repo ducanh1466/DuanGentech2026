@@ -76,6 +76,51 @@ class HomeController
 
     public function support()
     {
+        // Handle form submission
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'ContactModel.php';
+            $contactModel = new ContactModel();
+
+            $data = [
+                'fullname' => $_POST['fullname'] ?? '',
+                'phone' => $_POST['phone'] ?? '',
+                'order_id' => !empty($_POST['order_id']) ? $_POST['order_id'] : null,
+                'product_model' => !empty($_POST['product_model']) ? $_POST['product_model'] : null,
+                'serial_number' => !empty($_POST['serial_number']) ? $_POST['serial_number'] : null,
+                'type' => $_POST['type'] ?? '',
+                'priority' => $_POST['priority'] ?? 'normal',
+                'message' => $_POST['message'] ?? '',
+                'attached_file' => null
+            ];
+
+            // Handle file upload
+            if (isset($_FILES['attached_file']) && $_FILES['attached_file']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = 'assets/uploads/supports/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $fileName = time() . '_' . basename($_FILES['attached_file']['name']);
+                $targetFilePath = $uploadDir . $fileName;
+                if (move_uploaded_file($_FILES['attached_file']['tmp_name'], $targetFilePath)) {
+                    $data['attached_file'] = $fileName;
+                }
+            }
+
+            // Basic validation
+            if (empty($data['fullname']) || empty($data['phone']) || empty($data['message'])) {
+                $_SESSION['error'] = 'Vui lòng điền đầy đủ Họ tên, Số điện thoại và Nội dung.';
+            } else {
+                if ($contactModel->addContact($data)) {
+                    $_SESSION['success'] = 'Cảm ơn bạn! Yêu cầu hỗ trợ đã được gửi thành công. Chúng tôi sẽ liên hệ lại sớm nhất.';
+                } else {
+                    $_SESSION['error'] = 'Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau.';
+                }
+            }
+            
+            header('Location: ?action=support');
+            exit;
+        }
+
         $view = 'client/support';
         $title = 'Hỗ Trợ - Gentech';
         require_once PATH_VIEW . 'layouts/client_layout.php';

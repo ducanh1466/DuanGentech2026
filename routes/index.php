@@ -57,6 +57,11 @@ match ($action) {
     'admin-user-status'     => (new AdminController)->changeUserStatus(),
     'admin-orders'          => (new AdminController)->orders(),
     'admin-order-detail'    => (new AdminController)->orderDetail(),
+    'admin-contacts'        => (new AdminController)->contacts(),
+    'admin-contact-status'  => (new AdminController)->changeContactStatus(),
+    'admin-contact-department' => (new AdminController)->changeContactDepartment(),
+    'admin-contact-bulk'    => (new AdminController)->bulkUpdateContacts(),
+    'admin-contact-logs'    => (new AdminController)->getContactLogsAjax(),
     
     // --- ATTRIBUTES ROUTING ---
     'admin-attributes'      => (new AdminController)->attributes(),

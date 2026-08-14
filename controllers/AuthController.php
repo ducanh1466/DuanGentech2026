@@ -12,7 +12,7 @@ class AuthController
     public function login()
     {
         if (isset($_SESSION['user'])) {
-            header('Location: ' . ($_SESSION['user']['role'] == 1 ? BASE_URL . '?action=admin' : BASE_URL));
+            header('Location: ' . ($_SESSION['user']['role'] != 0 ? BASE_URL . '?action=admin' : BASE_URL));
             exit;
         }
 
@@ -35,7 +35,7 @@ class AuthController
                 } elseif (password_verify($password, $user['password'])) {
                     unset($_SESSION['login_attempts'][$email]);
                     $_SESSION['user'] = $user;
-                    if ($user['role'] == 1) {
+                    if ($user['role'] != 0) {
                         header('Location: ' . BASE_URL . '?action=admin');
                     } else {
                         header('Location: ' . BASE_URL);

@@ -901,8 +901,16 @@ class AdminController
     {
         $userModel = new UserModel();
         $id = $_GET['id'] ?? 0;
-        $userModel->deleteUser($id);
-        $_SESSION['success'] = 'Xóa người dùng thành công!';
+        try {
+            $userModel->deleteUser($id);
+            $_SESSION['success'] = 'Xóa người dùng thành công!';
+        } catch (\PDOException $e) {
+            if ($e->getCode() == '23000') {
+                $_SESSION['error'] = 'Không thể xóa người dùng này vì tài khoản đang có dữ liệu liên kết (đơn hàng, bình luận...)!';
+            } else {
+                $_SESSION['error'] = 'Lỗi khi xóa người dùng: ' . $e->getMessage();
+            }
+        }
         header('Location: ' . BASE_URL . '?action=admin-users');
         exit;
     }

@@ -29,11 +29,10 @@
             <div class="sidebar-header">
                 <a href="<?= BASE_URL ?>?action=admin"
                     class="sidebar-brand p-3 d-flex justify-content-center align-items-center text-decoration-none">
-                    <div
-                        style="background-color: #ffffff; padding: 10px 15px; border-radius: 12px; width: 90%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <div class="d-flex justify-content-center align-items-center" style="width: 100%; min-height: 68px;">
                         <img src="<?= BASE_URL ?>assets/uploads/logo1.png?v=<?= time() ?>" alt="Brand Logo"
-                            style="max-height: 42px; width: auto; object-fit: contain; transition: transform 0.3s ease;"
-                            onmouseover="this.style.transform='scale(1.05)'"
+                            style="height: 56px; width: auto; object-fit: contain; transition: transform 0.3s ease; filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.15));"
+                            onmouseover="this.style.transform='scale(1.08)'"
                             onmouseout="this.style.transform='scale(1)'">
                     </div>
                 </a>

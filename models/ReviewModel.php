@@ -8,7 +8,6 @@ class ReviewModel extends BaseModel
         $this->table = 'tb_reviews';
     }
 
-    // Lấy danh sách đánh giá của 1 sản phẩm
     public function getReviewsByProductId($product_id)
     {
         $sql = "SELECT r.*, u.full_name 
@@ -19,7 +18,12 @@ class ReviewModel extends BaseModel
                 ORDER BY r.review_date DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['product_id' => $product_id]);
-        return $stmt->fetchAll();
+        $reviews = $stmt->fetchAll();
+
+        foreach ($reviews as &$review) {
+            $review['replies'] = $this->getRepliesByReviewId($review['review_id']);
+        }
+        return $reviews;
     }
 
     // Lấy điểm trung bình và tổng số đánh giá
@@ -74,6 +78,73 @@ class ReviewModel extends BaseModel
             'product_id' => $product_id,
             'rating' => $rating,
             'content' => $content
+        ]);
+    }
+
+    // [ADMIN] Lấy danh sách đánh giá có phân trang
+    public function getAllReviewsPaginated($limit = 10, $offset = 0)
+    {
+        $sql = "SELECT r.*, p.product_name, u.full_name as user_full_name
+                FROM {$this->table} r
+                JOIN tb_products p ON r.product_id = p.product_id
+                JOIN tb_orders o ON r.order_id = o.order_id
+                JOIN tb_users u ON o.user_id = u.user_id
+                ORDER BY r.review_date DESC
+                LIMIT :limit OFFSET :offset";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $reviews = $stmt->fetchAll();
+
+        foreach ($reviews as &$review) {
+            $review['replies'] = $this->getRepliesByReviewId($review['review_id']);
+        }
+        return $reviews;
+    }
+
+    // [ADMIN] Đếm tổng số đánh giá
+    public function countTotalReviews()
+    {
+        $sql = "SELECT COUNT(*) as total FROM {$this->table}";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result ? $result['total'] : 0;
+    }
+
+    // [ADMIN] Xóa đánh giá
+    public function deleteReview($review_id)
+    {
+        $sql = "DELETE FROM {$this->table} WHERE review_id = :review_id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute(['review_id' => $review_id]);
+    }
+
+    // [ADMIN] Lấy danh sách reply của 1 đánh giá
+    public function getRepliesByReviewId($review_id)
+    {
+        $sql = "SELECT r.*, u.full_name, u.role
+                FROM tb_review_replies r
+                LEFT JOIN tb_users u ON r.user_id = u.user_id
+                WHERE r.review_id = :review_id
+                ORDER BY r.created_at ASC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['review_id' => $review_id]);
+        return $stmt->fetchAll();
+    }
+
+    // Thêm trả lời đánh giá (cho cả Admin và Khách)
+    public function addReply($review_id, $user_id, $content, $is_admin = 0)
+    {
+        $sql = "INSERT INTO tb_review_replies (review_id, user_id, content, created_at, is_admin)
+                VALUES (:review_id, :user_id, :content, NOW(), :is_admin)";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'review_id' => $review_id,
+            'user_id' => $user_id,
+            'content' => $content,
+            'is_admin' => (int)$is_admin
         ]);
     }
 }

@@ -53,9 +53,10 @@
                         <label class="form-horizontal-label">Mức giảm <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="number" class="form-control" name="discount_value" required min="1"
-                            value="<?= $discount['discount_value'] ?? '' ?>" 
-                            placeholder="Nhập phần trăm (vd: 10) hoặc số tiền (vd: 50000)" <?= ($isDetail ?? false) ? 'disabled' : '' ?>>
+                        <input type="text" class="form-control currency-input" id="discount_value_display" required
+                            value="<?= isset($discount['discount_value']) ? number_format($discount['discount_value'], 0, ',', '.') : '' ?>" 
+                            placeholder="Nhập phần trăm (vd: 10) hoặc số tiền (vd: 50.000)" <?= ($isDetail ?? false) ? 'disabled' : '' ?>>
+                        <input type="hidden" name="discount_value" id="discount_value_raw" value="<?= $discount['discount_value'] ?? '' ?>">
                         <small class="text-muted d-block mt-1">Lưu ý: Nếu chọn Phần trăm thì mức giảm <= 100.</small>
                     </div>
                 </div>
@@ -65,9 +66,10 @@
                         <label class="form-horizontal-label">Giảm tối đa</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="number" class="form-control" name="max_discount" min="0"
-                            value="<?= $discount['max_discount'] ?? '' ?>" 
-                            placeholder="Chỉ áp dụng cho loại Phần trăm. Vd: 100000" <?= ($isDetail ?? false) ? 'disabled' : '' ?>>
+                        <input type="text" class="form-control currency-input" id="max_discount_display"
+                            value="<?= isset($discount['max_discount']) ? number_format($discount['max_discount'], 0, ',', '.') : '' ?>" 
+                            placeholder="Chỉ áp dụng cho loại Phần trăm. Vd: 100.000" <?= ($isDetail ?? false) ? 'disabled' : '' ?>>
+                        <input type="hidden" name="max_discount" id="max_discount_raw" value="<?= $discount['max_discount'] ?? '' ?>">
                     </div>
                 </div>
 
@@ -76,9 +78,10 @@
                         <label class="form-horizontal-label">Đơn tối thiểu</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="number" class="form-control" name="minimum_order_value" min="0"
-                            value="<?= $discount['minimum_order_value'] ?? '' ?>" 
-                            placeholder="Để trống nếu không yêu cầu. Vd: 200000" <?= ($isDetail ?? false) ? 'disabled' : '' ?>>
+                        <input type="text" class="form-control currency-input" id="minimum_order_value_display"
+                            value="<?= isset($discount['minimum_order_value']) ? number_format($discount['minimum_order_value'], 0, ',', '.') : '' ?>" 
+                            placeholder="Để trống nếu không yêu cầu. Vd: 200.000" <?= ($isDetail ?? false) ? 'disabled' : '' ?>>
+                        <input type="hidden" name="minimum_order_value" id="minimum_order_value_raw" value="<?= $discount['minimum_order_value'] ?? '' ?>">
                     </div>
                 </div>
 
@@ -149,3 +152,28 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function formatCurrencyInput(displayId, rawId) {
+        const displayEl = document.getElementById(displayId);
+        const rawEl = document.getElementById(rawId);
+
+        if (displayEl && rawEl) {
+            displayEl.addEventListener('input', function(e) {
+                let value = this.value.replace(/\D/g, '');
+                rawEl.value = value;
+                if (value) {
+                    this.value = parseInt(value, 10).toLocaleString('vi-VN');
+                } else {
+                    this.value = '';
+                }
+            });
+        }
+    }
+
+    formatCurrencyInput('discount_value_display', 'discount_value_raw');
+    formatCurrencyInput('max_discount_display', 'max_discount_raw');
+    formatCurrencyInput('minimum_order_value_display', 'minimum_order_value_raw');
+});
+</script>

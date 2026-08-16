@@ -1937,4 +1937,155 @@ class AdminController
         header("Location: ?action=admin-discounts");
         exit();
     }
+
+    // --- ADMIN FLASH SALE MANAGEMENT ---
+    public function flashSales()
+    {
+        require_once PATH_MODEL . 'FlashSaleModel.php';
+        $flashSaleModel = new FlashSaleModel();
+        $flashSales = $flashSaleModel->getAllFlashSales();
+
+        $title = 'Quản lý Flash Sale - DGENTECH Admin';
+        $pageTitle = 'Quản lý Flash Sale';
+        $action = 'admin-flash-sales';
+        $view = 'admin/flash_sales/index';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function flashSaleForm()
+    {
+        require_once PATH_MODEL . 'FlashSaleModel.php';
+        $flashSaleModel = new FlashSaleModel();
+        
+        $flashSale = null;
+        if (isset($_GET['id'])) {
+            $flashSale = $flashSaleModel->getFlashSaleById($_GET['id']);
+        }
+
+        $title = ($flashSale ? 'Chỉnh sửa' : 'Thêm') . ' Flash Sale - DGENTECH Admin';
+        $pageTitle = ($flashSale ? 'Chỉnh sửa' : 'Thêm') . ' Flash Sale';
+        $action = 'admin-flash-sales';
+        $view = 'admin/flash_sales/form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function flashSaleSave()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'FlashSaleModel.php';
+            $flashSaleModel = new FlashSaleModel();
+            
+            $id = $_POST['id'] ?? null;
+            $title = $_POST['title'] ?? '';
+            $start_time = $_POST['start_time'] ?? '';
+            $end_time = $_POST['end_time'] ?? '';
+            $status = $_POST['status'] ?? 'active';
+
+            if (empty($title) || empty($start_time) || empty($end_time)) {
+                $_SESSION['error'] = "Vui lòng nhập đầy đủ thông tin!";
+                header("Location: " . ($id ? "?action=admin-flash-sale-form&id=$id" : "?action=admin-flash-sale-form"));
+                exit();
+            }
+
+            if ($id) {
+                if ($flashSaleModel->updateFlashSale($id, $title, $start_time, $end_time, $status)) {
+                    $_SESSION['success'] = "Cập nhật Flash Sale thành công!";
+                } else {
+                    $_SESSION['error'] = "Có lỗi xảy ra khi cập nhật!";
+                }
+            } else {
+                if ($flashSaleModel->createFlashSale($title, $start_time, $end_time, $status)) {
+                    $_SESSION['success'] = "Thêm mới Flash Sale thành công!";
+                } else {
+                    $_SESSION['error'] = "Có lỗi xảy ra khi thêm mới!";
+                }
+            }
+        }
+        header("Location: ?action=admin-flash-sales");
+        exit();
+    }
+
+    public function flashSaleDelete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            require_once PATH_MODEL . 'FlashSaleModel.php';
+            $flashSaleModel = new FlashSaleModel();
+            
+            if ($flashSaleModel->deleteFlashSale($_POST['id'])) {
+                $_SESSION['success'] = "Xóa Flash Sale thành công!";
+            } else {
+                $_SESSION['error'] = "Có lỗi xảy ra khi xóa!";
+            }
+        }
+        header("Location: ?action=admin-flash-sales");
+        exit();
+    }
+
+    public function flashSaleItems()
+    {
+        if (!isset($_GET['id'])) {
+            header("Location: ?action=admin-flash-sales");
+            exit();
+        }
+        $flashSaleId = $_GET['id'];
+
+        require_once PATH_MODEL . 'FlashSaleModel.php';
+        $flashSaleModel = new FlashSaleModel();
+        $flashSale = $flashSaleModel->getFlashSaleById($flashSaleId);
+        if (!$flashSale) {
+            header("Location: ?action=admin-flash-sales");
+            exit();
+        }
+        
+        $items = $flashSaleModel->getFlashSaleItems($flashSaleId);
+        
+        require_once PATH_MODEL . 'ProductModel.php';
+        $productModel = new ProductModel();
+        // Fetch all active products for the dropdown
+        $products = $productModel->getAllProducts('', 1000, 0, 'active');
+
+        $title = 'Sản phẩm Flash Sale - DGENTECH Admin';
+        $pageTitle = 'Sản phẩm Flash Sale';
+        $action = 'admin-flash-sales';
+        $view = 'admin/flash_sales/items';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function flashSaleItemSave()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['flash_sale_id'])) {
+            require_once PATH_MODEL . 'FlashSaleModel.php';
+            $flashSaleModel = new FlashSaleModel();
+            
+            $flashSaleId = $_POST['flash_sale_id'];
+            $productId = $_POST['product_id'];
+            $flashPrice = $_POST['flash_price'];
+            $quantity = empty($_POST['quantity']) ? null : $_POST['quantity'];
+
+            if ($flashSaleModel->saveFlashSaleItem($flashSaleId, $productId, $flashPrice, $quantity)) {
+                $_SESSION['success'] = "Thêm/cập nhật sản phẩm thành công!";
+            } else {
+                $_SESSION['error'] = "Có lỗi xảy ra!";
+            }
+            header("Location: ?action=admin-flash-sale-items&id=" . $flashSaleId);
+            exit();
+        }
+    }
+
+    public function flashSaleItemDelete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            require_once PATH_MODEL . 'FlashSaleModel.php';
+            $flashSaleModel = new FlashSaleModel();
+            $flashSaleId = $_POST['flash_sale_id'];
+            
+            if ($flashSaleModel->deleteFlashSaleItem($_POST['id'])) {
+                $_SESSION['success'] = "Đã xóa sản phẩm khỏi Flash Sale!";
+            } else {
+                $_SESSION['error'] = "Có lỗi xảy ra!";
+            }
+            header("Location: ?action=admin-flash-sale-items&id=" . $flashSaleId);
+            exit();
+        }
+    }
 }

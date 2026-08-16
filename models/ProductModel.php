@@ -115,14 +115,32 @@ class ProductModel extends BaseModel
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
                        (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
-                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
+                       (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
+                       fsi.flash_price,
+                       fs.end_time as flash_end_time,
+                       fsi.quantity as flash_limit,
+                       fsi.sold as flash_sold
                 FROM {$this->table} p
                 LEFT JOIN tb_categories c ON p.category_id = c.category_id
                 LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
+                LEFT JOIN tb_flash_sale_items fsi ON p.product_id = fsi.product_id
+                LEFT JOIN tb_flash_sales fs ON fsi.flash_sale_id = fs.id AND fs.status = 'active' AND fs.start_time <= NOW() AND fs.end_time >= NOW()
                 WHERE p.product_id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
-        return $stmt->fetch();
+        $product = $stmt->fetch();
+        
+        if ($product && $product['flash_end_time'] && $product['flash_sold'] < $product['flash_limit']) {
+            $product['is_flash_sale'] = true;
+            $product['original_price'] = $product['price'];
+            $product['price'] = $product['flash_price'];
+        } else {
+            if ($product) {
+                $product['is_flash_sale'] = false;
+            }
+        }
+        
+        return $product;
     }
 
     // Lấy danh sách các hình ảnh của một sản phẩm (Sắp xếp theo thứ tự hiển thị)

@@ -55,6 +55,7 @@
 </div>
 
 <!-- Flash Sale Section -->
+<?php if (!empty($activeFlashSale) && !empty($flashSaleItems)): ?>
 <div class="container mt-5 pt-4">
     <div class="p-4 rounded-4 position-relative overflow-hidden shadow-lg" style="background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);">
         <!-- Decorative elements -->
@@ -68,7 +69,7 @@
                     <i class="bi bi-lightning-fill"></i>
                 </div>
                 <div>
-                    <h3 class="fw-bold mb-1" style="letter-spacing: -1px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">DEAL CHỚP NHOÁNG</h3>
+                    <h3 class="fw-bold mb-1" style="letter-spacing: -1px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?= htmlspecialchars($activeFlashSale['title']) ?></h3>
                     <p class="mb-0 opacity-75 fw-medium">Săn sale sập sàn - Số lượng có hạn!</p>
                 </div>
             </div>
@@ -77,17 +78,17 @@
                 <span class="text-white fw-bold">Kết thúc trong:</span>
                 <div class="d-flex gap-2">
                     <div class="bg-white text-danger rounded p-2 text-center shadow-sm" style="min-width: 45px;">
-                        <div class="fw-bold fs-5 lh-1" id="fs-hours">03</div>
+                        <div class="fw-bold fs-5 lh-1" id="fs-hours">00</div>
                         <div style="font-size: 0.65rem;" class="fw-bold text-uppercase mt-1">Giờ</div>
                     </div>
                     <div class="text-white fw-bold fs-4">:</div>
                     <div class="bg-white text-danger rounded p-2 text-center shadow-sm" style="min-width: 45px;">
-                        <div class="fw-bold fs-5 lh-1" id="fs-minutes">45</div>
+                        <div class="fw-bold fs-5 lh-1" id="fs-minutes">00</div>
                         <div style="font-size: 0.65rem;" class="fw-bold text-uppercase mt-1">Phút</div>
                     </div>
                     <div class="text-white fw-bold fs-4">:</div>
                     <div class="bg-white text-danger rounded p-2 text-center shadow-sm" style="min-width: 45px;">
-                        <div class="fw-bold fs-5 lh-1" id="fs-seconds">12</div>
+                        <div class="fw-bold fs-5 lh-1" id="fs-seconds">00</div>
                         <div style="font-size: 0.65rem;" class="fw-bold text-uppercase mt-1">Giây</div>
                     </div>
                 </div>
@@ -95,32 +96,34 @@
         </div>
         
         <div class="row mt-4 position-relative z-1 g-3">
-            <?php if (!empty($latestProducts)): ?>
-                <?php $count = 0; foreach($latestProducts as $product): if($count >= 4) break; 
-                    $img = $product['image'] ?? '';
-                    $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_URL . 'assets/uploads/' . $img) : 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853';
-                ?>
+            <?php foreach($flashSaleItems as $item): 
+                $img = $item['image'] ?? '';
+                $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_URL . 'assets/uploads/' . $img) : 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853';
+                $discountPercent = $item['price'] > 0 ? round((($item['price'] - $item['flash_price']) / $item['price']) * 100) : 0;
+                $soldPercent = $item['quantity'] > 0 ? min(100, ($item['sold'] / $item['quantity']) * 100) : 0;
+            ?>
                 <div class="col-6 col-md-3">
-                    <div class="bg-white rounded-4 p-2 h-100 d-flex flex-column hover-elevate transition-all cursor-pointer" onclick="window.location.href='<?= BASE_URL ?>?action=product-detail&id=<?= $product['product_id'] ?>'">
+                    <div class="bg-white rounded-4 p-2 h-100 d-flex flex-column hover-elevate transition-all cursor-pointer" onclick="window.location.href='<?= BASE_URL ?>?action=product-detail&id=<?= $item['product_id'] ?>'">
                         <div class="position-relative bg-light rounded-3 mb-2" style="padding-top: 100%;">
                             <img src="<?= $imgUrl ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-contain p-2" alt="Product">
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">-15%</span>
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">-<?= $discountPercent ?>%</span>
                         </div>
                         <div class="px-2 pb-2 d-flex flex-column flex-grow-1">
-                            <h6 class="text-dark fw-bold text-truncate mb-1" style="font-size: 0.9rem;"><?= htmlspecialchars($product['product_name']) ?></h6>
+                            <h6 class="text-dark fw-bold text-truncate mb-1" style="font-size: 0.9rem;"><?= htmlspecialchars($item['product_name']) ?></h6>
                             <div class="mt-auto d-flex flex-column">
-                                <span class="text-danger fw-bold fs-6"><?= number_format($product['price'] * 0.85, 0, ',', '.') ?>đ</span>
-                                <span class="text-muted text-decoration-line-through" style="font-size: 0.75rem;"><?= number_format($product['price'], 0, ',', '.') ?>đ</span>
+                                <span class="text-danger fw-bold fs-6"><?= number_format($item['flash_price'], 0, ',', '.') ?>đ</span>
+                                <?php if ($item['price'] > $item['flash_price']): ?>
+                                    <span class="text-muted text-decoration-line-through" style="font-size: 0.75rem;"><?= number_format($item['price'], 0, ',', '.') ?>đ</span>
+                                <?php endif; ?>
                                 <div class="progress mt-2" style="height: 6px;">
-                                    <div class="progress-bar bg-danger" style="width: <?= rand(40, 90) ?>%"></div>
+                                    <div class="progress-bar bg-danger" style="width: <?= $soldPercent ?>%"></div>
                                 </div>
-                                <small class="text-danger mt-1" style="font-size: 0.65rem;">Đã bán <?= rand(10, 50) ?></small>
+                                <small class="text-danger mt-1" style="font-size: 0.65rem;">Đã bán <?= $item['sold'] ?> <?= $item['quantity'] ? '/ '.$item['quantity'] : '' ?></small>
                             </div>
                         </div>
                     </div>
                 </div>
-                <?php $count++; endforeach; ?>
-            <?php endif; ?>
+            <?php endforeach; ?>
         </div>
     </div>
 </div>
@@ -128,8 +131,7 @@
 <!-- Script đếm ngược -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Tạo một deadline giả định là 3 giờ nữa
-        let deadline = new Date().getTime() + (3 * 60 * 60 * 1000) + (45 * 60 * 1000) + (12 * 1000);
+        let deadline = new Date("<?= date('Y-m-d\TH:i:s', strtotime($activeFlashSale['end_time'])) ?>").getTime();
         
         let timer = setInterval(function() {
             let now = new Date().getTime();
@@ -140,7 +142,7 @@
                 return;
             }
             
-            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let hours = Math.floor(distance / (1000 * 60 * 60)); // Show total hours
             let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             let seconds = Math.floor((distance % (1000 * 60)) / 1000);
             
@@ -150,6 +152,7 @@
         }, 1000);
     });
 </script>
+<?php endif; ?>
 
 <!-- Categories -->
 <div class="container mt-5 pt-5">

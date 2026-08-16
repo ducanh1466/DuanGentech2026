@@ -226,6 +226,13 @@ class CheckoutController
                         $item['price']
                     );
                     
+                    // Nếu là sản phẩm Flash Sale, tăng số lượng đã bán (sold)
+                    if (isset($item['is_flash_sale']) && $item['is_flash_sale']) {
+                        require_once PATH_MODEL . 'FlashSaleModel.php';
+                        $flashSaleModel = new FlashSaleModel();
+                        $flashSaleModel->incrementFlashSaleSold($item['product_id'], $quantityToBuy);
+                    }
+
                     // Xóa sản phẩm ĐÃ MUA khỏi giỏ hàng
                     $this->cartModel->removeItem($item['cart_item_id']);
                 }

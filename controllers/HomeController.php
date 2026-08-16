@@ -21,6 +21,15 @@ class HomeController
         $heroBanners = $bannerModel->getActiveBannersByPosition('hero_slider');
         $promoBanners = $bannerModel->getActiveBannersByPosition('promo_banner', 2);
         
+        // Fetch Active Flash Sale
+        require_once PATH_MODEL . 'FlashSaleModel.php';
+        $flashSaleModel = new FlashSaleModel();
+        $activeFlashSale = $flashSaleModel->getActiveFlashSale();
+        $flashSaleItems = [];
+        if ($activeFlashSale) {
+            $flashSaleItems = $flashSaleModel->getFlashSaleItems($activeFlashSale['id']);
+        }
+        
         $view = 'client/home';
         require_once PATH_VIEW . 'layouts/client_layout.php';
     }

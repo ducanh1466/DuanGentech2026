@@ -180,7 +180,9 @@ class HomeController
         }
 
         require_once PATH_MODEL . 'ProductModel.php';
+        require_once PATH_MODEL . 'ReviewModel.php';
         $productModel = new ProductModel();
+        $reviewModel = new ReviewModel();
         
         $product = $productModel->getProductById($id);
         if (!$product) {
@@ -193,6 +195,21 @@ class HomeController
         $variantsData = $productModel->getVariantsByProductId($id);
         $specs = $productModel->getProductSpecs($id);
         $relatedProducts = $productModel->getProductsByCategory($product['category_id'], 4, $id);
+
+        // --- Reviews Data ---
+        $reviews = $reviewModel->getReviewsByProductId($id);
+        $ratingData = $reviewModel->getAverageRating($id);
+        $avgRating = $ratingData['avg_rating'] ? round($ratingData['avg_rating'], 1) : 0;
+        $totalReviews = $ratingData['total_reviews'] ?? 0;
+        
+        $isEligibleToReview = false;
+        $eligibleOrderId = null;
+        if (isset($_SESSION['user'])) {
+            $eligibleOrderId = $reviewModel->checkEligibilityToReview($_SESSION['user']['user_id'], $id);
+            if ($eligibleOrderId) {
+                $isEligibleToReview = true;
+            }
+        }
 
         $view = 'client/product_detail';
         $title = $product['product_name'] . ' - Gentech';
@@ -286,5 +303,39 @@ class HomeController
         $view = 'client/order_detail';
         $title = 'Chi Tiết Đơn Hàng - Gentech';
         require_once PATH_VIEW . 'layouts/client_layout.php';
+    }
+
+    public function postReview()
+    {
+        if (!isset($_SESSION['user']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ?action=/');
+            exit;
+        }
+
+        $userId = $_SESSION['user']['user_id'];
+        $productId = $_POST['product_id'] ?? 0;
+        $rating = $_POST['rating'] ?? 5;
+        $content = trim($_POST['content'] ?? '');
+
+        if (!$productId || empty($content)) {
+            $_SESSION['error'] = 'Vui lòng điền nội dung đánh giá.';
+            header("Location: ?action=product-detail&id={$productId}");
+            exit;
+        }
+
+        require_once PATH_MODEL . 'ReviewModel.php';
+        $reviewModel = new ReviewModel();
+
+        $orderId = $reviewModel->checkEligibilityToReview($userId, $productId);
+        
+        if ($orderId) {
+            $reviewModel->insertReview($orderId, $productId, $rating, $content);
+            $_SESSION['success'] = 'Cảm ơn bạn đã đánh giá sản phẩm!';
+        } else {
+            $_SESSION['error'] = 'Bạn không có quyền đánh giá sản phẩm này (Chưa mua hoặc đã đánh giá rồi).';
+        }
+
+        header("Location: ?action=product-detail&id={$productId}#reviews");
+        exit;
     }
 }

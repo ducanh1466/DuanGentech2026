@@ -11,6 +11,7 @@ match ($action) {
     'support' => (new HomeController)->support(),
     'products' => (new HomeController)->products(),
     'product-detail' => (new HomeController)->productDetail(),
+    'post-review' => (new HomeController)->postReview(),
     'cart' => (new CartController)->index(),
     'cart-add' => (new CartController)->add(),
     'cart-update' => (new CartController)->update(),

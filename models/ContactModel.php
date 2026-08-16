@@ -75,7 +75,7 @@ class ContactModel extends BaseModel {
         }
 
         if ($department !== '') {
-            $sql .= " AND assigned_department = :department";
+            $sql .= " AND (assigned_department = :department OR status IN ('resolved', 'closed'))";
             $params['department'] = $department;
         }
 
@@ -119,7 +119,7 @@ class ContactModel extends BaseModel {
         }
 
         if ($department !== '') {
-            $sql .= " AND assigned_department = :department";
+            $sql .= " AND (assigned_department = :department OR status IN ('resolved', 'closed'))";
             $params['department'] = $department;
         }
 
@@ -145,7 +145,7 @@ class ContactModel extends BaseModel {
     }
 
     public function updateDepartment($id, $department) {
-        $sql = "UPDATE {$this->table} SET assigned_department = :department WHERE id = :id";
+        $sql = "UPDATE {$this->table} SET assigned_department = :department, status = 'pending' WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute(['department' => $department, 'id' => $id]);
     }

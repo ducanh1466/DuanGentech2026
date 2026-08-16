@@ -10,7 +10,7 @@ class ProductModel extends BaseModel
 
     // Lấy toàn bộ danh sách sản phẩm (Dùng nhiều trong trang quản trị Admin)
     // Bao gồm: tên danh mục, tên thương hiệu, 1 ảnh đại diện và mức giá rẻ nhất trong các biến thể
-    public function getAllProducts($keyword = '', $limit = 0, $offset = 0, $status = '')
+    public function getAllProducts($keyword = '', $limit = 0, $offset = 0, $status = '', $category_id = null)
     {
         // Get products with their primary image and minimum variant price
         $baseSql = "SELECT p.*, c.category_name, b.brand_name,
@@ -22,6 +22,8 @@ class ProductModel extends BaseModel
             LEFT JOIN tb_brands b ON p.brand_id = b.brand_id";
         
         $params = [];
+        $whereAdded = false;
+
         if ($status !== '') {
             if ($status === '1' || $status === 'active') {
                 $baseSql .= " WHERE (p.status = 'active' OR p.status = '1')";
@@ -31,6 +33,12 @@ class ProductModel extends BaseModel
                 $baseSql .= " WHERE p.status = :status";
                 $params['status'] = $status;
             }
+            $whereAdded = true;
+        }
+
+        if ($category_id) {
+            $baseSql .= $whereAdded ? " AND p.category_id = :category_id" : " WHERE p.category_id = :category_id";
+            $params['category_id'] = $category_id;
         }
             
         return $this->fetchWithPagination(
@@ -44,10 +52,12 @@ class ProductModel extends BaseModel
         );
     }
 
-    public function countTotalProductsFiltered($keyword = '', $status = '')
+    public function countTotalProductsFiltered($keyword = '', $status = '', $category_id = null)
     {
         $sql = "SELECT COUNT(*) as total FROM {$this->table} p";
         $params = [];
+        $whereAdded = false;
+
         if ($status !== '') {
             if ($status === '1' || $status === 'active') {
                 $sql .= " WHERE (p.status = 'active' OR p.status = '1')";
@@ -57,6 +67,12 @@ class ProductModel extends BaseModel
                 $sql .= " WHERE p.status = :status";
                 $params['status'] = $status;
             }
+            $whereAdded = true;
+        }
+
+        if ($category_id) {
+            $sql .= $whereAdded ? " AND p.category_id = :category_id" : " WHERE p.category_id = :category_id";
+            $params['category_id'] = $category_id;
         }
 
         return $this->countTotalFiltered(
@@ -141,6 +157,118 @@ class ProductModel extends BaseModel
         }
         
         return $product;
+    }
+
+    // ------------------------------------------------------------------------
+    // INVENTORY MANAGEMENT METHODS
+    // ------------------------------------------------------------------------
+
+    public function getAllInventory($keyword = '', $limit = 0, $offset = 0, $stockFilter = '', $category_id = null)
+    {
+        $sql = "SELECT pv.variant_id, p.product_id, p.product_name, pv.sku, pv.price, pv.stock,
+                       (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT GROUP_CONCAT(av.attribute_value SEPARATOR ' - ') 
+                        FROM tb_variant_attributes va 
+                        JOIN tb_attribute_values av ON va.attribute_value_id = av.attribute_value_id 
+                        WHERE va.variant_id = pv.variant_id) as attributes
+                FROM tb_product_variants pv
+                JOIN tb_products p ON pv.product_id = p.product_id
+                WHERE (p.status = 1 OR p.status = 'active')";
+
+        $params = [];
+
+        if (!empty($keyword)) {
+            $sql .= " AND (p.product_name LIKE :keyword OR pv.sku LIKE :keyword)";
+            $params['keyword'] = "%{$keyword}%";
+        }
+
+        if ($stockFilter === 'low') {
+            $sql .= " AND pv.stock <= 10";
+        } elseif ($stockFilter === 'out') {
+            $sql .= " AND pv.stock = 0";
+        } elseif ($stockFilter === 'in') {
+            $sql .= " AND pv.stock > 10";
+        }
+
+        if ($category_id) {
+            $sql .= " AND p.category_id = :category_id";
+            $params['category_id'] = $category_id;
+        }
+
+        $sql .= " ORDER BY pv.stock ASC, p.product_id DESC";
+
+        if ($limit > 0) {
+            $sql .= " LIMIT :limit OFFSET :offset";
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+
+        foreach ($params as $key => $val) {
+            $stmt->bindValue(':' . $key, $val);
+        }
+
+        if ($limit > 0) {
+            $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countInventory($keyword = '', $stockFilter = '', $category_id = null)
+    {
+        $sql = "SELECT COUNT(*) 
+                FROM tb_product_variants pv
+                JOIN tb_products p ON pv.product_id = p.product_id
+                WHERE (p.status = 1 OR p.status = 'active')";
+
+        $params = [];
+
+        if (!empty($keyword)) {
+            $sql .= " AND (p.product_name LIKE :keyword OR pv.sku LIKE :keyword)";
+            $params['keyword'] = "%{$keyword}%";
+        }
+
+        if ($stockFilter === 'low') {
+            $sql .= " AND pv.stock <= 10";
+        } elseif ($stockFilter === 'out') {
+            $sql .= " AND pv.stock = 0";
+        } elseif ($stockFilter === 'in') {
+            $sql .= " AND pv.stock > 10";
+        }
+
+        if ($category_id) {
+            $sql .= " AND p.category_id = :category_id";
+            $params['category_id'] = $category_id;
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function updateStockQuick($variant_id, $stock)
+    {
+        try {
+            $sql = "UPDATE tb_product_variants SET stock = :stock WHERE variant_id = :variant_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                'stock' => (int)$stock,
+                'variant_id' => (int)$variant_id
+            ]);
+        } catch(PDOException $e) {}
+
+        try {
+            $sql2 = "UPDATE tb_product_variants SET stock_quantity = :stock WHERE variant_id = :variant_id";
+            $stmt2 = $this->pdo->prepare($sql2);
+            return $stmt2->execute([
+                'stock' => (int)$stock,
+                'variant_id' => (int)$variant_id
+            ]);
+        } catch(PDOException $e) {}
+        
+        return true;
     }
 
     // Lấy danh sách các hình ảnh của một sản phẩm (Sắp xếp theo thứ tự hiển thị)
@@ -468,7 +596,7 @@ class ProductModel extends BaseModel
         $params = [];
 
         if (!empty($filters['keyword'])) {
-            $sql .= " AND p.product_name LIKE :keyword";
+            $sql .= " AND (p.product_name LIKE :keyword OR c.category_name LIKE :keyword OR b.brand_name LIKE :keyword)";
             $params['keyword'] = "%{$filters['keyword']}%";
         }
 
@@ -588,11 +716,21 @@ class ProductModel extends BaseModel
     // Lấy số lượng tồn kho của một biến thể
     public function getVariantStock($variant_id)
     {
-        $sql = "SELECT stock_quantity FROM tb_product_variants WHERE variant_id = :variant_id";
+        $sql = "SELECT stock FROM tb_product_variants WHERE variant_id = :variant_id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['variant_id' => $variant_id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? (int) $result['stock_quantity'] : 0;
+        
+        // Fallback to stock_quantity if stock doesn't exist or is null
+        if ($result === false || !isset($result['stock'])) {
+            $sql2 = "SELECT stock_quantity FROM tb_product_variants WHERE variant_id = :variant_id";
+            $stmt2 = $this->pdo->prepare($sql2);
+            $stmt2->execute(['variant_id' => $variant_id]);
+            $res2 = $stmt2->fetch(PDO::FETCH_ASSOC);
+            return $res2 ? (int) $res2['stock_quantity'] : 0;
+        }
+
+        return (int) $result['stock'];
     }
 
     // Trừ số lượng tồn kho của một biến thể
@@ -604,11 +742,55 @@ class ProductModel extends BaseModel
             return false;
         }
 
-        $sql = "UPDATE tb_product_variants SET stock_quantity = stock_quantity - :quantity WHERE variant_id = :variant_id";
+        // Cập nhật cả 2 cột nếu schema có sự nhầm lẫn
+        try {
+            $sql = "UPDATE tb_product_variants SET stock = stock - :quantity WHERE variant_id = :variant_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                'quantity' => $quantity,
+                'variant_id' => $variant_id
+            ]);
+        } catch(PDOException $e) {
+            // Ignore if 'stock' column doesn't exist
+        }
+
+        try {
+            $sql2 = "UPDATE tb_product_variants SET stock_quantity = stock_quantity - :quantity WHERE variant_id = :variant_id";
+            $stmt2 = $this->pdo->prepare($sql2);
+            $stmt2->execute([
+                'quantity' => $quantity,
+                'variant_id' => $variant_id
+            ]);
+        } catch(PDOException $e) {
+            // Ignore if 'stock_quantity' doesn't exist
+        }
+
+        return true;
+    }
+
+    // Lấy số lượng tồn kho của sản phẩm gốc
+    public function getProductStock($product_id)
+    {
+        $sql = "SELECT stock FROM tb_products WHERE product_id = :product_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['product_id' => $product_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? (int) $result['stock'] : 0;
+    }
+
+    // Trừ số lượng tồn kho của sản phẩm gốc
+    public function reduceProductStock($product_id, $quantity)
+    {
+        $currentStock = $this->getProductStock($product_id);
+        if ($currentStock < $quantity) {
+            return false;
+        }
+
+        $sql = "UPDATE tb_products SET stock = stock - :quantity WHERE product_id = :product_id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
             'quantity' => $quantity,
-            'variant_id' => $variant_id
+            'product_id' => $product_id
         ]);
     }
 }

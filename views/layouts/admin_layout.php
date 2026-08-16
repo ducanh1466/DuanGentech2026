@@ -15,6 +15,15 @@
     <!-- Custom CSS -->
     <link href="<?= BASE_CSS ?>style.css?v=<?= time() ?>" rel="stylesheet">
     <link href="<?= BASE_CSS ?>admin.css?v=<?= time() ?>" rel="stylesheet">
+    <style>
+        .menu-toggle-icon {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+        [data-bs-toggle="collapse"]:not(.collapsed) .menu-toggle-icon {
+            transform: rotate(180deg);
+        }
+    </style>
 </head>
 
 <body>
@@ -29,7 +38,8 @@
             <div class="sidebar-header">
                 <a href="<?= BASE_URL ?>?action=admin"
                     class="sidebar-brand p-3 d-flex justify-content-center align-items-center text-decoration-none">
-                    <div class="d-flex justify-content-center align-items-center" style="width: 100%; min-height: 68px;">
+                    <div class="d-flex justify-content-center align-items-center"
+                        style="width: 100%; min-height: 68px;">
                         <img src="<?= BASE_URL ?>assets/uploads/logo1.png?v=<?= time() ?>" alt="Brand Logo"
                             style="height: 56px; width: auto; object-fit: contain; transition: transform 0.3s ease; filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.15));"
                             onmouseover="this.style.transform='scale(1.08)'"
@@ -42,128 +52,183 @@
             </div>
 
             <nav class="sidebar-nav">
-                    <div class="nav-label">Hệ Thống</div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link <?= ($action ?? '') === 'admin' ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin">
-                                <i class="bi bi-grid-1x2-fill"></i> Dashboard
-                            </a>
-                        </li>
-                    </ul>
+                <div class="nav-label">Hệ Thống</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link <?= ($action ?? '') === 'admin' ? 'active' : '' ?>"
+                            href="<?= BASE_URL ?>?action=admin">
+                            <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                        </a>
+                    </li>
+                </ul>
 
                 <div class="nav-label">Quản Trị Hệ Thống</div>
                 <ul class="nav flex-column">
-                    <?php 
-                        $role = $_SESSION['user']['role']; 
-                        $permissionsStr = $_SESSION['user']['permissions'] ?? '[]';
-                        $permissions = json_decode($permissionsStr, true);
-                        if (!is_array($permissions)) $permissions = [];
+                    <?php
+                    $role = $_SESSION['user']['role'];
+                    $permissionsStr = $_SESSION['user']['permissions'] ?? '[]';
+                    $permissions = json_decode($permissionsStr, true);
+                    if (!is_array($permissions))
+                        $permissions = [];
                     ?>
-                    
-                    <?php if ($role == 1 || in_array('products', $permissions)): ?>
+
+                    <!-- QUẢN LÝ CATALOG -->
+                    <?php if ($role == 1 || in_array('products', $permissions) || in_array('categories', $permissions) || in_array('brands', $permissions) || in_array('attributes', $permissions)): ?>
+                        <?php 
+                            $catalogActive = in_array($action ?? '', ['admin-products', 'admin-product-create', 'admin-product-edit', 'admin-inventory', 'admin-categories', 'admin-brands', 'admin-attributes']) || strpos($action ?? '', 'admin-attribute') !== false;
+                        ?>
                         <li class="nav-item">
-                            <a class="nav-link <?= in_array($action ?? '', ['admin-products', 'admin-product-create', 'admin-product-edit']) ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-products">
-                                <i class="bi bi-box-seam"></i> Sản phẩm
+                            <a class="nav-link d-flex align-items-center <?= $catalogActive ? '' : 'collapsed' ?>" data-bs-toggle="collapse" href="#collapseCatalog" role="button" aria-expanded="<?= $catalogActive ? 'true' : 'false' ?>">
+                                <i class="bi bi-box-seam me-2"></i> Catalog
+                                <i class="bi bi-chevron-down ms-auto menu-toggle-icon"></i>
                             </a>
-                        </li>
-                    <?php endif; ?>
-                    
-                    <?php if ($role == 1 || in_array('categories', $permissions)): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= ($action ?? '') === 'admin-categories' ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-categories">
-                                <i class="bi bi-tags"></i> Danh mục
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    
-                    <?php if ($role == 1 || in_array('brands', $permissions)): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= ($action ?? '') === 'admin-brands' ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-brands">
-                                <i class="bi bi-star"></i> Thương hiệu
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    
-                    <?php if ($role == 1 || in_array('attributes', $permissions)): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= strpos($action ?? '', 'admin-attribute') !== false ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-attributes">
-                                <i class="bi bi-sliders"></i> Thuộc tính
-                            </a>
+                            <div class="collapse <?= $catalogActive ? 'show' : '' ?>" id="collapseCatalog">
+                                <ul class="nav flex-column ms-3 mt-1" style="border-left: 2px solid var(--border-light);">
+                                    <?php if ($role == 1 || in_array('products', $permissions)): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= in_array($action ?? '', ['admin-products', 'admin-product-create', 'admin-product-edit']) ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-products">
+                                                <i class="bi bi-dot"></i> Sản phẩm
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= ($action ?? '') === 'admin-inventory' ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-inventory">
+                                                <i class="bi bi-dot"></i> Kho Hàng
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($role == 1 || in_array('categories', $permissions)): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= ($action ?? '') === 'admin-categories' ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-categories">
+                                                <i class="bi bi-dot"></i> Danh mục
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($role == 1 || in_array('brands', $permissions)): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= ($action ?? '') === 'admin-brands' ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-brands">
+                                                <i class="bi bi-dot"></i> Thương hiệu
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($role == 1 || in_array('attributes', $permissions)): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= strpos($action ?? '', 'admin-attribute') !== false ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-attributes">
+                                                <i class="bi bi-dot"></i> Thuộc tính
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                            </div>
                         </li>
                     <?php endif; ?>
 
-                    <?php if ($role == 1 || in_array('orders', $permissions)): ?>
+                    <!-- QUẢN LÝ BÁN HÀNG -->
+                    <?php if ($role == 1 || in_array('orders', $permissions) || in_array('reviews', $permissions) || in_array('contacts', $permissions)): ?>
+                        <?php 
+                            $salesActive = in_array($action ?? '', ['admin-orders', 'admin-order-detail', 'admin-reviews', 'admin-contacts']) || strpos($action ?? '', 'admin-review') !== false || strpos($action ?? '', 'admin-contact') !== false;
+                        ?>
                         <li class="nav-item">
-                            <a class="nav-link <?= in_array($action ?? '', ['admin-orders', 'admin-order-detail']) ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-orders">
-                                <i class="bi bi-receipt"></i> Đơn hàng
+                            <a class="nav-link d-flex align-items-center <?= $salesActive ? '' : 'collapsed' ?>" data-bs-toggle="collapse" href="#collapseSales" role="button" aria-expanded="<?= $salesActive ? 'true' : 'false' ?>">
+                                <i class="bi bi-cart me-2"></i> Bán Hàng
+                                <i class="bi bi-chevron-down ms-auto menu-toggle-icon"></i>
                             </a>
+                            <div class="collapse <?= $salesActive ? 'show' : '' ?>" id="collapseSales">
+                                <ul class="nav flex-column ms-3 mt-1" style="border-left: 2px solid var(--border-light);">
+                                    <?php if ($role == 1 || in_array('orders', $permissions)): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= in_array($action ?? '', ['admin-orders', 'admin-order-detail']) ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-orders">
+                                                <i class="bi bi-dot"></i> Đơn hàng
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($role == 1 || in_array('reviews', $permissions)): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= strpos($action ?? '', 'admin-review') !== false ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-reviews">
+                                                <i class="bi bi-dot"></i> Đánh giá
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($role == 1 || in_array('contacts', $permissions)): ?>
+                                        <?php $contactActive = strpos($action ?? '', 'admin-contact') !== false; ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 d-flex align-items-center <?= $contactActive ? '' : 'collapsed' ?>" data-bs-toggle="collapse" href="#collapseContacts" role="button" aria-expanded="<?= $contactActive ? 'true' : 'false' ?>">
+                                                <i class="bi bi-dot"></i> Phản ánh
+                                                <i class="bi bi-chevron-down ms-auto menu-toggle-icon" style="font-size: 0.75rem;"></i>
+                                            </a>
+                                            <div class="collapse <?= $contactActive ? 'show' : '' ?>" id="collapseContacts">
+                                                <ul class="nav flex-column ms-3 mt-1" style="border-left: 2px solid var(--border-light);">
+                                                    <?php if ($role == 1 || $role == 2): ?>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link py-1 <?= ($action == 'admin-contacts' && ($_GET['department'] ?? '') == 'CSKH') ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-contacts&department=CSKH" style="font-size: 0.85rem;">
+                                                            CSKH
+                                                        </a>
+                                                    </li>
+                                                    <?php endif; ?>
+                                                    <?php if ($role == 1 || $role == 3): ?>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link py-1 <?= ($action == 'admin-contacts' && ($_GET['department'] ?? '') == 'KyThuat') ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-contacts&department=KyThuat" style="font-size: 0.85rem;">
+                                                            Kỹ thuật
+                                                        </a>
+                                                    </li>
+                                                    <?php endif; ?>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                            </div>
                         </li>
                     <?php endif; ?>
 
-                    <?php if ($role == 1 || in_array('reviews', $permissions)): ?>
+                    <!-- MARKETING & TIN TỨC -->
+                    <?php if ($role == 1 || in_array('banners', $permissions) || in_array('discounts', $permissions ?? []) || in_array('flash_sales', $permissions ?? []) || in_array('news', $permissions)): ?>
+                        <?php 
+                            $marketingActive = in_array($action ?? '', ['admin-banners', 'admin-banner-form', 'admin-discounts', 'admin-flash-sales', 'admin-news']) || strpos($action ?? '', 'admin-discount') !== false || strpos($action ?? '', 'admin-flash-sale') !== false || strpos($action ?? '', 'admin-news') !== false;
+                        ?>
                         <li class="nav-item">
-                            <a class="nav-link <?= strpos($action ?? '', 'admin-review') !== false ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-reviews">
-                                <i class="bi bi-star-half"></i> Đánh giá
+                            <a class="nav-link d-flex align-items-center <?= $marketingActive ? '' : 'collapsed' ?>" data-bs-toggle="collapse" href="#collapseMarketing" role="button" aria-expanded="<?= $marketingActive ? 'true' : 'false' ?>">
+                                <i class="bi bi-megaphone me-2"></i> Marketing
+                                <i class="bi bi-chevron-down ms-auto menu-toggle-icon"></i>
                             </a>
+                            <div class="collapse <?= $marketingActive ? 'show' : '' ?>" id="collapseMarketing">
+                                <ul class="nav flex-column ms-3 mt-1" style="border-left: 2px solid var(--border-light);">
+                                    <?php if ($role == 1 || in_array('banners', $permissions)): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= in_array($action ?? '', ['admin-banners', 'admin-banner-form']) ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-banners">
+                                                <i class="bi bi-dot"></i> Banner
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($role == 1 || in_array('discounts', $permissions ?? [])): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= strpos($action ?? '', 'admin-discount') !== false ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-discounts">
+                                                <i class="bi bi-dot"></i> Mã giảm giá
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($role == 1 || in_array('flash_sales', $permissions ?? [])): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= strpos($action ?? '', 'admin-flash-sale') !== false ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-flash-sales">
+                                                <i class="bi bi-dot"></i> Flash Sale
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($role == 1 || in_array('news', $permissions)): ?>
+                                        <li class="nav-item">
+                                            <a class="nav-link py-2 <?= strpos($action ?? '', 'admin-news') !== false ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-news">
+                                                <i class="bi bi-dot"></i> Tin tức
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                            </div>
                         </li>
                     <?php endif; ?>
 
-                    <?php if ($role == 1 || in_array('contacts', $permissions)): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= strpos($action ?? '', 'admin-contact') !== false ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-contacts">
-                                <i class="bi bi-headset"></i> Phản ánh
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-                    <?php if ($role == 1 || in_array('banners', $permissions)): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= in_array($action ?? '', ['admin-banners', 'admin-banner-form']) ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-banners">
-                                <i class="bi bi-images"></i> Banner
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-                    <?php if ($role == 1 || in_array('discounts', $permissions ?? [])): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= strpos($action ?? '', 'admin-discount') !== false ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-discounts">
-                                <i class="bi bi-ticket-perforated"></i> Mã giảm giá
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-                    <?php if ($role == 1 || in_array('flash_sales', $permissions ?? [])): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= strpos($action ?? '', 'admin-flash-sale') !== false ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-flash-sales">
-                                <i class="bi bi-lightning-charge"></i> Flash Sale
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
-                    <?php if ($role == 1 || in_array('news', $permissions)): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= strpos($action ?? '', 'admin-news') !== false ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-news">
-                                <i class="bi bi-newspaper"></i> Tin tức
-                            </a>
-                        </li>
-                    <?php endif; ?>
-
+                    <!-- TÀI KHOẢN -->
                     <?php if ($role == 1): ?>
                         <li class="nav-item">
-                            <a class="nav-link <?= ($action ?? '') === 'admin-users' ? 'active' : '' ?>"
-                                href="<?= BASE_URL ?>?action=admin-users">
+                            <a class="nav-link <?= ($action ?? '') === 'admin-users' ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-users">
                                 <i class="bi bi-people"></i> Tài Khoản
                             </a>
                         </li>
@@ -207,10 +272,7 @@
                     </div>
                 </div>
                 <div class="topbar-right d-flex align-items-center gap-3">
-                    <button class="theme-toggle" aria-label="Chuyển đổi giao diện">
-                        <i class="bi bi-moon-fill icon-moon"></i>
-                        <i class="bi bi-sun-fill icon-sun"></i>
-                    </button>
+
 
                     <div class="dropdown">
                         <div class="cursor-pointer" data-bs-toggle="dropdown" aria-expanded="false">

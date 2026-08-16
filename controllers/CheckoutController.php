@@ -214,8 +214,12 @@ class CheckoutController
                         throw new Exception("Rất tiếc! Sản phẩm '" . htmlspecialchars($item['product_name']) . "' hiện chỉ còn " . $currentStock . " sản phẩm trong kho. Vui lòng quay lại giỏ hàng để cập nhật số lượng.");
                     }
                     
-                    // Trừ tồn kho
+                    // Trừ tồn kho biến thể
                     $this->productModel->reduceVariantStock($variantId, $quantityToBuy);
+
+                    // Trừ tồn kho sản phẩm gốc
+                    $productId = $item['product_id'];
+                    $this->productModel->reduceProductStock($productId, $quantityToBuy);
 
                     // Thêm vào chi tiết đơn hàng
                     $this->orderDetailModel->insertOrderDetail(

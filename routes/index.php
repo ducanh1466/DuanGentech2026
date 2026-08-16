@@ -69,6 +69,10 @@ match ($action) {
     'admin-contact-bulk'    => (new AdminController)->bulkUpdateContacts(),
     'admin-contact-logs'    => (new AdminController)->getContactLogsAjax(),
     
+    // --- INVENTORY ROUTING ---
+    'admin-inventory'       => (new AdminController)->inventory(),
+    'admin-update-stock-quick' => (new AdminController)->updateStockQuick(),
+    
     // --- ATTRIBUTES ROUTING ---
     'admin-attributes'      => (new AdminController)->attributes(),
     'admin-attribute-create' => (new AdminController)->attributeCreate(),

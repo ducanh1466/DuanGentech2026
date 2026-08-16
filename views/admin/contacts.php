@@ -20,50 +20,49 @@ $pageTitle = 'Quản lý yêu cầu phản ánh';
 
 <div class="admin-table-card">
     <div class="card-header-custom d-flex justify-content-between align-items-center">
-        <h6 class="m-0 fw-bold"><i class="bi bi-headset me-2"></i>Danh sách yêu cầu phản ánh</h6>
+        <?php $deptName = ($_GET['department'] ?? '') === 'KyThuat' ? 'Hỗ trợ Kỹ thuật' : 'Chăm sóc Khách hàng'; ?>
+        <h6 class="m-0 fw-bold"><i class="bi bi-headset me-2"></i>Danh sách yêu cầu phản ánh - <?= $deptName ?></h6>
     </div>
+
 
     <div class="p-3 border-bottom bg-light">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
             <!-- Filter Form -->
-            <form method="GET" class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 850px;">
+            <form method="GET" class="d-flex gap-3 m-0 p-2 align-items-center flex-grow-1" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; max-width: 850px;">
                 <input type="hidden" name="action" value="admin-contacts">
-
-                <div class="position-relative" style="width: 220px;">
-                    <i class="bi bi-search position-absolute"
-                        style="left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted); font-size: 0.875rem;"></i>
-                    <input type="text" name="keyword" class="form-control form-control-sm ps-4"
-                        value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>"
-                        placeholder="Tìm ID, SĐT, Tên...">
-                </div>
-
-                <select name="status" class="form-select form-select-sm" style="width: 140px;">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="pending" <?= ($status ?? '') === 'pending' ? 'selected' : '' ?>>Chờ xử lý</option>
-                    <option value="processing" <?= ($status ?? '') === 'processing' ? 'selected' : '' ?>>Đang xử lý</option>
-                    <option value="resolved" <?= ($status ?? '') === 'resolved' ? 'selected' : '' ?>>Đã xử lý</option>
-                    <option value="reprocess" <?= ($status ?? '') === 'reprocess' ? 'selected' : '' ?>>Xử lý lại</option>
-                    <option value="closed" <?= ($status ?? '') === 'closed' ? 'selected' : '' ?>>Đã đóng</option>
-                    <option value="rejected" <?= ($status ?? '') === 'rejected' ? 'selected' : '' ?>>Từ chối</option>
-                </select>
-                
-                <?php if ($_SESSION['user']['role'] == 1): ?>
-                <select name="department" class="form-select form-select-sm" style="width: 130px;">
-                    <option value="">Phòng ban</option>
-                    <option value="CSKH" <?= ($_GET['department'] ?? '') === 'CSKH' ? 'selected' : '' ?>>CSKH</option>
-                    <option value="KyThuat" <?= ($_GET['department'] ?? '') === 'KyThuat' ? 'selected' : '' ?>>Kỹ Thuật</option>
-                </select>
+                <?php if (!empty($_GET['department'])): ?>
+                    <input type="hidden" name="department" value="<?= htmlspecialchars($_GET['department']) ?>">
                 <?php endif; ?>
 
-                <div class="d-flex align-items-center gap-1">
-                    <input type="date" name="start_date" class="form-control form-control-sm"
-                        value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>" title="Từ ngày">
-                    <span class="text-muted small">-</span>
-                    <input type="date" name="end_date" class="form-control form-control-sm"
-                        value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>" title="Đến ngày">
+                <!-- Status Filter -->
+                <div class="input-group input-group-sm" style="flex: 1; min-width: 140px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
+                    <span class="input-group-text bg-white border-end-0 border-light text-muted"><i class="bi bi-funnel"></i></span>
+                    <select name="status" class="form-select border-start-0 border-light shadow-none fw-medium" style="color: #475569; cursor: pointer;">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="pending" <?= ($status ?? '') === 'pending' ? 'selected' : '' ?>>Chờ xử lý</option>
+                        <option value="processing" <?= ($status ?? '') === 'processing' ? 'selected' : '' ?>>Đang xử lý</option>
+                        <option value="resolved" <?= ($status ?? '') === 'resolved' ? 'selected' : '' ?>>Đã xử lý</option>
+                        <option value="reprocess" <?= ($status ?? '') === 'reprocess' ? 'selected' : '' ?>>Xử lý lại</option>
+                        <option value="closed" <?= ($status ?? '') === 'closed' ? 'selected' : '' ?>>Đã đóng</option>
+                        <option value="rejected" <?= ($status ?? '') === 'rejected' ? 'selected' : '' ?>>Từ chối</option>
+                    </select>
                 </div>
 
-                <button type="submit" class="btn btn-sm btn-primary text-nowrap px-3"><i class="bi bi-search me-1"></i> Tìm kiếm</button>
+                <!-- Date Filter -->
+                <div class="d-flex align-items-center gap-1 bg-white border border-light" style="border-radius: 8px; padding: 2px 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <input type="date" name="start_date" class="form-control form-control-sm border-0 shadow-none fw-medium"
+                        value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>" title="Từ ngày" style="color: #475569; background: transparent;">
+                    <span class="text-muted small px-1"><i class="bi bi-arrow-right"></i></span>
+                    <input type="date" name="end_date" class="form-control form-control-sm border-0 shadow-none fw-medium"
+                        value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>" title="Đến ngày" style="color: #475569; background: transparent;">
+                </div>
+
+                <!-- Search Input -->
+                <div class="input-group input-group-sm" style="flex: 2; min-width: 200px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
+                    <span class="input-group-text bg-white border-end-0 border-light text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="keyword" class="form-control border-start-0 border-light shadow-none fw-medium" value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>" placeholder="Tìm ID, SĐT, Tên..." style="color: #475569;">
+                </div>
+                <button type="submit" class="btn btn-sm btn-primary shadow-sm text-nowrap px-3" style="border-radius: 8px;"><i class="bi bi-search me-1"></i>Tìm kiếm</button>
             </form>
 
             <!-- Bulk Actions Toolbar -->

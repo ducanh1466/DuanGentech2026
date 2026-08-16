@@ -133,6 +133,15 @@
                         </li>
                     <?php endif; ?>
 
+                    <?php if ($role == 1 || in_array('discounts', $permissions ?? [])): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos($action ?? '', 'admin-discount') !== false ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-discounts">
+                                <i class="bi bi-ticket-perforated"></i> Mã giảm giá
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <?php if ($role == 1 || in_array('news', $permissions)): ?>
                         <li class="nav-item">
                             <a class="nav-link <?= strpos($action ?? '', 'admin-news') !== false ? 'active' : '' ?>"

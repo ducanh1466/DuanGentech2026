@@ -57,12 +57,13 @@ class OrderModel extends BaseModel
         );
     }
 
-    // Lấy chi tiết thông tin chung của 1 đơn hàng theo ID mã đơn
     public function getOrderById($id)
     {
-        $sql = "SELECT o.*, u.full_name as user_full_name, u.email as user_email
+        $sql = "SELECT o.*, u.full_name as user_full_name, u.email as user_email,
+                       d.code as discount_code, d.discount_type, d.discount_value, d.max_discount
                 FROM {$this->table} o
                 LEFT JOIN tb_users u ON o.user_id = u.user_id
+                LEFT JOIN tb_discounts d ON o.discount_id = d.discount_id
                 WHERE o.order_id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id]);

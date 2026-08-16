@@ -323,16 +323,38 @@
                     </div>
                 </div>
 
+                <?php
+                // Tính lại tiền hàng gốc (chưa giảm)
+                $subtotal = 0;
+                if (!empty($orderDetails)) {
+                    foreach ($orderDetails as $detail) {
+                        $subtotal += $detail['unit_price'] * $detail['quantity'];
+                    }
+                }
+                $discountAmount = $subtotal - $order['total_amount'];
+                if ($discountAmount < 0) $discountAmount = 0;
+                ?>
                 <div class="row justify-content-end mt-4 pt-4 border-top">
                     <div class="col-md-5 col-lg-4">
                         <div class="d-flex justify-content-between mb-3">
                             <span class="text-secondary fw-medium">Tổng tiền hàng</span>
-                            <span class="text-dark fw-bold"><?= number_format($order['total_amount'], 0, ',', '.') ?>đ</span>
+                            <span class="text-dark fw-bold"><?= number_format($subtotal, 0, ',', '.') ?>đ</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-4">
+                        <div class="d-flex justify-content-between mb-3">
                             <span class="text-secondary fw-medium">Phí vận chuyển</span>
                             <span class="text-success fw-bold">Miễn phí</span>
                         </div>
+                        <?php if ($discountAmount > 0): ?>
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="text-secondary fw-medium">
+                                Mã giảm giá 
+                                <?php if (!empty($order['discount_code'])): ?>
+                                    <span class="badge bg-primary ms-1"><?= htmlspecialchars($order['discount_code']) ?></span>
+                                <?php endif; ?>
+                            </span>
+                            <span class="text-danger fw-bold">-<?= number_format($discountAmount, 0, ',', '.') ?>đ</span>
+                        </div>
+                        <?php endif; ?>
                         <div class="d-flex justify-content-between align-items-center bg-gray-100 p-3 rounded-3 border">
                             <span class="fw-bold text-dark text-uppercase letter-spacing-1">Thành tiền</span>
                             <span class="fw-bold text-danger fs-3"><?= number_format($order['total_amount'], 0, ',', '.') ?>đ</span>

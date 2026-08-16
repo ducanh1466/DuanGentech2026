@@ -103,4 +103,16 @@ match ($action) {
     'admin-news-category-create' => (new AdminController)->newsCategoryCreate(),
     'admin-news-category-update' => (new AdminController)->newsCategoryUpdate(),
     'admin-news-category-delete' => (new AdminController)->newsCategoryDelete(),
+
+    // --- DISCOUNTS ROUTING ---
+    'admin-discounts'         => (new AdminController)->discounts(),
+    'admin-discount-detail'   => (new AdminController)->discountDetail(),
+    'admin-discount-form'     => (new AdminController)->discountForm(),
+    'admin-discount-create'   => (new AdminController)->discountCreate(),
+    'admin-discount-update'   => (new AdminController)->discountUpdate(),
+    'admin-discount-delete'   => (new AdminController)->discountDelete(),
+
+    // --- CHECKOUT AJAX ROUTING ---
+    'apply-discount'          => (new CheckoutController)->applyDiscountAjax(),
+    'remove-discount'         => (new CheckoutController)->removeDiscountAjax(),
 };

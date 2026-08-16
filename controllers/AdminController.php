@@ -1723,9 +1723,7 @@ class AdminController
     // --- ADMIN REVIEW MANAGEMENT ---
     public function reviews()
     {
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $limit = 10;
-        $offset = ($page - 1) * $limit;
+        list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
 
         require_once 'models/ReviewModel.php';
         $reviewModel = new ReviewModel();
@@ -1774,7 +1772,169 @@ class AdminController
                 }
             }
         }
-        header("Location: ?action=admin-reviews");
+    }
+    
+    // --- MÃ GIẢM GIÁ (DISCOUNTS) ---
+
+    public function discounts()
+    {
+        require_once PATH_MODEL . 'DiscountModel.php';
+        $discountModel = new DiscountModel();
+
+        list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+
+        $discounts = $discountModel->getAllDiscounts($keyword, $limit, $offset);
+        $totalRecords = $discountModel->countTotalDiscountsFiltered($keyword);
+        $totalPages = ceil($totalRecords / $limit);
+
+        $title = 'Quản lý Mã Giảm Giá - DGENTECH Admin';
+        $pageTitle = 'Mã Giảm Giá';
+        $action = 'admin-discounts';
+        $view = 'admin/discounts/index';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function discountDetail()
+    {
+        require_once PATH_MODEL . 'DiscountModel.php';
+        $discountModel = new DiscountModel();
+
+        $id = $_GET['id'] ?? 0;
+        $discount = null;
+        $isDetail = true;
+
+        if ($id > 0) {
+            $discount = $discountModel->getDiscountById($id);
+            if (!$discount) {
+                $_SESSION['error'] = "Không tìm thấy mã giảm giá!";
+                header("Location: ?action=admin-discounts");
+                exit();
+            }
+        } else {
+            header("Location: ?action=admin-discounts");
+            exit();
+        }
+
+        $title = 'Chi tiết Mã Giảm Giá - DGENTECH Admin';
+        $pageTitle = 'Mã Giảm Giá';
+        $action = 'admin-discounts';
+        $view = 'admin/discounts/form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function discountForm()
+    {
+        require_once PATH_MODEL . 'DiscountModel.php';
+        $discountModel = new DiscountModel();
+
+        $id = $_GET['id'] ?? 0;
+        $discount = null;
+        $isDetail = false; // Add for compatibility with forms if needed
+
+        if ($id > 0) {
+            $discount = $discountModel->getDiscountById($id);
+            if (!$discount) {
+                $_SESSION['error'] = "Không tìm thấy mã giảm giá!";
+                header("Location: ?action=admin-discounts");
+                exit();
+            }
+        }
+
+        $title = ($id > 0 ? 'Sửa' : 'Thêm') . ' Mã Giảm Giá - DGENTECH Admin';
+        $pageTitle = 'Mã Giảm Giá';
+        $action = 'admin-discounts';
+        $view = 'admin/discounts/form';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function discountCreate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'DiscountModel.php';
+            $discountModel = new DiscountModel();
+
+            $code = trim($_POST['code']);
+            $discount_type = $_POST['discount_type'];
+            $discount_value = $_POST['discount_value'];
+            $max_discount = $_POST['max_discount'] ?? null;
+            $minimum_order_value = $_POST['minimum_order_value'] ?? 0;
+            $quantity = $_POST['quantity'] ?? null;
+            $max_usage_per_user = $_POST['max_usage_per_user'] ?? null;
+            $start_date = !empty($_POST['start_date']) ? $_POST['start_date'] : null;
+            $end_date = !empty($_POST['end_date']) ? $_POST['end_date'] : null;
+            $status = $_POST['status'] ?? 'active';
+
+            // Check duplicate code
+            $existing = $discountModel->getDiscountByCode($code);
+            if ($existing) {
+                $_SESSION['error'] = "Mã giảm giá này đã tồn tại!";
+                header("Location: ?action=admin-discount-form");
+                exit();
+            }
+
+            if ($discountModel->insertDiscount($code, $discount_type, $discount_value, $max_discount, $minimum_order_value, $quantity, $max_usage_per_user, $start_date, $end_date, $status)) {
+                $_SESSION['success'] = "Thêm mã giảm giá thành công!";
+                header("Location: ?action=admin-discounts");
+                exit();
+            } else {
+                $_SESSION['error'] = "Thêm thất bại!";
+            }
+        }
+        header("Location: ?action=admin-discounts");
+        exit();
+    }
+
+    public function discountUpdate()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once PATH_MODEL . 'DiscountModel.php';
+            $discountModel = new DiscountModel();
+
+            $id = $_POST['id'];
+            $code = trim($_POST['code']);
+            $discount_type = $_POST['discount_type'];
+            $discount_value = $_POST['discount_value'];
+            $max_discount = $_POST['max_discount'] ?? null;
+            $minimum_order_value = $_POST['minimum_order_value'] ?? 0;
+            $quantity = $_POST['quantity'] ?? null;
+            $max_usage_per_user = $_POST['max_usage_per_user'] ?? null;
+            $start_date = !empty($_POST['start_date']) ? $_POST['start_date'] : null;
+            $end_date = !empty($_POST['end_date']) ? $_POST['end_date'] : null;
+            $status = $_POST['status'] ?? 'active';
+
+            // Check duplicate code (excluding current ID)
+            $existing = $discountModel->getDiscountByCode($code);
+            if ($existing && $existing['discount_id'] != $id) {
+                $_SESSION['error'] = "Mã giảm giá này đã tồn tại ở mục khác!";
+                header("Location: ?action=admin-discount-form&id=" . $id);
+                exit();
+            }
+
+            if ($discountModel->updateDiscount($id, $code, $discount_type, $discount_value, $max_discount, $minimum_order_value, $quantity, $max_usage_per_user, $start_date, $end_date, $status)) {
+                $_SESSION['success'] = "Cập nhật mã giảm giá thành công!";
+                header("Location: ?action=admin-discounts");
+                exit();
+            } else {
+                $_SESSION['error'] = "Cập nhật thất bại!";
+            }
+        }
+        header("Location: ?action=admin-discounts");
+        exit();
+    }
+
+    public function discountDelete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            require_once PATH_MODEL . 'DiscountModel.php';
+            $discountModel = new DiscountModel();
+            
+            if ($discountModel->deleteDiscount($_POST['id'])) {
+                $_SESSION['success'] = "Xóa mã giảm giá thành công!";
+            } else {
+                $_SESSION['error'] = "Có lỗi xảy ra khi xóa!";
+            }
+        }
+        header("Location: ?action=admin-discounts");
         exit();
     }
 }

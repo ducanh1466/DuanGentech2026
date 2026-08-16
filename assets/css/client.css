@@ -333,6 +333,7 @@ html {
     align-items: center;
     justify-content: center;
     border-top: 1px solid rgba(255,255,255,0.4);
+    z-index: 20;
 }
 .product-card-premium:hover .premium-hover-overlay {
     transform: translateY(0);
@@ -527,6 +528,7 @@ html {
     align-items: center;
     justify-content: center;
     border-top: 1px solid rgba(255,255,255,0.4);
+    z-index: 20;
 }
 .product-card-premium:hover .premium-hover-overlay {
     transform: translateY(0);
@@ -724,4 +726,28 @@ html {
 
 .editorial-card:hover .read-more-btn i {
     transform: translateX(8px);
+}
+
+/* Custom Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hover-scale {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05) !important;
+}
+
+.text-shadow-sm {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }

@@ -92,12 +92,12 @@
                         </div>
                         
                         <!-- Premium Hover Overlay -->
-                        <div class="premium-hover-overlay">
-                            <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form w-100 px-3">
+                        <div class="premium-hover-overlay" style="padding: 1rem;">
+                            <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form w-100 d-flex justify-content-center">
                                 <input type="hidden" name="variant_id" value="<?= htmlspecialchars($product['default_variant_id'] ?? 0) ?>">
                                 <input type="hidden" name="quantity" value="1">
-                                <button type="submit" name="action_type" value="add_to_cart" class="btn btn-dark w-100 rounded-pill py-3 fw-bold btn-premium-add shadow-lg d-flex justify-content-center align-items-center gap-2">
-                                    <i class="bi bi-cart-plus fs-5"></i> THÊM VÀO GIỎ
+                                <button type="submit" name="action_type" value="add_to_cart" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-premium-add shadow-sm d-flex justify-content-center align-items-center gap-2" style="font-size: 0.9rem; transition: all 0.3s ease;">
+                                    <i class="bi bi-cart-plus fs-5"></i> Thêm vào giỏ
                                 </button>
                             </form>
                         </div>
@@ -182,12 +182,12 @@
                         </div>
                         
                         <!-- Premium Hover Overlay -->
-                        <div class="premium-hover-overlay">
-                            <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form w-100 px-3">
+                        <div class="premium-hover-overlay" style="padding: 1rem;">
+                            <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form w-100 d-flex justify-content-center">
                                 <input type="hidden" name="variant_id" value="<?= htmlspecialchars($product['default_variant_id'] ?? 0) ?>">
                                 <input type="hidden" name="quantity" value="1">
-                                <button type="submit" name="action_type" value="add_to_cart" class="btn btn-dark w-100 rounded-pill py-3 fw-bold btn-premium-add shadow-lg d-flex justify-content-center align-items-center gap-2">
-                                    <i class="bi bi-cart-plus fs-5"></i> THÊM VÀO GIỎ
+                                <button type="submit" name="action_type" value="add_to_cart" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-premium-add shadow-sm d-flex justify-content-center align-items-center gap-2" style="font-size: 0.9rem; transition: all 0.3s ease;">
+                                    <i class="bi bi-cart-plus fs-5"></i> Thêm vào giỏ
                                 </button>
                             </form>
                         </div>

@@ -134,6 +134,10 @@ $id = isset($user['user_id']) ? $user['user_id'] : 0;
                                         <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="banners" id="perm_banners" <?= in_array('banners', $userPermissions) ? 'checked' : '' ?>>
                                         <label class="form-check-label" for="perm_banners">Quản lý Banner</label>
                                     </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="reviews" id="perm_reviews" <?= in_array('reviews', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_reviews">Quản lý Đánh giá</label>
+                                    </div>
                                 </div>
                             </div>
                             <small class="text-muted mt-2 d-block"><i class="bi bi-info-circle"></i> Tùy chỉnh quyền hạn riêng cho tài khoản này. Hệ thống sẽ tự động check theo phòng ban khi bạn thay đổi Vai trò.</small>
@@ -190,9 +194,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const permCheckboxes = document.querySelectorAll(".perm-checkbox");
 
     const rolePermissions = {
-        1: ["products", "categories", "brands", "attributes", "orders", "contacts", "news", "banners"], // CNTT (All)
-        2: ["orders", "contacts"], // CSKH
-        3: ["products", "categories", "brands", "attributes", "orders", "contacts"], // Vận hành
+        1: ["products", "categories", "brands", "attributes", "orders", "contacts", "news", "banners", "reviews"], // CNTT (All)
+        2: ["orders", "contacts", "reviews"], // CSKH
+        3: ["products", "categories", "brands", "attributes", "orders", "contacts", "reviews"], // Vận hành
         4: ["news", "banners"] // Marketing
     };
 

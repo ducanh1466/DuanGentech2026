@@ -1719,4 +1719,62 @@ class AdminController
             exit;
         }
     }
+
+    // --- ADMIN REVIEW MANAGEMENT ---
+    public function reviews()
+    {
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        require_once 'models/ReviewModel.php';
+        $reviewModel = new ReviewModel();
+        
+        $reviews = $reviewModel->getAllReviewsPaginated($limit, $offset);
+        $totalReviews = $reviewModel->countTotalReviews();
+        $totalPages = ceil($totalReviews / $limit);
+
+        $title = 'Quản lý đánh giá - DGENTECH Admin';
+        $pageTitle = 'Quản lý đánh giá';
+        $action = 'admin-reviews';
+        $view = 'admin/reviews';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function deleteReview()
+    {
+        if (isset($_GET['id'])) {
+            require_once 'models/ReviewModel.php';
+            $reviewModel = new ReviewModel();
+            if ($reviewModel->deleteReview($_GET['id'])) {
+                $_SESSION['success'] = "Xóa đánh giá thành công!";
+            } else {
+                $_SESSION['error'] = "Có lỗi xảy ra khi xóa đánh giá!";
+            }
+        }
+        header("Location: ?action=admin-reviews");
+        exit();
+    }
+
+    public function replyReview()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['review_id']) && isset($_POST['reply_content'])) {
+            require_once 'models/ReviewModel.php';
+            $reviewModel = new ReviewModel();
+            
+            $review_id = $_POST['review_id'];
+            $content = trim($_POST['reply_content']);
+            $user_id = $_SESSION['user']['user_id'];
+            
+            if ($content !== '') {
+                if ($reviewModel->addReply($review_id, $user_id, $content, 1)) {
+                    $_SESSION['success'] = "Đã gửi phản hồi thành công!";
+                } else {
+                    $_SESSION['error'] = "Có lỗi xảy ra khi gửi phản hồi!";
+                }
+            }
+        }
+        header("Location: ?action=admin-reviews");
+        exit();
+    }
 }

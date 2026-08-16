@@ -338,4 +338,35 @@ class HomeController
         header("Location: ?action=product-detail&id={$productId}#reviews");
         exit;
     }
+
+    public function clientReplyReview()
+    {
+        if (!isset($_SESSION['user']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ?action=/');
+            exit;
+        }
+
+        $userId = $_SESSION['user']['user_id'];
+        $reviewId = $_POST['review_id'] ?? 0;
+        $productId = $_POST['product_id'] ?? 0;
+        $content = trim($_POST['reply_content'] ?? '');
+
+        if (!$reviewId || !$productId || empty($content)) {
+            $_SESSION['error'] = 'Vui lòng nhập nội dung trả lời.';
+            header("Location: ?action=product-detail&id={$productId}#reviews");
+            exit;
+        }
+
+        require_once PATH_MODEL . 'ReviewModel.php';
+        $reviewModel = new ReviewModel();
+
+        if ($reviewModel->addReply($reviewId, $userId, $content, 0)) {
+            $_SESSION['success'] = 'Gửi trả lời thành công!';
+        } else {
+            $_SESSION['error'] = 'Gửi trả lời thất bại, vui lòng thử lại.';
+        }
+
+        header("Location: ?action=product-detail&id={$productId}#reviews");
+        exit;
+    }
 }

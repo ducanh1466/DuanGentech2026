@@ -258,6 +258,90 @@
                                 </div>
                             </div>
                             <p class="mb-0 text-dark" style="line-height: 1.6;"><?= nl2br(htmlspecialchars($review['content'])) ?></p>
+                            
+                            <?php if (!empty($review['replies'])): ?>
+                                <div class="mt-4 ms-4 border-start border-2 ps-4" style="border-color: #e2e8f0 !important; position: relative;">
+                                    <?php foreach ($review['replies'] as $reply): ?>
+                                        <!-- Timeline dot -->
+                                        <div class="position-absolute" style="left: -7px; width: 12px; height: 12px; border-radius: 50%; background-color: <?= $reply['is_admin'] == 1 ? '#0d6efd' : '#6c757d' ?>; margin-top: 20px; box-shadow: 0 0 0 4px #fff;"></div>
+                                        
+                                        <?php if ($reply['is_admin'] == 1): ?>
+                                            <div class="mb-3">
+                                                <div class="p-3 bg-gradient rounded-4 shadow-sm position-relative overflow-hidden hover-elevate transition-all" style="background: linear-gradient(145deg, #f0f7ff 0%, #ffffff 100%); border: 1px solid rgba(13, 110, 253, 0.1);">
+                                                    <!-- Admin Decorative icon -->
+                                                    <div class="position-absolute opacity-10" style="right: -5px; top: -5px;">
+                                                        <i class="bi bi-patch-check-fill text-primary" style="font-size: 2.5rem;"></i>
+                                                    </div>
+                                                    
+                                                    <div class="d-flex align-items-center gap-2 mb-2 position-relative z-1">
+                                                        <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 35px; height: 35px;">
+                                                            <i class="bi bi-headset fs-6"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                                                                CSKH Gentech
+                                                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill fw-normal" style="font-size: 0.7rem;"><i class="bi bi-check-circle-fill me-1"></i>Official</span>
+                                                            </h6>
+                                                            <small class="text-muted" style="font-size: 0.8rem;"><?= date('H:i - d/m/Y', strtotime($reply['created_at'])) ?></small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-dark position-relative z-1" style="line-height: 1.6; font-size: 0.95rem;">
+                                                        <?= nl2br(htmlspecialchars($reply['content'])) ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="mb-3">
+                                                <div class="p-3 bg-white rounded-4 shadow-sm position-relative hover-elevate transition-all border border-gray-100">
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px; font-size: 0.9rem;">
+                                                            <?= strtoupper(substr($reply['full_name'] ?? 'K', 0, 1)) ?>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.95rem;"><?= htmlspecialchars($reply['full_name'] ?? 'Khách hàng') ?></h6>
+                                                            <small class="text-muted" style="font-size: 0.75rem;"><?= date('H:i - d/m/Y', strtotime($reply['created_at'])) ?></small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-dark" style="line-height: 1.6; font-size: 0.95rem;">
+                                                        <?= nl2br(htmlspecialchars($reply['content'])) ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (isset($_SESSION['user'])): ?>
+                                <div class="mt-4 text-end">
+                                    <button class="btn btn-light border rounded-pill px-4 py-2 hover-elevate shadow-sm fw-medium text-primary transition-all" type="button" data-bs-toggle="collapse" data-bs-target="#replyForm<?= $review['review_id'] ?>" aria-expanded="false" onclick="this.classList.toggle('bg-primary'); this.classList.toggle('text-white'); this.classList.toggle('text-primary');">
+                                        <i class="bi bi-reply-fill me-1"></i> Viết phản hồi
+                                    </button>
+                                </div>
+                                <div class="collapse mt-3" id="replyForm<?= $review['review_id'] ?>">
+                                    <form action="?action=client-reply-review" method="POST" class="p-4 bg-white rounded-4 shadow-sm border border-gray-200 position-relative overflow-hidden">
+                                        <!-- Decorative glass background -->
+                                        <div class="position-absolute w-100 h-100 top-0 start-0 bg-primary opacity-10" style="filter: blur(40px); z-index: 0; pointer-events: none;"></div>
+                                        
+                                        <div class="position-relative z-1">
+                                            <input type="hidden" name="review_id" value="<?= $review['review_id'] ?>">
+                                            <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
+                                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                                <i class="bi bi-chat-dots-fill text-primary"></i> Phản hồi của bạn
+                                            </h6>
+                                            <div class="mb-3">
+                                                <textarea name="reply_content" class="form-control bg-light border-0" rows="3" placeholder="Nhập câu trả lời của bạn tại đây..." style="box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); resize: none;" required></textarea>
+                                            </div>
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <button type="button" class="btn btn-light px-4 rounded-pill fw-medium" data-bs-toggle="collapse" data-bs-target="#replyForm<?= $review['review_id'] ?>">Hủy</button>
+                                                <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold shadow-sm d-flex align-items-center gap-2">
+                                                    Gửi <i class="bi bi-send-fill"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <?php endforeach; ?>
                     </div>

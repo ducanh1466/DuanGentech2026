@@ -106,6 +106,15 @@
                         </li>
                     <?php endif; ?>
 
+                    <?php if ($role == 1 || in_array('reviews', $permissions)): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos($action ?? '', 'admin-review') !== false ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-reviews">
+                                <i class="bi bi-star-half"></i> Đánh giá
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <?php if ($role == 1 || in_array('contacts', $permissions)): ?>
                         <li class="nav-item">
                             <a class="nav-link <?= strpos($action ?? '', 'admin-contact') !== false ? 'active' : '' ?>"

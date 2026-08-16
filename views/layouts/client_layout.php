@@ -173,82 +173,92 @@ if (isset($_SESSION['user'])) {
     </div>
 
     <!-- Footer Premium -->
-    <footer class="gentech-footer bg-dark pt-5 pb-3" style="color: #a1a1aa; border-top: 5px solid var(--primary-color);">
+    <footer class="gentech-footer bg-white pt-5 pb-3" style="color: #4b5563; border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -10px 40px rgba(0,0,0,0.02);">
         <div class="container pt-4">
             <div class="row g-5 mb-5">
                 <!-- Cột 1: Thông tin công ty -->
                 <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h3 class="fw-bold mb-4 text-white" style="letter-spacing: 2px;">GENTECH<span class="text-primary">.</span></h3>
-                    <p class="mb-4 pe-lg-4 text-gray-300" style="line-height: 1.8;">Tiên phong định hình phong cách sống công nghệ. Chúng tôi tự hào mang đến trải nghiệm mua sắm thiết bị điện tử thông minh, đẳng cấp và khác biệt nhất tại Việt Nam.</p>
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                    <h3 class="fw-bolder mb-4 text-dark" style="letter-spacing: 1px;">GENTECH<span class="text-primary">.</span></h3>
+                    <p class="mb-4 pe-lg-4 text-muted" style="line-height: 1.8;">Tiên phong định hình phong cách sống công nghệ. Chúng tôi tự hào mang đến trải nghiệm mua sắm thiết bị điện tử thông minh, đẳng cấp và khác biệt nhất tại Việt Nam.</p>
+                    <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-4 bg-light transition-all hover-elevate">
+                        <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px;">
                             <i class="bi bi-telephone-fill fs-5"></i>
                         </div>
                         <div>
-                            <p class="mb-0 small text-gray-400">Hotline 24/7</p>
-                            <h5 class="fw-bold text-white mb-0">1900 1234</h5>
+                            <p class="mb-0 small text-muted text-uppercase fw-semibold" style="letter-spacing: 1px;">Hotline 24/7</p>
+                            <h5 class="fw-bolder text-dark mb-0 fs-4">1900 1234</h5>
                         </div>
                     </div>
                     <div class="d-flex gap-3 mt-4">
-                        <a href="#" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center border-gray-600 hover-white transition-all" style="width: 40px; height: 40px;"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center border-gray-600 hover-white transition-all" style="width: 40px; height: 40px;"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center border-gray-600 hover-white transition-all" style="width: 40px; height: 40px;"><i class="bi bi-youtube"></i></a>
-                        <a href="#" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center border-gray-600 hover-white transition-all" style="width: 40px; height: 40px;"><i class="bi bi-tiktok"></i></a>
+                        <a href="#" class="btn btn-light text-dark rounded-circle d-flex align-items-center justify-content-center shadow-sm hover-primary transition-all" style="width: 45px; height: 45px;"><i class="bi bi-facebook fs-5"></i></a>
+                        <a href="#" class="btn btn-light text-dark rounded-circle d-flex align-items-center justify-content-center shadow-sm hover-primary transition-all" style="width: 45px; height: 45px;"><i class="bi bi-instagram fs-5"></i></a>
+                        <a href="#" class="btn btn-light text-dark rounded-circle d-flex align-items-center justify-content-center shadow-sm hover-primary transition-all" style="width: 45px; height: 45px;"><i class="bi bi-youtube fs-5"></i></a>
+                        <a href="#" class="btn btn-light text-dark rounded-circle d-flex align-items-center justify-content-center shadow-sm hover-primary transition-all" style="width: 45px; height: 45px;"><i class="bi bi-tiktok fs-5"></i></a>
                     </div>
                 </div>
                 
                 <!-- Cột 2: Sản phẩm -->
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
-                    <h5 class="fw-bold mb-4 text-white">Sản Phẩm</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-3"><a href="#" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block" style="transform: translateX(0);"><i class="bi bi-chevron-right small me-2 text-primary"></i>Điện thoại Apple</a></li>
-                        <li class="mb-3"><a href="#" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block" style="transform: translateX(0);"><i class="bi bi-chevron-right small me-2 text-primary"></i>Laptop cao cấp</a></li>
-                        <li class="mb-3"><a href="#" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block" style="transform: translateX(0);"><i class="bi bi-chevron-right small me-2 text-primary"></i>Âm thanh & Audio</a></li>
-                        <li class="mb-3"><a href="#" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block" style="transform: translateX(0);"><i class="bi bi-chevron-right small me-2 text-primary"></i>Phụ kiện thông minh</a></li>
-                        <li class="mb-3"><a href="#" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block" style="transform: translateX(0);"><i class="bi bi-chevron-right small me-2 text-primary"></i>Hàng cũ (CPO)</a></li>
+                    <h5 class="fw-bold mb-4 text-dark position-relative d-inline-block">
+                        Sản Phẩm
+                        <div class="position-absolute w-50" style="height: 3px; bottom: -8px; left: 0; background: var(--primary-color); border-radius: 2px;"></div>
+                    </h5>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-3"><a href="#" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Điện thoại Apple</a></li>
+                        <li class="mb-3"><a href="#" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Laptop cao cấp</a></li>
+                        <li class="mb-3"><a href="#" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Âm thanh & Audio</a></li>
+                        <li class="mb-3"><a href="#" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Phụ kiện thông minh</a></li>
+                        <li class="mb-3"><a href="#" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Hàng cũ (CPO)</a></li>
                     </ul>
                 </div>
                 
                 <!-- Cột 3: Hỗ trợ -->
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
-                    <h5 class="fw-bold mb-4 text-white">Chính Sách</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-3"><a href="#" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block"><i class="bi bi-chevron-right small me-2 text-primary"></i>Chính sách bảo hành</a></li>
-                        <li class="mb-3"><a href="#" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block"><i class="bi bi-chevron-right small me-2 text-primary"></i>Chính sách đổi trả 30 ngày</a></li>
-                        <li class="mb-3"><a href="#" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block"><i class="bi bi-chevron-right small me-2 text-primary"></i>Giao hàng hỏa tốc</a></li>
-                        <li class="mb-3"><a href="#" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block"><i class="bi bi-chevron-right small me-2 text-primary"></i>Chính sách bảo mật</a></li>
-                        <li class="mb-3"><a href="<?= BASE_URL ?? '/' ?>?action=support" class="text-decoration-none text-gray-400 hover-primary transition-all d-inline-block"><i class="bi bi-chevron-right small me-2 text-primary"></i>Trung tâm hỗ trợ</a></li>
+                    <h5 class="fw-bold mb-4 text-dark position-relative d-inline-block">
+                        Chính Sách
+                        <div class="position-absolute w-50" style="height: 3px; bottom: -8px; left: 0; background: var(--primary-color); border-radius: 2px;"></div>
+                    </h5>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-3"><a href="#" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Chính sách bảo hành</a></li>
+                        <li class="mb-3"><a href="#" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Chính sách đổi trả 30 ngày</a></li>
+                        <li class="mb-3"><a href="#" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Giao hàng hỏa tốc</a></li>
+                        <li class="mb-3"><a href="#" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Chính sách bảo mật</a></li>
+                        <li class="mb-3"><a href="<?= BASE_URL ?? '/' ?>?action=support" class="text-decoration-none text-muted hover-primary transition-all d-inline-block fw-medium"><i class="bi bi-chevron-right small me-2 text-primary opacity-75"></i>Trung tâm hỗ trợ</a></li>
                     </ul>
                 </div>
                 
                 <!-- Cột 4: Đăng ký & Chứng nhận -->
                 <div class="col-lg-4 col-md-4">
-                    <h5 class="fw-bold mb-4 text-white">Đăng Ký Nhận Bản Tin</h5>
-                    <p class="mb-4 text-gray-400">Trở thành người đầu tiên sở hữu các siêu phẩm mới nhất và nhận ưu đãi độc quyền.</p>
-                    <div class="input-group mb-4 rounded-pill overflow-hidden p-1 bg-gray-800 border border-gray-700">
-                        <input type="text" class="form-control border-0 bg-transparent text-white px-4 shadow-none" placeholder="Email của bạn..." aria-label="Email">
-                        <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" type="button">Đăng ký ngay</button>
-                    </div>
-                    
-                    <h6 class="fw-bold mb-3 mt-5 text-white">Phương Thức Thanh Toán</h6>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <!-- Giả lập các logo thanh toán -->
-                        <div class="bg-white rounded px-2 py-1"><span class="text-dark fw-bold small">VISA</span></div>
-                        <div class="bg-white rounded px-2 py-1"><span class="text-dark fw-bold small">MasterCard</span></div>
-                        <div class="bg-white rounded px-2 py-1"><span class="text-primary fw-bold small">VNPAY</span></div>
-                        <div class="bg-white rounded px-2 py-1"><span class="text-danger fw-bold small">MOMO</span></div>
+                    <div class="p-4 rounded-4 bg-light position-relative overflow-hidden" style="border: 1px solid rgba(0,0,0,0.03);">
+                        <div class="position-absolute w-100 h-100 top-0 start-0 opacity-10" style="background: radial-gradient(circle at top right, var(--primary-color), transparent 70%);"></div>
+                        <h5 class="fw-bold mb-3 text-dark position-relative z-1">Đăng Ký Nhận Bản Tin</h5>
+                        <p class="mb-4 text-muted small position-relative z-1">Trở thành người đầu tiên sở hữu siêu phẩm mới nhất và nhận ưu đãi độc quyền.</p>
+                        
+                        <div class="input-group mb-4 rounded-pill overflow-hidden bg-white shadow-sm position-relative z-1 border border-light">
+                            <input type="text" class="form-control border-0 bg-transparent text-dark px-4 shadow-none" placeholder="Email của bạn..." aria-label="Email">
+                            <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" type="button">Đăng ký</button>
+                        </div>
+                        
+                        <h6 class="fw-bold mb-3 mt-4 text-dark position-relative z-1">Thanh Toán Chấp Nhận</h6>
+                        <div class="d-flex gap-2 flex-wrap position-relative z-1">
+                            <div class="bg-white rounded px-2 py-1 shadow-sm border border-light"><span class="text-dark fw-bold" style="font-size: 0.7rem;">VISA</span></div>
+                            <div class="bg-white rounded px-2 py-1 shadow-sm border border-light"><span class="text-dark fw-bold" style="font-size: 0.7rem;">MasterCard</span></div>
+                            <div class="bg-white rounded px-2 py-1 shadow-sm border border-light"><span class="text-primary fw-bold" style="font-size: 0.7rem;">VNPAY</span></div>
+                            <div class="bg-white rounded px-2 py-1 shadow-sm border border-light"><span class="text-danger fw-bold" style="font-size: 0.7rem;">MOMO</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
             
             <!-- Bottom Footer -->
-            <div class="row pt-4 mt-4 border-top border-gray-700 align-items-center">
+            <div class="row pt-4 mt-4 align-items-center" style="border-top: 1px solid rgba(0,0,0,0.05);">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <p class="mb-0 text-gray-400 small">&copy; 2026 Gentech. Bản quyền thuộc về Công ty TNHH Gentech Việt Nam.</p>
+                    <p class="mb-0 text-muted small fw-medium">&copy; 2026 Gentech. Bản quyền thuộc về Công ty TNHH Gentech Việt Nam.</p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
-                    <!-- Giả lập logo BCT -->
-                    <span class="badge border border-gray-600 text-gray-400 rounded-pill px-3 py-2 fw-normal hover-white cursor-pointer"><i class="bi bi-check-circle-fill text-success me-2"></i>Đã thông báo Bộ Công Thương</span>
+                    <span class="badge bg-light text-dark border shadow-sm rounded-pill px-3 py-2 fw-medium hover-primary cursor-pointer transition-all">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>Đã thông báo Bộ Công Thương
+                    </span>
                 </div>
             </div>
         </div>

@@ -31,3 +31,10 @@ define('DB_OPTIONS', [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 ]);
+
+// --- Cấu hình VNPAY ---
+define('VNP_TMN_CODE', 'LPAZEB0Y'); // Mã website tại VNPAY 
+define('VNP_HASH_SECRET', 'YVAPUVEWAVNZAQGBZENPSADCZOTDAOIR'); // Chuỗi bí mật
+define('VNP_URL', 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html');
+define('VNP_RETURN_URL', BASE_URL . '?action=vnpay-return');
+

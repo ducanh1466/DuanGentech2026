@@ -13,6 +13,11 @@ $autoTickId = $_GET['tick'] ?? null;
 
 <!-- Cart Content -->
 <div class="container mb-5 pb-5 mt-4">
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger border-0 bg-danger-subtle rounded-3 mb-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <?= $_SESSION['error']; unset($_SESSION['error']); ?>
+        </div>
+    <?php endif; ?>
     <?php if (empty($cartItems)): ?>
         <div class="text-center py-5 bg-white rounded-4 shadow-sm border border-gray-200">
             <i class="bi bi-cart-x text-muted mb-3 d-block" style="font-size: 4rem;"></i>

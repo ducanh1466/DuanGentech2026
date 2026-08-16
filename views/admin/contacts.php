@@ -137,8 +137,8 @@ $pageTitle = 'Quản lý yêu cầu phản ánh';
                                 </td>
                                 <td><?= date('d/m/Y H:i', strtotime($contact['created_at'])) ?></td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-outline-primary px-3" onclick="openDetailModal(<?= $contact['id'] ?>)">
-                                        Chi tiết
+                                    <button type="button" class="btn-action-detail" onclick="openDetailModal(<?= $contact['id'] ?>)">
+                                        <i class="bi bi-info-circle"></i> Chi tiết
                                     </button>
                                 </td>
                             </tr>
@@ -155,28 +155,76 @@ $pageTitle = 'Quản lý yêu cầu phản ánh';
     </form>
 
     <!-- Pagination -->
-    <?php if ($totalPages > 1): ?>
-        <div class="card-footer-custom bg-white d-flex align-items-center justify-content-between p-3 border-top">
-            <div class="text-muted small">
-                Hiển thị <?= count($contacts) ?> yêu cầu / trang
-            </div>
-            <nav aria-label="Page navigation">
-                <ul class="pagination pagination-sm m-0">
-                    <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?action=admin-contacts&page=<?= $page - 1 ?>">Trước</a>
-                    </li>
-                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
-                            <a class="page-link" href="?action=admin-contacts&page=<?= $i ?>"><?= $i ?></a>
-                        </li>
-                    <?php endfor; ?>
-                    <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?action=admin-contacts&page=<?= $page + 1 ?>">Sau</a>
-                    </li>
-                </ul>
-            </nav>
+    <div class="d-flex justify-content-between align-items-center p-3 border-top" style="border-color:var(--border-light)!important">
+        <!-- Chỉnh số lượng hiển thị -->
+        <div class="d-flex align-items-center gap-2">
+            <?php
+                $queryParamsLimit = $_GET;
+                unset($queryParamsLimit['limit']);
+                unset($queryParamsLimit['page']);
+                $queryStringLimit = http_build_query($queryParamsLimit);
+                $queryStringLimit = $queryStringLimit ? '&' . $queryStringLimit : '';
+            ?>
+            <select class="form-select form-select-sm" style="width: auto; border-radius: 4px;" onchange="window.location.href='?<?= $queryStringLimit ?>&limit='+this.value">
+                <option value="10" <?= ($limit ?? 10) == 10 ? 'selected' : '' ?>>10 / trang</option>
+                <option value="20" <?= ($limit ?? 10) == 20 ? 'selected' : '' ?>>20 / trang</option>
+                <option value="50" <?= ($limit ?? 10) == 50 ? 'selected' : '' ?>>50 / trang</option>
+                <option value="100" <?= ($limit ?? 10) == 100 ? 'selected' : '' ?>>100 / trang</option>
+            </select>
         </div>
-    <?php endif; ?>
+
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-muted" style="font-size:0.85rem;">Tổng <?= $totalContacts ?? 0 ?> bản ghi</span>
+            
+            <?php if (isset($totalPages) && $totalPages > 1): ?>
+                <?php
+                    $queryParamsPage = $_GET;
+                    unset($queryParamsPage['page']);
+                    $queryStringPage = http_build_query($queryParamsPage);
+                    $queryStringPage = $queryStringPage ? '&' . $queryStringPage : '';
+                ?>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?<?= $queryStringPage ?>&page=<?= ($page ?? 1) - 1 ?>">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        
+                        <?php 
+                        $start = max(1, ($page ?? 1) - 2);
+                        $end = min($totalPages, ($page ?? 1) + 2);
+                        
+                        if ($start > 1) {
+                            echo '<li class="page-item"><a class="page-link" href="?'.$queryStringPage.'&page=1">1</a></li>';
+                            if ($start > 2) {
+                                echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                            }
+                        }
+                        
+                        for ($i = $start; $i <= $end; $i++) {
+                            $active = ($i == ($page ?? 1)) ? 'active' : '';
+                            echo '<li class="page-item ' . $active . '"><a class="page-link" href="?'.$queryStringPage.'&page='.$i.'">' . $i . '</a></li>';
+                        }
+                        
+                        if ($end < $totalPages) {
+                            if ($end < $totalPages - 1) {
+                                echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                            }
+                            echo '<li class="page-item"><a class="page-link" href="?'.$queryStringPage.'&page='.$totalPages.'">'.$totalPages.'</a></li>';
+                        }
+                        ?>
+                        
+                        <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?<?= $queryStringPage ?>&page=<?= ($page ?? 1) + 1 ?>">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
 <!-- SINGLE DETAIL MODAL (Image 2 representation) -->

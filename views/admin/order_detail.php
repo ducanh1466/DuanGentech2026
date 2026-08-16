@@ -150,15 +150,35 @@
             </div>
         </div>
 
+        <?php
+        // Tính lại tiền hàng gốc (chưa giảm)
+        $subtotal = 0;
+        if (!empty($orderDetails)) {
+            foreach ($orderDetails as $detail) {
+                $subtotal += $detail['unit_price'] * $detail['quantity'];
+            }
+        }
+        $discountAmount = $subtotal - ($order['total_amount'] ?? 0);
+        if ($discountAmount < 0) $discountAmount = 0;
+        ?>
         <!-- Order Summary -->
         <div class="order-info-card">
             <h6><i class="bi bi-calculator me-2"></i>Tổng kết đơn hàng</h6>
             <div class="info-row"><span class="label">Tạm tính</span><span class="value">
-                    <?= number_format($order['total_amount'] ?? 0, 0, ',', '.') ?>₫
+                    <?= number_format($subtotal, 0, ',', '.') ?>₫
                 </span></div>
-            <div class="info-row"><span class="label">Phí vận chuyển</span><span class="value text-success">Miễn
-                    phí</span></div>
-            <div class="info-row"><span class="label">Giảm giá</span><span class="value">0₫</span></div>
+            <div class="info-row"><span class="label">Phí vận chuyển</span><span class="value text-success">Miễn phí</span></div>
+            <div class="info-row">
+                <span class="label">
+                    Giảm giá 
+                    <?php if (!empty($order['discount_code'])): ?>
+                        <span class="badge bg-primary ms-1"><?= htmlspecialchars($order['discount_code']) ?></span>
+                    <?php endif; ?>
+                </span>
+                <span class="value text-danger">
+                    <?= $discountAmount > 0 ? '-' . number_format($discountAmount, 0, ',', '.') . '₫' : '0₫' ?>
+                </span>
+            </div>
             <hr>
             <div class="info-row" style="font-size:1.1rem;">
                 <span class="label fw-bold">Tổng thanh toán</span>

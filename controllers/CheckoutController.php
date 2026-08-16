@@ -8,8 +8,8 @@ class CheckoutController
     private $cartModel;
     private $orderModel;
     private $orderDetailModel;
-
     private $productModel;
+    private $discountModel;
 
     public function __construct()
     {
@@ -28,6 +28,10 @@ class CheckoutController
         require_once PATH_MODEL . 'ProductModel.php';
         $this->productModel = new ProductModel();
         $this->productModel->pdo = $sharedPdo;
+
+        require_once PATH_MODEL . 'DiscountModel.php';
+        $this->discountModel = new DiscountModel();
+        $this->discountModel->pdo = $sharedPdo;
     }
 
     // Hiển thị trang thanh toán
@@ -71,6 +75,23 @@ class CheckoutController
         $totalAmount = 0;
         foreach ($cartItems as $item) {
             $totalAmount += $item['price'] * $item['quantity'];
+        }
+
+        // Lấy danh sách mã giảm giá
+        $activeDiscounts = $this->discountModel->getActiveDiscounts();
+        
+        // Kiểm tra mã đang áp dụng
+        $appliedDiscount = null;
+        $discountAmount = 0;
+        if (isset($_SESSION['discount'])) {
+            $validation = $this->discountModel->validateDiscount($_SESSION['discount']['code'], $totalAmount, $userId);
+            if ($validation['status']) {
+                $appliedDiscount = $validation['discount'];
+                $discountAmount = $validation['discount_amount'];
+                $totalAmount = $validation['new_total'];
+            } else {
+                unset($_SESSION['discount']);
+            }
         }
 
         $view = 'client/checkout';
@@ -142,8 +163,17 @@ class CheckoutController
                 $_SESSION['user']['address'] = $shippingAddress;
             }
             
-            // Xử lý mã giảm giá (ở phiên bản này để trống phần xử lý giảm giá phức tạp)
+            // Xử lý mã giảm giá
             $discountId = null; 
+            if (isset($_SESSION['discount'])) {
+                $validation = $this->discountModel->validateDiscount($_SESSION['discount']['code'], $totalAmount, $userId);
+                if ($validation['status']) {
+                    $discountId = $validation['discount']['discount_id'];
+                    $totalAmount = $validation['new_total'];
+                } else {
+                    unset($_SESSION['discount']);
+                }
+            }
             
             // Bắt đầu TRANSACTION
             $pdo = $this->orderModel->getPdo();
@@ -166,6 +196,11 @@ class CheckoutController
 
                 if (!$orderId) {
                     throw new Exception("Lỗi: Không thể tạo đơn hàng!");
+                }
+
+                // Ghi lại việc sử dụng mã giảm giá
+                if ($discountId) {
+                    $this->discountModel->recordUsage($discountId, $userId, $orderId);
                 }
 
                 // 2. Kiểm tra tồn kho và chuyển từ giỏ hàng sang chi tiết đơn hàng
@@ -396,5 +431,72 @@ class CheckoutController
             header('Location: ?action=cart');
             exit;
         }
+    }
+
+    public function applyDiscountAjax()
+    {
+        header('Content-Type: application/json');
+        if (!isset($_SESSION['user'])) {
+            echo json_encode(['error' => 1, 'message' => 'Bạn cần đăng nhập để dùng mã giảm giá!']);
+            return;
+        }
+
+        $code = trim($_POST['code'] ?? '');
+        if (empty($code)) {
+            echo json_encode(['error' => 1, 'message' => 'Vui lòng nhập mã giảm giá!']);
+            return;
+        }
+
+        // Tính tổng tiền giỏ hàng hiện tại (chỉ những món được chọn)
+        $userId = $_SESSION['user']['user_id'];
+        $cartId = $this->cartModel->getOrCreateCartId($userId);
+        $allCartItems = $this->cartModel->getCartItems($cartId);
+        $selectedItems = $_SESSION['selected_items'] ?? [];
+        
+        $cartItems = array_filter($allCartItems, function($item) use ($selectedItems) {
+            return in_array($item['cart_item_id'], $selectedItems);
+        });
+
+        $totalAmount = 0;
+        foreach ($cartItems as $item) {
+            $totalAmount += $item['price'] * $item['quantity'];
+        }
+
+        if ($totalAmount == 0) {
+            echo json_encode(['error' => 1, 'message' => 'Giỏ hàng trống!']);
+            return;
+        }
+
+        $validation = $this->discountModel->validateDiscount($code, $totalAmount, $userId);
+
+        if (!$validation['status']) {
+            echo json_encode(['error' => 1, 'message' => $validation['message']]);
+            return;
+        }
+
+        // Lưu vào session
+        $_SESSION['discount'] = [
+            'code' => $code,
+            'discount_amount' => $validation['discount_amount']
+        ];
+
+        echo json_encode([
+            'error' => 0,
+            'message' => 'Áp dụng mã giảm giá thành công!',
+            'discount_amount' => $validation['discount_amount'],
+            'new_total' => $validation['new_total']
+        ]);
+    }
+
+    public function removeDiscountAjax()
+    {
+        header('Content-Type: application/json');
+        if (isset($_SESSION['discount'])) {
+            unset($_SESSION['discount']);
+        }
+        echo json_encode([
+            'error' => 0,
+            'message' => 'Đã gỡ mã giảm giá!'
+        ]);
     }
 }

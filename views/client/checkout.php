@@ -181,11 +181,47 @@
                     
                     <div class="d-flex justify-content-between mb-3 text-muted">
                         <span>Tổng tiền hàng</span>
-                        <span class="text-dark fw-medium"><?= number_format($totalAmount, 0, ',', '.') ?>đ</span>
+                        <span class="text-dark fw-medium" id="subTotalDisplay"><?= number_format($totalAmount + $discountAmount, 0, ',', '.') ?>đ</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3 text-muted border-bottom border-gray-300 pb-4">
                         <span>Phí vận chuyển</span>
                         <span class="text-success fw-medium">Miễn phí</span>
+                    </div>
+
+                    <!-- Giảm giá -->
+                    <div class="mb-4 pb-4 border-bottom border-gray-300">
+                        <label class="form-label fw-bold mb-2">Mã Giảm Giá</label>
+                        <div class="input-group mb-3">
+                            <input type="text" id="discountCodeInput" class="form-control border shadow-none" placeholder="Nhập mã giảm giá" value="<?= htmlspecialchars($appliedDiscount['code'] ?? '') ?>">
+                            <button class="btn btn-dark" type="button" id="btnApplyDiscount">Áp dụng</button>
+                        </div>
+                        <div id="discountMessage" class="small mb-3"></div>
+
+                        <!-- Danh sách mã khả dụng -->
+                        <?php if (!empty($activeDiscounts)): ?>
+                        <div class="bg-white rounded p-3 border">
+                            <h6 class="fw-bold fs-6 mb-3"><i class="bi bi-ticket-perforated text-primary"></i> Mã có thể dùng:</h6>
+                            <div class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
+                                <?php foreach ($activeDiscounts as $discount): ?>
+                                    <div class="border rounded p-2 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-bold text-primary mb-1"><?= htmlspecialchars($discount['code']) ?></div>
+                                            <div class="small text-muted">
+                                                Giảm <?= $discount['discount_type'] == 'percent' ? $discount['discount_value'] . '%' : number_format($discount['discount_value'], 0, ',', '.') . 'đ' ?> 
+                                                đơn từ <?= number_format($discount['minimum_order_value'], 0, ',', '.') ?>đ
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary btn-use-discount" data-code="<?= htmlspecialchars($discount['code']) ?>">Dùng</button>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <div id="discountAppliedRow" class="d-flex justify-content-between mt-3 text-success fw-medium <?= $discountAmount > 0 ? '' : 'd-none' ?>">
+                            <span>Đã giảm giá:</span>
+                            <span>-<span id="discountValueDisplay"><?= number_format($discountAmount, 0, ',', '.') ?></span>đ</span>
+                        </div>
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-end mt-4 mb-5">
@@ -304,6 +340,65 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             wardName.value = '';
         }
+    });
+
+    // 5. Xử lý Mã Giảm Giá
+    const btnApplyDiscount = document.getElementById('btnApplyDiscount');
+    const discountCodeInput = document.getElementById('discountCodeInput');
+    const discountMessage = document.getElementById('discountMessage');
+    const discountAppliedRow = document.getElementById('discountAppliedRow');
+    const discountValueDisplay = document.getElementById('discountValueDisplay');
+    const finalTotalDisplay = document.querySelector('.text-primary.d-block');
+
+    function applyDiscount(code) {
+        discountMessage.innerHTML = '<span class="text-info">Đang kiểm tra...</span>';
+        
+        const formData = new FormData();
+        formData.append('code', code);
+
+        fetch('?action=apply-discount', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error === 0) {
+                discountMessage.innerHTML = '<span class="text-success">' + data.message + '</span>';
+                discountAppliedRow.classList.remove('d-none');
+                discountValueDisplay.textContent = new Intl.NumberFormat('vi-VN').format(data.discount_amount);
+                finalTotalDisplay.textContent = new Intl.NumberFormat('vi-VN').format(data.new_total) + 'đ';
+                discountCodeInput.value = code;
+            } else {
+                discountMessage.innerHTML = '<span class="text-danger">' + data.message + '</span>';
+                discountAppliedRow.classList.add('d-none');
+                
+                // Re-calculate the total if discount failed but was previously applied
+                // This would require a page reload or keeping the original total in a variable
+            }
+        })
+        .catch(error => {
+            console.error('Error applying discount:', error);
+            discountMessage.innerHTML = '<span class="text-danger">Có lỗi xảy ra!</span>';
+        });
+    }
+
+    btnApplyDiscount.addEventListener('click', function() {
+        const code = discountCodeInput.value.trim();
+        if (code) {
+            applyDiscount(code);
+        } else {
+            discountMessage.innerHTML = '<span class="text-danger">Vui lòng nhập mã!</span>';
+        }
+    });
+
+    // Xử lý các nút "Dùng" ở danh sách gợi ý
+    const useDiscountBtns = document.querySelectorAll('.btn-use-discount');
+    useDiscountBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const code = this.getAttribute('data-code');
+            discountCodeInput.value = code;
+            applyDiscount(code);
+        });
     });
 });
 </script>

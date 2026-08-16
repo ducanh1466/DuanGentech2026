@@ -52,8 +52,8 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-2 action-dropdown position-relative">
-                                <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#replyModal<?= $review['review_id'] ?>">
-                                    <i class="bi bi-eye"></i> Chi tiết
+                                <button type="button" class="btn-action-detail" data-bs-toggle="modal" data-bs-target="#replyModal<?= $review['review_id'] ?>">
+                                    <i class="bi bi-info-circle"></i> Chi tiết
                                 </button>
                                 <div class="dropdown dropend">
                                     <button class="btn-action-more dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -80,27 +80,63 @@
     </div>
 
     <!-- Phân trang -->
-    <?php if ($totalPages > 1): ?>
-    <div class="d-flex justify-content-center p-3 border-top" style="border-color:var(--border-light)!important">
-        <ul class="pagination pagination-sm m-0">
-            <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
-                <a class="page-link" href="?action=admin-reviews&page=<?= $page - 1 ?>" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <?php for ($p = 1; $p <= $totalPages; $p++): ?>
-                <li class="page-item <?= $p == $page ? 'active' : '' ?>">
-                    <a class="page-link" href="?action=admin-reviews&page=<?= $p ?>"><?= $p ?></a>
-                </li>
-            <?php endfor; ?>
-            <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
-                <a class="page-link" href="?action=admin-reviews&page=<?= $page + 1 ?>" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
+    <div class="d-flex justify-content-between align-items-center p-3 border-top" style="border-color:var(--border-light)!important">
+        <!-- Chỉnh số lượng hiển thị -->
+        <div class="d-flex align-items-center gap-2">
+            <select class="form-select form-select-sm" style="width: auto; border-radius: 4px;" onchange="window.location.href='?action=admin-reviews&limit='+this.value">
+                <option value="10" <?= ($limit ?? 10) == 10 ? 'selected' : '' ?>>10 / trang</option>
+                <option value="20" <?= ($limit ?? 10) == 20 ? 'selected' : '' ?>>20 / trang</option>
+                <option value="50" <?= ($limit ?? 10) == 50 ? 'selected' : '' ?>>50 / trang</option>
+                <option value="100" <?= ($limit ?? 10) == 100 ? 'selected' : '' ?>>100 / trang</option>
+            </select>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-muted" style="font-size:0.85rem;">Tổng <?= $totalReviews ?? 0 ?> bản ghi</span>
+            
+            <?php if (isset($totalPages) && $totalPages > 1): ?>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?action=admin-reviews&limit=<?= $limit ?? 10 ?>&page=<?= ($page ?? 1) - 1 ?>">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        
+                        <?php 
+                        $start = max(1, ($page ?? 1) - 2);
+                        $end = min($totalPages, ($page ?? 1) + 2);
+                        
+                        if ($start > 1) {
+                            echo '<li class="page-item"><a class="page-link" href="?action=admin-reviews&limit='.($limit ?? 10).'&page=1">1</a></li>';
+                            if ($start > 2) {
+                                echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                            }
+                        }
+                        
+                        for ($i = $start; $i <= $end; $i++) {
+                            $active = ($i == ($page ?? 1)) ? 'active' : '';
+                            echo '<li class="page-item ' . $active . '"><a class="page-link" href="?action=admin-reviews&limit='.($limit ?? 10).'&page='.$i.'">' . $i . '</a></li>';
+                        }
+                        
+                        if ($end < $totalPages) {
+                            if ($end < $totalPages - 1) {
+                                echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                            }
+                            echo '<li class="page-item"><a class="page-link" href="?action=admin-reviews&limit='.($limit ?? 10).'&page='.$totalPages.'">'.$totalPages.'</a></li>';
+                        }
+                        ?>
+                        
+                        <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?action=admin-reviews&limit=<?= $limit ?? 10 ?>&page=<?= ($page ?? 1) + 1 ?>">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            <?php endif; ?>
+        </div>
     </div>
-    <?php endif; ?>
 </div>
 
 <!-- Render Modals Outside Table-Responsive -->

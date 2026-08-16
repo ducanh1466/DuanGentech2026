@@ -342,6 +342,9 @@ class CheckoutController
         $vnp_Locale = 'vn';
         $vnp_BankCode = '';
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
+        if ($vnp_IpAddr == '::1' || $vnp_IpAddr == 'localhost') {
+            $vnp_IpAddr = '127.0.0.1'; // VNPAY không chấp nhận định dạng IPv6 ::1 ở môi trường test
+        }
         
         $startTime = date("YmdHis");
         $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));

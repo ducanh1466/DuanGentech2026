@@ -66,7 +66,62 @@
                     <span class="text-success fw-medium"><i class="bi bi-check-circle-fill me-1"></i>Còn hàng</span>
                 </div>
                 <div class="mb-4">
-                    <span id="productPrice" class="fs-1 fw-bold text-dark me-3"><?= number_format($product['price'] ?? 0, 0, ',', '.') ?>đ</span>
+                    <?php if (!empty($product['is_flash_sale'])): ?>
+                        <div class="d-flex flex-column gap-2 mb-3 bg-danger bg-opacity-10 p-3 rounded-3 border border-danger border-opacity-25">
+                            <div class="d-flex align-items-center gap-2 text-danger fw-bold">
+                                <i class="bi bi-lightning-fill"></i> FLASH SALE ĐANG DIỄN RA
+                            </div>
+                            <div class="d-flex align-items-baseline gap-3">
+                                <span id="productPrice" class="fs-1 fw-bold text-danger"><?= number_format($product['price'] ?? 0, 0, ',', '.') ?>đ</span>
+                                <?php if ($product['original_price'] > $product['price']): ?>
+                                    <span class="fs-5 text-muted text-decoration-line-through"><?= number_format($product['original_price'], 0, ',', '.') ?>đ</span>
+                                    <span class="badge bg-danger">-<?= round((($product['original_price'] - $product['price']) / $product['original_price']) * 100) ?>%</span>
+                                <?php endif; ?>
+                            </div>
+                            <!-- Countdown -->
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span class="text-danger fw-medium" style="font-size: 0.9rem;">Kết thúc trong:</span>
+                                <div class="d-flex gap-1 fw-bold text-danger fs-5 lh-1" id="fs-countdown">
+                                    --:--:--
+                                </div>
+                            </div>
+                            <!-- Progress -->
+                            <?php if ($product['flash_limit'] > 0): ?>
+                            <div class="mt-2">
+                                <div class="d-flex justify-content-between text-danger mb-1" style="font-size: 0.8rem; font-weight: 500;">
+                                    <span>Đã bán <?= $product['flash_sold'] ?></span>
+                                    <span>Tối đa <?= $product['flash_limit'] ?></span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" style="width: <?= min(100, ($product['flash_sold'] / $product['flash_limit']) * 100) ?>%"></div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                let deadline = new Date("<?= date('Y-m-d\TH:i:s', strtotime($product['flash_end_time'])) ?>").getTime();
+                                let timer = setInterval(function() {
+                                    let now = new Date().getTime();
+                                    let distance = deadline - now;
+                                    if (distance < 0) {
+                                        clearInterval(timer);
+                                        document.getElementById('fs-countdown').innerText = 'Đã kết thúc';
+                                        return;
+                                    }
+                                    let hours = Math.floor(distance / (1000 * 60 * 60));
+                                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                    document.getElementById('fs-countdown').innerText = 
+                                        hours.toString().padStart(2, '0') + ':' + 
+                                        minutes.toString().padStart(2, '0') + ':' + 
+                                        seconds.toString().padStart(2, '0');
+                                }, 1000);
+                            });
+                        </script>
+                    <?php else: ?>
+                        <span id="productPrice" class="fs-1 fw-bold text-dark me-3"><?= number_format($product['price'] ?? 0, 0, ',', '.') ?>đ</span>
+                    <?php endif; ?>
                 </div>
             </div>
 

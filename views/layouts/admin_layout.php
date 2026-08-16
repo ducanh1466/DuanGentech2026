@@ -142,6 +142,15 @@
                         </li>
                     <?php endif; ?>
 
+                    <?php if ($role == 1 || in_array('flash_sales', $permissions ?? [])): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos($action ?? '', 'admin-flash-sale') !== false ? 'active' : '' ?>"
+                                href="<?= BASE_URL ?>?action=admin-flash-sales">
+                                <i class="bi bi-lightning-charge"></i> Flash Sale
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <?php if ($role == 1 || in_array('news', $permissions)): ?>
                         <li class="nav-item">
                             <a class="nav-link <?= strpos($action ?? '', 'admin-news') !== false ? 'active' : '' ?>"

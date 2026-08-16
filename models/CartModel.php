@@ -33,10 +33,15 @@ class CartModel extends BaseModel
                 ci.quantity,
                 v.variant_id,
                 v.variant_name,
-                v.price,
+                v.price as original_price,
                 v.stock_quantity,
+                p.product_id,
                 p.product_name,
-                pi.image_url
+                pi.image_url,
+                fsi.flash_price,
+                fs.end_time as flash_end_time,
+                fsi.quantity as flash_limit,
+                fsi.sold as flash_sold
             FROM tb_cart_items ci
             JOIN tb_product_variants v ON ci.variant_id = v.variant_id
             JOIN tb_products p ON v.product_id = p.product_id
@@ -45,12 +50,27 @@ class CartModel extends BaseModel
                 FROM tb_product_images 
                 WHERE is_primary = 1
             ) pi ON p.product_id = pi.product_id
+            LEFT JOIN tb_flash_sale_items fsi ON p.product_id = fsi.product_id
+            LEFT JOIN tb_flash_sales fs ON fsi.flash_sale_id = fs.id AND fs.status = 'active' AND fs.start_time <= NOW() AND fs.end_time >= NOW()
             WHERE ci.cart_id = :cart_id
         ";
         
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['cart_id' => $cartId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Process prices based on flash sale
+        foreach ($items as &$item) {
+            if (!empty($item['flash_end_time']) && $item['flash_sold'] < $item['flash_limit']) {
+                $item['price'] = $item['flash_price'];
+                $item['is_flash_sale'] = true;
+            } else {
+                $item['price'] = $item['original_price'];
+                $item['is_flash_sale'] = false;
+            }
+        }
+        
+        return $items;
     }
 
     // Thêm sản phẩm vào giỏ

@@ -112,6 +112,15 @@ match ($action) {
     'admin-discount-update'   => (new AdminController)->discountUpdate(),
     'admin-discount-delete'   => (new AdminController)->discountDelete(),
 
+    // --- FLASH SALES ROUTING ---
+    'admin-flash-sales'       => (new AdminController)->flashSales(),
+    'admin-flash-sale-form'   => (new AdminController)->flashSaleForm(),
+    'admin-flash-sale-save'   => (new AdminController)->flashSaleSave(),
+    'admin-flash-sale-delete' => (new AdminController)->flashSaleDelete(),
+    'admin-flash-sale-items'  => (new AdminController)->flashSaleItems(),
+    'admin-flash-sale-item-save' => (new AdminController)->flashSaleItemSave(),
+    'admin-flash-sale-item-delete' => (new AdminController)->flashSaleItemDelete(),
+
     // --- CHECKOUT AJAX ROUTING ---
     'apply-discount'          => (new CheckoutController)->applyDiscountAjax(),
     'remove-discount'         => (new CheckoutController)->removeDiscountAjax(),

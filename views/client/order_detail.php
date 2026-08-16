@@ -304,6 +304,9 @@
                                                     </div>
                                                     <div>
                                                         <h6 class="mb-1 text-dark fw-bold fs-6" style="max-width: 300px; line-height: 1.4;"><?= htmlspecialchars($detail['product_name']) ?></h6>
+                                                        <?php if ($order['status'] == 'completed'): ?>
+                                                            <a href="?action=product-detail&id=<?= $detail['product_id'] ?>#reviews" class="btn btn-sm btn-outline-primary mt-2 rounded-pill px-3">Đánh giá sản phẩm</a>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </td>

@@ -296,8 +296,11 @@
                                 <p class="text-secondary small mb-0" style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?= htmlspecialchars($order['shipping_address']) ?></p>
                             </div>
                         </div>
-                        <div>
-                            <a href="?action=order-detail&id=<?= $order['order_id'] ?>" class="btn btn-premium-outline px-4 py-2 w-100">Chi Tiết Đơn</a>
+                        <div class="d-flex gap-2">
+                            <?php if ($order['status'] == 'completed'): ?>
+                                <a href="?action=order-detail&id=<?= $order['order_id'] ?>" class="btn btn-dark px-4 py-2 flex-grow-1 text-nowrap">Đánh Giá</a>
+                            <?php endif; ?>
+                            <a href="?action=order-detail&id=<?= $order['order_id'] ?>" class="btn btn-premium-outline px-4 py-2 flex-grow-1 text-nowrap">Chi Tiết Đơn</a>
                         </div>
                     </div>
                 </div>

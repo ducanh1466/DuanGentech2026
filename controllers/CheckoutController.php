@@ -202,7 +202,9 @@ class CheckoutController
                 unset($_SESSION['selected_items']);
 
                 // 4. Chuyển hướng tới trang thành công hoặc cổng thanh toán
-                if (in_array($paymentMethod, ['vnpay', 'momo', 'zalopay', 'applepay'])) {
+                if ($paymentMethod === 'vnpay') {
+                    $this->createVnPayUrl($orderId, $totalAmount);
+                } else if (in_array($paymentMethod, ['momo', 'zalopay', 'applepay'])) {
                     header('Location: ?action=payment-mock&method=' . $paymentMethod . '&order_id=' . $orderId);
                 } else {
                     header('Location: ?action=checkout-success&id=' . $orderId);
@@ -280,5 +282,119 @@ class CheckoutController
 
         header('Location: ?action=checkout-success&id=' . $orderId);
         exit;
+    }
+
+    private function createVnPayUrl($orderId, $amount)
+    {
+        // VNPAY yêu cầu thời gian phải theo múi giờ Việt Nam
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
+        
+        $vnp_TxnRef = $orderId; 
+        $vnp_OrderInfo = 'Thanh toan don hang: ' . $orderId;
+        $vnp_OrderType = 'billpayment';
+        $vnp_Amount = $amount * 100;
+        $vnp_Locale = 'vn';
+        $vnp_BankCode = '';
+        $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
+        
+        $startTime = date("YmdHis");
+        $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
+        
+        $inputData = array(
+            "vnp_Version" => "2.1.0",
+            "vnp_TmnCode" => VNP_TMN_CODE,
+            "vnp_Amount" => $vnp_Amount,
+            "vnp_Command" => "pay",
+            "vnp_CreateDate" => $startTime,
+            "vnp_CurrCode" => "VND",
+            "vnp_IpAddr" => $vnp_IpAddr,
+            "vnp_Locale" => $vnp_Locale,
+            "vnp_OrderInfo" => $vnp_OrderInfo,
+            "vnp_OrderType" => $vnp_OrderType,
+            "vnp_ReturnUrl" => VNP_RETURN_URL,
+            "vnp_TxnRef" => $vnp_TxnRef,
+            "vnp_ExpireDate" => $expire
+        );
+
+        if (isset($vnp_BankCode) && $vnp_BankCode != "") {
+            $inputData['vnp_BankCode'] = $vnp_BankCode;
+        }
+
+        ksort($inputData);
+        $query = "";
+        $i = 0;
+        $hashdata = "";
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
+            } else {
+                $hashdata .= urlencode($key) . "=" . urlencode($value);
+                $i = 1;
+            }
+            $query .= urlencode($key) . "=" . urlencode($value) . '&';
+        }
+
+        $vnp_Url = VNP_URL . "?" . $query;
+        if (VNP_HASH_SECRET) {
+            $vnpSecureHash = hash_hmac('sha512', $hashdata, VNP_HASH_SECRET);
+            $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
+        }
+        
+        header('Location: ' . $vnp_Url);
+        exit();
+    }
+
+    public function vnpayReturn()
+    {
+        $vnp_SecureHash = $_GET['vnp_SecureHash'] ?? '';
+        $inputData = array();
+        foreach ($_GET as $key => $value) {
+            if (substr($key, 0, 4) == "vnp_") {
+                $inputData[$key] = $value;
+            }
+        }
+        
+        unset($inputData['vnp_SecureHash']);
+        ksort($inputData);
+        $i = 0;
+        $hashData = "";
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashData = $hashData . '&' . urlencode($key) . "=" . urlencode($value);
+            } else {
+                $hashData = $hashData . urlencode($key) . "=" . urlencode($value);
+                $i = 1;
+            }
+        }
+
+        $secureHash = hash_hmac('sha512', $hashData, VNP_HASH_SECRET);
+        $orderId = $_GET['vnp_TxnRef'] ?? 0;
+        $vnp_ResponseCode = $_GET['vnp_ResponseCode'] ?? '';
+        $amount = ($_GET['vnp_Amount'] ?? 0) / 100;
+
+        if ($secureHash == $vnp_SecureHash) {
+            if ($vnp_ResponseCode == '00') {
+                // Thanh toán thành công
+                $this->orderModel->updatePaymentStatus($orderId, 'paid');
+                $this->orderModel->updateOrderStatus($orderId, 'processing');
+                
+                require_once PATH_MODEL . 'PaymentModel.php';
+                $paymentModel = new PaymentModel();
+                $paymentModel->pdo = $this->orderModel->getPdo();
+                $paymentModel->insertPayment($orderId, 'vnpay', $amount, 'success');
+                
+                header('Location: ?action=checkout-success&id=' . $orderId);
+                exit;
+            } else {
+                // Thanh toán lỗi hoặc bị hủy
+                $_SESSION['error'] = "Thanh toán VNPAY thất bại hoặc bị hủy.";
+                header('Location: ?action=cart');
+                exit;
+            }
+        } else {
+            $_SESSION['error'] = "Lỗi bảo mật: Sai chữ ký VNPAY.";
+            header('Location: ?action=cart');
+            exit;
+        }
     }
 }

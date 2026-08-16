@@ -21,6 +21,7 @@ match ($action) {
     'checkout-success' => (new CheckoutController)->success(),
     'payment-mock' => (new CheckoutController)->paymentMock(),
     'payment-process' => (new CheckoutController)->paymentProcess(),
+    'vnpay-return' => (new CheckoutController)->vnpayReturn(),
     'profile' => (new HomeController)->profile(),
     'order-history' => (new HomeController)->orderHistory(),
     'order-detail' => (new HomeController)->orderDetail(),

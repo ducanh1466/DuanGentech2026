@@ -110,11 +110,79 @@ class AdminController
         } catch (\Exception $e) {
         }
 
-        // Lấy số liệu thống kê tổng quan từ CSDL
-        $totalOrders = $dashboardModel->getTotalOrders();
-        $revenue = $dashboardModel->getTotalRevenue();
-        $totalProducts = $dashboardModel->getTotalProducts();
-        $totalUsers = $dashboardModel->getTotalUsers();
+        // Xử lý bộ lọc thời gian
+        $dateFilter = $_GET['date_filter'] ?? 'all';
+        $startDate = null;
+        $endDate = null;
+        $prevStartDate = null;
+        $prevEndDate = null;
+        $trendText = '';
+
+        switch ($dateFilter) {
+            case 'today':
+                $startDate = date('Y-m-d');
+                $endDate = date('Y-m-d');
+                $prevStartDate = date('Y-m-d', strtotime('-1 day'));
+                $prevEndDate = date('Y-m-d', strtotime('-1 day'));
+                $trendText = 'so với hôm qua';
+                break;
+            case 'this_week':
+                $startDate = date('Y-m-d', strtotime('monday this week'));
+                $endDate = date('Y-m-d', strtotime('sunday this week'));
+                $prevStartDate = date('Y-m-d', strtotime('monday last week'));
+                $prevEndDate = date('Y-m-d', strtotime('sunday last week'));
+                $trendText = 'so với tuần trước';
+                break;
+            case 'this_month':
+                $startDate = date('Y-m-01');
+                $endDate = date('Y-m-t');
+                $prevStartDate = date('Y-m-01', strtotime('first day of last month'));
+                $prevEndDate = date('Y-m-t', strtotime('last day of last month'));
+                $trendText = 'so với tháng trước';
+                break;
+            case 'this_year':
+                $startDate = date('Y-01-01');
+                $endDate = date('Y-12-31');
+                $prevStartDate = date('Y-01-01', strtotime('-1 year'));
+                $prevEndDate = date('Y-12-31', strtotime('-1 year'));
+                $trendText = 'so với năm trước';
+                break;
+            default:
+                $trendText = 'từ trước tới nay';
+                break;
+        }
+
+        // Hàm tính phần trăm thay đổi
+        $calculateTrend = function($current, $previous) {
+            if ($previous == 0) {
+                return $current > 0 ? 100 : 0;
+            }
+            return (($current - $previous) / $previous) * 100;
+        };
+
+        // Lấy số liệu thống kê tổng quan từ CSDL (có lọc thời gian)
+        $totalOrders = $dashboardModel->getTotalOrders($startDate, $endDate);
+        $revenue = $dashboardModel->getTotalRevenue($startDate, $endDate);
+        $totalProducts = $dashboardModel->getTotalProducts($startDate, $endDate);
+        $totalUsers = $dashboardModel->getTotalUsers($startDate, $endDate);
+
+        // Tính số liệu kỳ trước
+        $prevOrders = 0;
+        $prevRevenue = 0;
+        $prevProducts = 0;
+        $prevUsers = 0;
+
+        if ($dateFilter != 'all') {
+            $prevOrders = $dashboardModel->getTotalOrders($prevStartDate, $prevEndDate);
+            $prevRevenue = $dashboardModel->getTotalRevenue($prevStartDate, $prevEndDate);
+            $prevProducts = $dashboardModel->getTotalProducts($prevStartDate, $prevEndDate);
+            $prevUsers = $dashboardModel->getTotalUsers($prevStartDate, $prevEndDate);
+        }
+
+        $trendOrders = $calculateTrend($totalOrders, $prevOrders);
+        $trendRevenue = $calculateTrend($revenue, $prevRevenue);
+        $trendProducts = $calculateTrend($totalProducts, $prevProducts);
+        $trendUsers = $calculateTrend($totalUsers, $prevUsers);
 
         // Lấy năm đang chọn, mặc định là năm hiện tại
         $selectedYear = $_GET['year'] ?? date('Y');
@@ -125,6 +193,18 @@ class AdminController
 
         // Lấy dữ liệu doanh thu theo 12 tháng của năm được chọn
         $chartData = json_encode($dashboardModel->getRevenueByMonths($selectedYear));
+
+        // Lấy dữ liệu mới cho bản nâng cấp (Top Bán Chạy cũng bị lọc)
+        $topSellingProducts = $dashboardModel->getTopSellingProducts(5, $startDate, $endDate);
+        $lowStockProducts = $dashboardModel->getLowStockProducts(5, 10);
+        $orderStatusData = json_encode($dashboardModel->getOrdersByStatus());
+        
+        // Khối cảnh báo
+        $alerts = $dashboardModel->getPendingAlerts();
+
+        // Khách hàng VIP và Doanh thu theo danh mục
+        $topVIPCustomers = $dashboardModel->getTopVIPCustomers(5, $startDate, $endDate);
+        $salesByCategoryData = json_encode($dashboardModel->getSalesByCategory($startDate, $endDate));
 
         $title = 'Dashboard - DGENTECH Admin';
         $pageTitle = 'Dashboard';

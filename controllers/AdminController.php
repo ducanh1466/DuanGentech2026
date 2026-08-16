@@ -1742,12 +1742,28 @@ class AdminController
         $role = $_SESSION['user']['role'] ?? 1;
         $department = $_GET['department'] ?? '';
 
-        if ($role == 2) {
-            $department = 'CSKH';
-        } elseif ($role == 3) {
-            $department = 'KyThuat';
+        $permissions = $_SESSION['user']['permissions'] ?? [];
+        if (is_string($permissions)) {
+            $permissions = json_decode($permissions, true) ?: [];
+        }
+
+        if ($role != 1) {
+            if (in_array('contacts_cskh', $permissions) && !in_array('contacts_kythuat', $permissions)) {
+                $department = 'CSKH';
+            } elseif (in_array('contacts_kythuat', $permissions) && !in_array('contacts_cskh', $permissions)) {
+                $department = 'KyThuat';
+            } else {
+                if (empty($department) || !in_array($department, ['CSKH', 'KyThuat'])) {
+                    if (in_array('contacts_cskh', $permissions)) {
+                        header('Location: ' . BASE_URL . '?action=admin-contacts&department=CSKH');
+                        exit;
+                    } elseif (in_array('contacts_kythuat', $permissions)) {
+                        header('Location: ' . BASE_URL . '?action=admin-contacts&department=KyThuat');
+                        exit;
+                    }
+                }
+            }
         } else {
-            // Role 1 (Admin) or others: force department to CSKH or KyThuat
             if (empty($department) || !in_array($department, ['CSKH', 'KyThuat'])) {
                 header('Location: ' . BASE_URL . '?action=admin-contacts&department=CSKH');
                 exit;

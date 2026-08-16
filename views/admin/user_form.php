@@ -121,8 +121,12 @@ $id = isset($user['user_id']) ? $user['user_id'] : 0;
                                         <label class="form-check-label" for="perm_orders">Quản lý Đơn hàng</label>
                                     </div>
                                     <div class="form-check mt-2">
-                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="contacts" id="perm_contacts" <?= in_array('contacts', $userPermissions) ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="perm_contacts">Quản lý Phản ánh</label>
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="contacts_cskh" id="perm_contacts_cskh" <?= in_array('contacts_cskh', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_contacts_cskh">Quản lý Phản ánh (CSKH)</label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="contacts_kythuat" id="perm_contacts_kythuat" <?= in_array('contacts_kythuat', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_contacts_kythuat">Quản lý Phản ánh (Kỹ thuật)</label>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
@@ -137,6 +141,14 @@ $id = isset($user['user_id']) ? $user['user_id'] : 0;
                                     <div class="form-check mt-2">
                                         <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="reviews" id="perm_reviews" <?= in_array('reviews', $userPermissions) ? 'checked' : '' ?>>
                                         <label class="form-check-label" for="perm_reviews">Quản lý Đánh giá</label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="flash_sales" id="perm_flash_sales" <?= in_array('flash_sales', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_flash_sales">Quản lý Flash Sale</label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" value="discounts" id="perm_discounts" <?= in_array('discounts', $userPermissions) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="perm_discounts">Quản lý Mã giảm giá</label>
                                     </div>
                                 </div>
                             </div>
@@ -194,10 +206,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const permCheckboxes = document.querySelectorAll(".perm-checkbox");
 
     const rolePermissions = {
-        1: ["products", "categories", "brands", "attributes", "orders", "contacts", "news", "banners", "reviews"], // CNTT (All)
-        2: ["orders", "contacts", "reviews"], // CSKH
-        3: ["products", "categories", "brands", "attributes", "orders", "contacts", "reviews"], // Vận hành
-        4: ["news", "banners"] // Marketing
+        1: ["products", "categories", "brands", "attributes", "orders", "contacts_cskh", "contacts_kythuat", "news", "banners", "reviews", "flash_sales", "discounts"], // CNTT (All)
+        2: ["orders", "contacts_cskh", "reviews"], // CSKH
+        3: ["products", "categories", "brands", "attributes", "orders", "contacts_kythuat", "reviews"], // Vận hành
+        4: ["news", "banners", "flash_sales", "discounts"] // Marketing
     };
 
     roleSelect.addEventListener("change", function() {

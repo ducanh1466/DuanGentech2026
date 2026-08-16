@@ -148,7 +148,7 @@
                                             </a>
                                         </li>
                                     <?php endif; ?>
-                                    <?php if ($role == 1 || in_array('contacts', $permissions)): ?>
+                                    <?php if ($role == 1 || in_array('contacts_cskh', $permissions) || in_array('contacts_kythuat', $permissions)): ?>
                                         <?php $contactActive = strpos($action ?? '', 'admin-contact') !== false; ?>
                                         <li class="nav-item">
                                             <a class="nav-link py-2 d-flex align-items-center <?= $contactActive ? '' : 'collapsed' ?>" data-bs-toggle="collapse" href="#collapseContacts" role="button" aria-expanded="<?= $contactActive ? 'true' : 'false' ?>">
@@ -157,14 +157,14 @@
                                             </a>
                                             <div class="collapse <?= $contactActive ? 'show' : '' ?>" id="collapseContacts">
                                                 <ul class="nav flex-column ms-3 mt-1" style="border-left: 2px solid var(--border-light);">
-                                                    <?php if ($role == 1 || $role == 2): ?>
+                                                    <?php if ($role == 1 || in_array('contacts_cskh', $permissions)): ?>
                                                     <li class="nav-item">
                                                         <a class="nav-link py-1 <?= ($action == 'admin-contacts' && ($_GET['department'] ?? '') == 'CSKH') ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-contacts&department=CSKH" style="font-size: 0.85rem;">
                                                             CSKH
                                                         </a>
                                                     </li>
                                                     <?php endif; ?>
-                                                    <?php if ($role == 1 || $role == 3): ?>
+                                                    <?php if ($role == 1 || in_array('contacts_kythuat', $permissions)): ?>
                                                     <li class="nav-item">
                                                         <a class="nav-link py-1 <?= ($action == 'admin-contacts' && ($_GET['department'] ?? '') == 'KyThuat') ? 'active' : '' ?>" href="<?= BASE_URL ?>?action=admin-contacts&department=KyThuat" style="font-size: 0.85rem;">
                                                             Kỹ thuật

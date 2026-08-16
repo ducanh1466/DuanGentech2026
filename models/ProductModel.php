@@ -716,21 +716,28 @@ class ProductModel extends BaseModel
     // Lấy số lượng tồn kho của một biến thể
     public function getVariantStock($variant_id)
     {
-        $sql = "SELECT stock FROM tb_product_variants WHERE variant_id = :variant_id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['variant_id' => $variant_id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // Fallback to stock_quantity if stock doesn't exist or is null
-        if ($result === false || !isset($result['stock'])) {
+        try {
+            $sql = "SELECT stock FROM tb_product_variants WHERE variant_id = :variant_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['variant_id' => $variant_id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result && isset($result['stock'])) {
+                return (int) $result['stock'];
+            }
+        } catch (PDOException $e) {
+            // Cột stock không tồn tại, bỏ qua
+        }
+
+        // Fallback to stock_quantity
+        try {
             $sql2 = "SELECT stock_quantity FROM tb_product_variants WHERE variant_id = :variant_id";
             $stmt2 = $this->pdo->prepare($sql2);
             $stmt2->execute(['variant_id' => $variant_id]);
             $res2 = $stmt2->fetch(PDO::FETCH_ASSOC);
             return $res2 ? (int) $res2['stock_quantity'] : 0;
+        } catch (PDOException $e) {
+            return 0;
         }
-
-        return (int) $result['stock'];
     }
 
     // Trừ số lượng tồn kho của một biến thể
@@ -771,11 +778,25 @@ class ProductModel extends BaseModel
     // Lấy số lượng tồn kho của sản phẩm gốc
     public function getProductStock($product_id)
     {
-        $sql = "SELECT stock FROM tb_products WHERE product_id = :product_id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['product_id' => $product_id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? (int) $result['stock'] : 0;
+        try {
+            $sql = "SELECT stock FROM tb_products WHERE product_id = :product_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['product_id' => $product_id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result && isset($result['stock'])) return (int) $result['stock'];
+        } catch (PDOException $e) {
+            // Ignore if column doesn't exist
+        }
+        
+        try {
+            $sql2 = "SELECT stock_quantity FROM tb_products WHERE product_id = :product_id";
+            $stmt2 = $this->pdo->prepare($sql2);
+            $stmt2->execute(['product_id' => $product_id]);
+            $res2 = $stmt2->fetch(PDO::FETCH_ASSOC);
+            return $res2 ? (int) $res2['stock_quantity'] : 0;
+        } catch (PDOException $e) {
+            return 0;
+        }
     }
 
     // Trừ số lượng tồn kho của sản phẩm gốc
@@ -786,11 +807,21 @@ class ProductModel extends BaseModel
             return false;
         }
 
-        $sql = "UPDATE tb_products SET stock = stock - :quantity WHERE product_id = :product_id";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([
-            'quantity' => $quantity,
-            'product_id' => $product_id
-        ]);
+        try {
+            $sql = "UPDATE tb_products SET stock = stock - :quantity WHERE product_id = :product_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['quantity' => $quantity, 'product_id' => $product_id]);
+        } catch (PDOException $e) {
+            // Ignore if column doesn't exist
+        }
+
+        try {
+            $sql2 = "UPDATE tb_products SET stock_quantity = stock_quantity - :quantity WHERE product_id = :product_id";
+            $stmt2 = $this->pdo->prepare($sql2);
+            $stmt2->execute(['quantity' => $quantity, 'product_id' => $product_id]);
+        } catch (PDOException $e) {
+            // Ignore if column doesn't exist
+        }
+        return true;
     }
 }

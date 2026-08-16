@@ -89,10 +89,13 @@ if (isset($_SESSION['user'])) {
 
                     <!-- Search & Actions -->
                     <div class="d-flex align-items-center gap-3">
-                        <div class="search-box position-relative d-none d-lg-block">
-                            <i class="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
-                            <input type="text" class="form-control rounded-pill ps-5 bg-light border-0" placeholder="Tìm kiếm...">
-                        </div>
+                        <form action="<?= BASE_URL ?>" method="GET" class="search-box position-relative d-none d-lg-block m-0">
+                            <input type="hidden" name="action" value="products">
+                            <button type="submit" class="border-0 bg-transparent position-absolute top-50 translate-middle-y ms-2" style="z-index: 10;">
+                                <i class="bi bi-search text-muted"></i>
+                            </button>
+                            <input type="text" name="keyword" class="form-control rounded-pill bg-light border-0" style="padding-left: 2.5rem;" placeholder="Tìm kiếm sản phẩm..." value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>">
+                        </form>
                         <a href="<?= BASE_URL ?? '/' ?>?action=cart" class="btn btn-light rounded-circle icon-btn position-relative hover-primary-bg transition-all border-0">
                             <i class="bi bi-cart3 fs-5"></i>
                             <span id="header-cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm">

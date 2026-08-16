@@ -213,6 +213,52 @@ class AdminController
         require_once PATH_VIEW_ADMIN;
     }
 
+    // ------------------------------------------------------------------------
+    // INVENTORY MANAGEMENT (QUẢN LÝ KHO)
+    // ------------------------------------------------------------------------
+
+    public function inventory()
+    {
+        $productModel = new ProductModel();
+        $categoryModel = new CategoryModel();
+
+        list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
+        $stockFilter = $_GET['stock_filter'] ?? '';
+        $category_id = $_GET['category_id'] ?? null;
+
+        $inventory = $productModel->getAllInventory($keyword, $limit, $offset, $stockFilter, $category_id);
+        $totalRecords = $productModel->countInventory($keyword, $stockFilter, $category_id);
+        $totalPages = ceil($totalRecords / $limit);
+
+        // Lấy danh sách danh mục để hiển thị ở bộ lọc
+        $categories = $categoryModel->getAllCategories();
+
+        $title = 'Quản lý Kho - DGENTECH Admin';
+        $pageTitle = 'Quản lý Kho';
+        $action = 'admin-inventory';
+        $view = 'admin/inventory';
+        require_once PATH_VIEW_ADMIN;
+    }
+
+    public function updateStockQuick()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $variant_id = $_POST['variant_id'] ?? 0;
+            $stock = $_POST['stock'] ?? 0;
+
+            if ($variant_id > 0 && $stock >= 0) {
+                $productModel = new ProductModel();
+                $success = $productModel->updateStockQuick($variant_id, $stock);
+                if ($success) {
+                    echo json_encode(['success' => true, 'message' => 'Cập nhật thành công']);
+                    exit;
+                }
+            }
+            echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ']);
+            exit;
+        }
+    }
+
     // Chức năng: Quản lý danh mục (Hiển thị danh sách)
     public function categories()
     {
@@ -404,12 +450,18 @@ class AdminController
     public function products()
     {
         $productModel = new ProductModel();
+        $categoryModel = new CategoryModel();
+        
         list($keyword, $page, $limit, $offset) = $this->getPaginationParams();
         $status = $_GET['status'] ?? '';
+        $category_id = $_GET['category_id'] ?? null;
 
-        $products = $productModel->getAllProducts($keyword, $limit, $offset, $status);
-        $totalRecords = $productModel->countTotalProductsFiltered($keyword, $status);
+        $products = $productModel->getAllProducts($keyword, $limit, $offset, $status, $category_id);
+        $totalRecords = $productModel->countTotalProductsFiltered($keyword, $status, $category_id);
         $totalPages = ceil($totalRecords / $limit);
+
+        // Lấy danh sách danh mục để hiển thị ở bộ lọc
+        $categories = $categoryModel->getAllCategories();
 
         $title = 'Quản lý sản phẩm - DGENTECH Admin';
         $pageTitle = 'Sản phẩm';
@@ -1687,6 +1739,21 @@ class AdminController
         require_once PATH_MODEL . 'ContactModel.php';
         $contactModel = new ContactModel();
 
+        $role = $_SESSION['user']['role'] ?? 1;
+        $department = $_GET['department'] ?? '';
+
+        if ($role == 2) {
+            $department = 'CSKH';
+        } elseif ($role == 3) {
+            $department = 'KyThuat';
+        } else {
+            // Role 1 (Admin) or others: force department to CSKH or KyThuat
+            if (empty($department) || !in_array($department, ['CSKH', 'KyThuat'])) {
+                header('Location: ' . BASE_URL . '?action=admin-contacts&department=CSKH');
+                exit;
+            }
+        }
+
         $keyword = trim($_GET['keyword'] ?? '');
         $status = $_GET['status'] ?? '';
         $startDate = $_GET['start_date'] ?? '';
@@ -1697,15 +1764,6 @@ class AdminController
         $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
         if (!in_array($limit, [10, 20, 50, 100])) $limit = 10;
         $offset = ($page - 1) * $limit;
-
-        $department = $_GET['department'] ?? '';
-        $role = $_SESSION['user']['role'] ?? 1;
-
-        if ($role == 2) {
-            $department = 'CSKH'; // CSKH chỉ thấy đơn CSKH
-        } elseif ($role == 3) {
-            $department = 'KyThuat'; // Kỹ thuật chỉ thấy đơn Kỹ Thuật
-        }
 
         $contacts = $contactModel->getAllContacts($limit, $offset, $keyword, $status, $startDate, $endDate, $department);
         $totalContacts = $contactModel->countTotalContactsFiltered($keyword, $status, $startDate, $endDate, $department);

@@ -2,29 +2,39 @@
     <div class="card-header-custom">
         <h6><i class="bi bi-box-seam me-2"></i>Quản lý sản phẩm</h6>
         <div class="d-flex gap-2 align-items-center flex-wrap">
-            <form method="GET" class="d-flex gap-2 m-0 p-0 align-items-center">
+            <form method="GET" class="d-flex gap-3 m-0 p-2 align-items-center flex-grow-1" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
                 <input type="hidden" name="action" value="admin-products">
                 <input type="hidden" name="limit" value="<?= $limit ?? 10 ?>">
-                <input type="hidden" name="status" id="statusFilter" value="<?= htmlspecialchars($status ?? '') ?>">
-                <div class="dropdown">
-                    <button class="btn admin-filter-select" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 160px; text-align: left;">
-                        <?php 
-                            if (($status ?? '') === '1' || ($status ?? '') === 'active') echo 'Hiển thị';
-                            elseif (($status ?? '') === '0' || ($status ?? '') === 'inactive') echo 'Ẩn';
-                            else echo 'Tất cả trạng thái';
-                        ?>
-                    </button>
-                    <ul class="dropdown-menu shadow border-0" style="border-radius: 16px; min-width: 160px; padding: 8px; margin-top: 6px;">
-                        <li><a class="dropdown-item py-2 rounded mb-1 <?= ($status ?? '') === '' ? 'active text-white' : '' ?>" style="<?= ($status ?? '') === '' ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value=''; this.closest('form').submit(); return false;">Tất cả trạng thái</a></li>
-                        <li><a class="dropdown-item py-2 rounded mb-1 <?= (($status ?? '') === '1' || ($status ?? '') === 'active') ? 'active text-white' : '' ?>" style="<?= (($status ?? '') === '1' || ($status ?? '') === 'active') ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='1'; this.closest('form').submit(); return false;">Hiển thị</a></li>
-                        <li><a class="dropdown-item py-2 rounded <?= (($status ?? '') === '0' || ($status ?? '') === 'inactive') ? 'active text-white' : '' ?>" style="<?= (($status ?? '') === '0' || ($status ?? '') === 'inactive') ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='0'; this.closest('form').submit(); return false;">Ẩn</a></li>
-                    </ul>
+                
+                <!-- Filter by Category -->
+                <div class="input-group input-group-sm" style="flex: 1; min-width: 160px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
+                    <span class="input-group-text bg-white border-end-0 border-light text-muted"><i class="bi bi-folder2-open"></i></span>
+                    <select name="category_id" class="form-select border-start-0 border-light shadow-none fw-medium" onchange="this.form.submit()" style="color: #475569; cursor: pointer;">
+                        <option value="">Tất cả danh mục</option>
+                        <?php if(!empty($categories)): foreach($categories as $cat): ?>
+                            <option value="<?= $cat['category_id'] ?>" <?= (($category_id ?? '') == $cat['category_id']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($cat['category_name']) ?>
+                            </option>
+                        <?php endforeach; endif; ?>
+                    </select>
                 </div>
-                <div class="position-relative">
-                    <i class="bi bi-search position-absolute"
-                        style="left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);"></i>
-                    <input type="text" name="keyword" class="admin-search-input" value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>" placeholder="Tìm sản phẩm...">
+
+                <!-- Filter by Status -->
+                <div class="input-group input-group-sm" style="flex: 1; min-width: 150px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
+                    <span class="input-group-text bg-white border-end-0 border-light text-muted"><i class="bi bi-funnel"></i></span>
+                    <select name="status" class="form-select border-start-0 border-light shadow-none fw-medium" onchange="this.form.submit()" style="color: #475569; cursor: pointer;">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="1" <?= (($status ?? '') === '1' || ($status ?? '') === 'active') ? 'selected' : '' ?>>Hiển thị</option>
+                        <option value="0" <?= (($status ?? '') === '0' || ($status ?? '') === 'inactive') ? 'selected' : '' ?>>Ẩn</option>
+                    </select>
                 </div>
+
+                <!-- Search Input -->
+                <div class="input-group input-group-sm" style="flex: 2; min-width: 200px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden;">
+                    <span class="input-group-text bg-white border-end-0 border-light text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="keyword" class="form-control border-start-0 border-light shadow-none fw-medium" value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>" placeholder="Tìm tên, ID sản phẩm..." style="color: #475569;">
+                </div>
+                <button type="submit" class="btn btn-sm btn-primary shadow-sm text-nowrap px-3" style="border-radius: 8px;"><i class="bi bi-search me-1"></i>Tìm kiếm</button>
             </form>
             <a href="<?= BASE_URL ?>?action=admin-product-create" class="btn btn-accent btn-sm">
                 <i class="bi bi-plus-lg me-1"></i> Thêm sản phẩm
@@ -108,7 +118,7 @@
     <div class="d-flex justify-content-between align-items-center p-3 border-top" style="border-color:var(--border-light)!important">
         <!-- Chỉnh số lượng hiển thị -->
         <div class="d-flex align-items-center gap-2">
-            <select class="form-select form-select-sm" style="width: auto; border-radius: 4px;" onchange="window.location.href='?action=admin-products&keyword=<?= urlencode($keyword ?? '') ?>&status=<?= urlencode($status ?? '') ?>&limit='+this.value">
+            <select class="form-select form-select-sm" style="width: auto; border-radius: 4px;" onchange="window.location.href='?action=admin-products&keyword=<?= urlencode($keyword ?? '') ?>&status=<?= urlencode($status ?? '') ?>&category_id=<?= urlencode($category_id ?? '') ?>&limit='+this.value">
                 <option value="10" <?= ($limit ?? 10) == 10 ? 'selected' : '' ?>>10 / trang</option>
                 <option value="20" <?= ($limit ?? 10) == 20 ? 'selected' : '' ?>>20 / trang</option>
                 <option value="50" <?= ($limit ?? 10) == 50 ? 'selected' : '' ?>>50 / trang</option>
@@ -123,7 +133,7 @@
                 <nav aria-label="Page navigation">
                     <ul class="pagination pagination-sm mb-0">
                         <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                            <a class="page-link" href="?action=admin-products&keyword=<?= urlencode($keyword ?? '') ?>&status=<?= urlencode($status ?? '') ?>&limit=<?= $limit ?? 10 ?>&page=<?= ($page ?? 1) - 1 ?>">
+                            <a class="page-link" href="?action=admin-products&keyword=<?= urlencode($keyword ?? '') ?>&status=<?= urlencode($status ?? '') ?>&category_id=<?= urlencode($category_id ?? '') ?>&limit=<?= $limit ?? 10 ?>&page=<?= ($page ?? 1) - 1 ?>">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -133,7 +143,7 @@
                         $end = min($totalPages, ($page ?? 1) + 2);
                         
                         if ($start > 1) {
-                            echo '<li class="page-item"><a class="page-link" href="?action=admin-products&keyword='.urlencode($keyword ?? '').'&status='.urlencode($status ?? '').'&limit='.($limit ?? 10).'&page=1">1</a></li>';
+                            echo '<li class="page-item"><a class="page-link" href="?action=admin-products&keyword='.urlencode($keyword ?? '').'&status='.urlencode($status ?? '').'&category_id='.urlencode($category_id ?? '').'&limit='.($limit ?? 10).'&page=1">1</a></li>';
                             if ($start > 2) {
                                 echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
                             }
@@ -141,19 +151,19 @@
                         
                         for ($i = $start; $i <= $end; $i++) {
                             $active = ($i == ($page ?? 1)) ? 'active' : '';
-                            echo '<li class="page-item ' . $active . '"><a class="page-link" href="?action=admin-products&keyword='.urlencode($keyword ?? '').'&status='.urlencode($status ?? '').'&limit='.($limit ?? 10).'&page='.$i.'">' . $i . '</a></li>';
+                            echo '<li class="page-item ' . $active . '"><a class="page-link" href="?action=admin-products&keyword='.urlencode($keyword ?? '').'&status='.urlencode($status ?? '').'&category_id='.urlencode($category_id ?? '').'&limit='.($limit ?? 10).'&page='.$i.'">' . $i . '</a></li>';
                         }
                         
                         if ($end < $totalPages) {
                             if ($end < $totalPages - 1) {
                                 echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
                             }
-                            echo '<li class="page-item"><a class="page-link" href="?action=admin-products&keyword='.urlencode($keyword ?? '').'&status='.urlencode($status ?? '').'&limit='.($limit ?? 10).'&page='.$totalPages.'">'.$totalPages.'</a></li>';
+                            echo '<li class="page-item"><a class="page-link" href="?action=admin-products&keyword='.urlencode($keyword ?? '').'&status='.urlencode($status ?? '').'&category_id='.urlencode($category_id ?? '').'&limit='.($limit ?? 10).'&page='.$totalPages.'">'.$totalPages.'</a></li>';
                         }
                         ?>
                         
                         <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
-                            <a class="page-link" href="?action=admin-products&keyword=<?= urlencode($keyword ?? '') ?>&status=<?= urlencode($status ?? '') ?>&limit=<?= $limit ?? 10 ?>&page=<?= ($page ?? 1) + 1 ?>">
+                            <a class="page-link" href="?action=admin-products&keyword=<?= urlencode($keyword ?? '') ?>&status=<?= urlencode($status ?? '') ?>&category_id=<?= urlencode($category_id ?? '') ?>&limit=<?= $limit ?? 10 ?>&page=<?= ($page ?? 1) + 1 ?>">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>

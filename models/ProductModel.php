@@ -165,7 +165,7 @@ class ProductModel extends BaseModel
 
     public function getAllInventory($keyword = '', $limit = 0, $offset = 0, $stockFilter = '', $category_id = null)
     {
-        $sql = "SELECT pv.variant_id, p.product_id, p.product_name, pv.sku, pv.price, pv.stock,
+        $sql = "SELECT pv.variant_id, p.product_id, p.product_name, pv.sku, pv.price, pv.stock_quantity as stock,
                        (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT GROUP_CONCAT(av.attribute_value SEPARATOR ' - ') 
                         FROM tb_variant_attributes va 
@@ -183,11 +183,11 @@ class ProductModel extends BaseModel
         }
 
         if ($stockFilter === 'low') {
-            $sql .= " AND pv.stock <= 10";
+            $sql .= " AND pv.stock_quantity <= 10";
         } elseif ($stockFilter === 'out') {
-            $sql .= " AND pv.stock = 0";
+            $sql .= " AND pv.stock_quantity = 0";
         } elseif ($stockFilter === 'in') {
-            $sql .= " AND pv.stock > 10";
+            $sql .= " AND pv.stock_quantity > 10";
         }
 
         if ($category_id) {
@@ -195,7 +195,7 @@ class ProductModel extends BaseModel
             $params['category_id'] = $category_id;
         }
 
-        $sql .= " ORDER BY pv.stock ASC, p.product_id DESC";
+        $sql .= " ORDER BY pv.stock_quantity ASC, p.product_id DESC";
 
         if ($limit > 0) {
             $sql .= " LIMIT :limit OFFSET :offset";
@@ -231,11 +231,11 @@ class ProductModel extends BaseModel
         }
 
         if ($stockFilter === 'low') {
-            $sql .= " AND pv.stock <= 10";
+            $sql .= " AND pv.stock_quantity <= 10";
         } elseif ($stockFilter === 'out') {
-            $sql .= " AND pv.stock = 0";
+            $sql .= " AND pv.stock_quantity = 0";
         } elseif ($stockFilter === 'in') {
-            $sql .= " AND pv.stock > 10";
+            $sql .= " AND pv.stock_quantity > 10";
         }
 
         if ($category_id) {

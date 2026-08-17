@@ -1785,6 +1785,9 @@ class AdminController
         $totalContacts = $contactModel->countTotalContactsFiltered($keyword, $status, $startDate, $endDate, $department);
         $totalPages = ceil($totalContacts / $limit);
 
+        $title = 'Quản lý yêu cầu phản ánh - DGENTECH Admin';
+        $pageTitle = 'Quản lý yêu cầu phản ánh';
+        $action = 'admin-contacts';
         $view = 'admin/contacts';
         require_once PATH_VIEW . 'layouts/admin_layout.php';
     }

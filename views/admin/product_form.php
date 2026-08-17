@@ -318,7 +318,9 @@ $all_attributes = $all_attributes ?? [];
         // Render existing variants if they are not just "Mặc định"
         if(existingVariants.length > 0 && !(existingVariants.length === 1 && existingVariants[0].variant_name === 'Mặc định')) {
             existingVariants.forEach(v => {
-                appendVariantRow(v.variant_id, v.variant_name, v.sku || '', v.price || '', v.stock_quantity || 0, '');
+                let p = v.price ? Math.round(parseFloat(v.price)) : '';
+                let sq = typeof v.stock_quantity !== 'undefined' ? v.stock_quantity : (v.stock || 0);
+                appendVariantRow(v.variant_id, v.variant_name, v.sku || '', p, sq, '');
             });
         }
     });

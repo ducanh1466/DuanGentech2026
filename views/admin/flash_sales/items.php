@@ -82,7 +82,11 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
                                             <div class="rounded border" style="width: 45px; height: 45px; overflow: hidden;">
-                                                <img src="<?= htmlspecialchars($item['image'] ?: 'assets/images/placeholder.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                                <?php 
+                                                    $img = $item['image'] ?? '';
+                                                    $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_ASSETS_UPLOADS . 'products/' . basename($img)) : 'assets/images/placeholder.png';
+                                                ?>
+                                                <img src="<?= htmlspecialchars($imgUrl) ?>" style="width: 100%; height: 100%; object-fit: cover;">
                                             </div>
                                             <div class="fw-bold text-dark text-truncate" style="max-width: 250px;">
                                                 <?= htmlspecialchars($item['product_name']) ?>

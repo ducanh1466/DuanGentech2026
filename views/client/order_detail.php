@@ -331,7 +331,8 @@
                         $subtotal += $detail['unit_price'] * $detail['quantity'];
                     }
                 }
-                $discountAmount = $subtotal - $order['total_amount'];
+                $shippingFee = $order['shipping_fee'] ?? 0;
+                $discountAmount = $subtotal + $shippingFee - $order['total_amount'];
                 if ($discountAmount < 0) $discountAmount = 0;
                 ?>
                 <div class="row justify-content-end mt-4 pt-4 border-top">
@@ -342,7 +343,11 @@
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-secondary fw-medium" style="font-size: 0.85rem;">Phí vận chuyển</span>
-                            <span class="text-success fw-bold" style="font-size: 0.85rem;">Miễn phí</span>
+                            <?php if ($shippingFee > 0): ?>
+                                <span class="text-dark fw-bold" style="font-size: 0.85rem;"><?= number_format($shippingFee, 0, ',', '.') ?>đ</span>
+                            <?php else: ?>
+                                <span class="text-success fw-bold" style="font-size: 0.85rem;">Miễn phí</span>
+                            <?php endif; ?>
                         </div>
                         <?php if ($discountAmount > 0): ?>
                         <div class="d-flex justify-content-between mb-3">

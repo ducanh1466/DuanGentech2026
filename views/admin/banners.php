@@ -67,6 +67,8 @@
                         <td>
                             <?php if ($banner['position'] === 'hero_slider'): ?>
                                 <span class="badge bg-primary">Hero Slider</span>
+                            <?php elseif ($banner['position'] === 'product_page_banner'): ?>
+                                <span class="badge bg-dark">Trang Sản Phẩm</span>
                             <?php else: ?>
                                 <span class="badge bg-info text-dark">Khuyến Mãi</span>
                             <?php endif; ?>

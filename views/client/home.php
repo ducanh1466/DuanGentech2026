@@ -1,56 +1,52 @@
 <!-- Hero Parallax Section -->
 <div class="container-fluid px-4 mt-3" data-aos="fade-up">
-    <div class="hero-parallax-slider shadow-lg">
+    <div id="heroCarousel" class="carousel slide shadow-lg rounded-4 overflow-hidden" data-bs-ride="carousel" data-bs-interval="6000">
+        <!-- Indicators -->
+        <div class="carousel-indicators">
+            <?php if (!empty($heroBanners)): ?>
+                <?php foreach ($heroBanners as $index => $banner): ?>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="<?= $index ?>" class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $index + 1 ?>"></button>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <?php endif; ?>
+        </div>
+        
+        <div class="carousel-inner" style="height: 500px;">
         <?php if (!empty($heroBanners)): ?>
             <?php foreach ($heroBanners as $index => $banner): ?>
-                <div class="hero-parallax-item <?= $index === 0 ? 'active' : '' ?>">
-                    <div class="hero-parallax-bg" style="background-image: url('<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>');"></div>
-                    <div class="hero-parallax-overlay"></div>
-                    <div class="hero-parallax-content d-flex flex-column align-items-center justify-content-center h-100">
-                        <div class="p-4 rounded-4 text-center mx-3" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); max-width: 700px; transform: translateY(20px); animation: fadeInUp 1s ease forwards;">
-                            <span class="badge bg-white text-primary rounded-pill px-3 py-1 mb-3 fw-bold text-uppercase tracking-wider" style="letter-spacing: 1px; font-size: 0.75rem;" data-aos="fade-up" data-aos-delay="100">Khám Phá Kỷ Nguyên Mới</span>
-                            
-                            <h1 class="display-5 fw-bolder mb-3 text-white text-shadow-sm" style="line-height: 1.2; letter-spacing: -0.5px;" data-aos="fade-up" data-aos-delay="200">
-                                <?= htmlspecialchars($banner['title']) ?>
-                            </h1>
-                            
-                            <p class="text-white mb-4 opacity-75 mx-auto" style="max-width: 500px; font-size: 1rem;" data-aos="fade-up" data-aos-delay="300">
-                                Trải nghiệm đỉnh cao công nghệ cùng Gentech. Sự hoàn hảo đến từ những chi tiết nhỏ nhất.
-                            </p>
-                            
-                            <!-- Nút bấm với link động -->
-                            <div class="d-flex gap-3 justify-content-center" data-aos="fade-up" data-aos-delay="400">
-                                <?php if (!empty($banner['link'])): ?>
-                                    <a href="<?= htmlspecialchars($banner['link']) ?>" class="btn btn-light text-primary rounded-pill px-4 py-2 fw-bold fs-6 shadow-sm hover-scale transition-all d-flex align-items-center gap-2">
-                                        Khám Phá Ngay <i class="bi bi-arrow-right"></i>
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
+                <div class="carousel-item h-100 <?= $index === 0 ? 'active' : '' ?>">
+                    <?php if (!empty($banner['link'])): ?>
+                    <a href="<?= htmlspecialchars($banner['link']) ?>" class="d-block w-100 h-100 position-absolute z-1"></a>
+                    <?php endif; ?>
+                    <div class="position-absolute w-100 h-100" style="background-image: url('<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+                    <!-- Giảm độ tối của overlay để ảnh banner sáng hơn -->
+                    <div class="position-absolute w-100 h-100" style="background: rgba(0,0,0,0.1);"></div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
             <!-- Fallback nếu không có banner nào -->
-            <div class="hero-parallax-item active">
-                <div class="hero-parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=2070&auto=format&fit=crop');"></div>
-                <div class="hero-parallax-overlay"></div>
-                <div class="hero-parallax-content d-flex flex-column align-items-center justify-content-center h-100">
-                    <span class="badge bg-primary rounded-pill px-3 py-1 mb-3 fs-6 shadow-sm border border-light border-opacity-25" data-aos="fade-up" data-aos-delay="200">GENTECH</span>
+            <div class="carousel-item active h-100">
+                <div class="position-absolute w-100 h-100" style="background-image: url('https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center;"></div>
+                <div class="position-absolute w-100 h-100" style="background: rgba(0,0,0,0.4);"></div>
+                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center h-100" style="bottom: 0;">
+                    <span class="badge bg-primary rounded-pill px-3 py-1 mb-3 fs-6 shadow-sm border border-light border-opacity-25">GENTECH</span>
                     <h1 class="display-5 fw-bold mb-3 text-white" style="letter-spacing: -1px;">SẢN PHẨM <span class="text-primary">CHÍNH HÃNG</span></h1>
                 </div>
             </div>
         <?php endif; ?>
+        </div>
         
-        <!-- Script to rotate slides (simulated for now, would be handled by JS) -->
-        <script>
-            // Basic parallax slider script
-            document.addEventListener('DOMContentLoaded', function() {
-                const slider = document.querySelector('.hero-parallax-slider');
-                if(!slider) return;
-                // Add more slides dynamically or handle in PHP
-            });
-        </script>
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" style="width: 5%; opacity: 1;">
+            <span class="carousel-control-prev-icon p-3 bg-dark bg-opacity-50 rounded-circle" aria-hidden="true" style="width: 50px; height: 50px;"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" style="width: 5%; opacity: 1;">
+            <span class="carousel-control-next-icon p-3 bg-dark bg-opacity-50 rounded-circle" aria-hidden="true" style="width: 50px; height: 50px;"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+
     </div>
 </div>
 
@@ -98,7 +94,8 @@
         <div class="row mt-4 position-relative z-1 g-3">
             <?php foreach($flashSaleItems as $item): 
                 $img = $item['image'] ?? '';
-                $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_URL . 'assets/uploads/' . $img) : 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853';
+                $imgName = !empty($img) ? basename($img) : '';
+                $imgUrl = !empty($imgName) ? BASE_ASSETS_UPLOADS . 'products/' . $imgName : 'https://placehold.co/400x400/e2e8f0/64748b?text=IMG';
                 $discountPercent = $item['price'] > 0 ? round((($item['price'] - $item['flash_price']) / $item['price']) * 100) : 0;
                 $soldPercent = $item['quantity'] > 0 ? min(100, ($item['sold'] / $item['quantity']) * 100) : 0;
             ?>
@@ -199,11 +196,12 @@
         <?php if (!empty($latestProducts)): ?>
             <?php foreach($latestProducts as $index => $product): 
                 $img = $product['image'] ?? '';
-                $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_URL . 'assets/uploads/' . $img) : 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=2071&auto=format&fit=crop';
+                $imgName = !empty($img) ? basename($img) : '';
+                $imgUrl = !empty($imgName) ? BASE_ASSETS_UPLOADS . 'products/' . $imgName : 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=2071&auto=format&fit=crop';
             ?>
             <div class="col-sm-6 col-lg-3 mb-5" data-aos="fade-up" data-aos-delay="<?= ($index % 4 + 1) * 100 ?>">
                 <div class="product-card-premium bg-white rounded-4 h-100 d-flex flex-column position-relative overflow-hidden transition-all" style="box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02);">
-                    <div class="card-img-wrap bg-light position-relative p-4 rounded-top-4 d-flex align-items-center justify-content-center overflow-hidden" style="height: 250px;">
+                    <div class="card-img-wrap bg-light position-relative p-4 rounded-top-4 d-flex align-items-center justify-content-center overflow-hidden" style="height: 250px;" onmouseover="this.querySelector('.hover-overlay').style.opacity='1'" onmouseout="this.querySelector('.hover-overlay').style.opacity='0'">
                         <a href="<?= BASE_URL ?>?action=product-detail&id=<?= $product['product_id'] ?? 0 ?>" class="d-block w-100 h-100 position-relative">
                             <img src="<?= $imgUrl ?>" alt="<?= htmlspecialchars($product['product_name'] ?? 'Product') ?>" style="object-fit: contain; width: 100%; height: 100%; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2; position: relative;" class="product-img-main drop-shadow-md">
                         </a>
@@ -212,12 +210,12 @@
                         </div>
                         
                         <!-- Premium Hover Overlay -->
-                        <div class="premium-hover-overlay" style="padding: 1.5rem 1rem;">
-                            <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form w-100 d-flex justify-content-center">
+                        <div class="position-absolute d-flex justify-content-center align-items-center w-100 h-100 hover-overlay" style="top: 0; left: 0; background: rgba(255,255,255,0.4); opacity: 0; transition: all 0.3s ease; z-index: 15; pointer-events: none;">
+                            <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form" style="pointer-events: auto;">
                                 <input type="hidden" name="variant_id" value="<?= htmlspecialchars($product['default_variant_id'] ?? 0) ?>">
                                 <input type="hidden" name="quantity" value="1">
-                                <button type="submit" name="action_type" value="add_to_cart" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-premium-add shadow d-flex justify-content-center align-items-center gap-2 transition-all hover-scale" style="font-size: 0.9rem;">
-                                    <i class="bi bi-cart-plus fs-5"></i> Thêm vào giỏ
+                                <button type="submit" name="action_type" value="add_to_cart" class="btn btn-dark rounded-circle shadow-lg d-flex justify-content-center align-items-center transition-all hover-scale" style="width: 55px; height: 55px; transform: translateY(10px); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(0)'" onmouseout="this.style.transform='translateY(10px)'" title="Thêm vào giỏ">
+                                    <i class="bi bi-cart-plus fs-4"></i>
                                 </button>
                             </form>
                         </div>
@@ -257,27 +255,58 @@
 
 <!-- Banner Khuyến Mãi -->
 <div class="container mt-5 pt-5">
-    <div class="row g-4">
-        <?php if (!empty($promoBanners)): ?>
-            <?php foreach ($promoBanners as $index => $banner): ?>
-                <div class="col-md-6" data-aos="<?= $index % 2 == 0 ? 'fade-right' : 'fade-left' ?>">
-                    <a href="<?= !empty($banner['link']) ? htmlspecialchars($banner['link']) : '#' ?>" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
-                        <img src="<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>" alt="<?= htmlspecialchars($banner['title']) ?>" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
-                    </a>
+    <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="7000">
+        <div class="carousel-inner">
+            <?php if (!empty($promoBanners)): ?>
+                <?php 
+                // Gộp 2 banner vào 1 slide để giữ layout 2 cột
+                $chunks = array_chunk($promoBanners, 2);
+                foreach ($chunks as $index => $chunk): 
+                ?>
+                    <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+                        <div class="row g-4">
+                            <?php foreach ($chunk as $banner): ?>
+                                <div class="col-md-6">
+                                    <a href="<?= !empty($banner['link']) ? htmlspecialchars($banner['link']) : '#' ?>" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
+                                        <img src="<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>" alt="<?= htmlspecialchars($banner['title']) ?>" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- ========================================== -->
+                <!-- VỊ TRÍ THÊM BANNER QUẢNG CÁO CỦA BẠN Ở ĐÂY -->
+                <!-- ========================================== -->
+                <div class="carousel-item active">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom bg-light border d-flex justify-content-center align-items-center" style="height:250px;">
+                                <img src="https://placehold.co/800x300/475569/ffffff?text=BANNER+1" alt="Banner Khuyến Mãi 1" class="img-fluid w-100 h-100 rounded-4" style="object-fit:cover;">
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom bg-light border d-flex justify-content-center align-items-center" style="height:250px;">
+                                <img src="https://placehold.co/800x300/64748b/ffffff?text=BANNER+2" alt="Banner Khuyến Mãi 2" class="img-fluid w-100 h-100 rounded-4" style="object-fit:cover;">
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <!-- Fallback tĩnh nếu admin chưa thêm banner -->
-            <div class="col-md-6" data-aos="fade-right">
-                <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
-                    <img src="<?= BASE_URL ?>assets/uploads/banner/bannersale1.jpg" alt="Banner Khuyến Mãi 1" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
-                </a>
-            </div>
-            <div class="col-md-6" data-aos="fade-left">
-                <a href="#" class="d-block rounded-4 overflow-hidden shadow-sm hover-zoom">
-                    <img src="<?= BASE_URL ?>assets/uploads/banner/bannersale2.jpg" alt="Banner Khuyến Mãi 2" class="img-fluid w-100 rounded-4" style="height:250px; object-fit:cover;">
-                </a>
-            </div>
+                <!-- ========================================== -->
+            <?php endif; ?>
+        </div>
+        
+        <?php if (!empty($promoBanners) && count($promoBanners) > 2): ?>
+            <!-- Controls (chỉ hiện khi có hơn 2 banner) -->
+            <button class="carousel-control-prev justify-content-start ms-n4" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev" style="width: auto;">
+                <span class="carousel-control-prev-icon p-3 bg-dark bg-opacity-50 rounded-circle shadow" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next justify-content-end me-n4" type="button" data-bs-target="#promoCarousel" data-bs-slide="next" style="width: auto;">
+                <span class="carousel-control-next-icon p-3 bg-dark bg-opacity-50 rounded-circle shadow" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
         <?php endif; ?>
     </div>
 </div>
@@ -293,25 +322,26 @@
         <?php if (!empty($bestSellers)): ?>
             <?php foreach($bestSellers as $index => $product): 
                 $img = $product['image'] ?? '';
-                $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_URL . 'assets/uploads/' . $img) : 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=2080&auto=format&fit=crop';
+                $imgName = !empty($img) ? basename($img) : '';
+                $imgUrl = !empty($imgName) ? BASE_ASSETS_UPLOADS . 'products/' . $imgName : 'https://placehold.co/400x400/e2e8f0/64748b?text=IMG';
             ?>
             <div class="col-sm-6 col-lg-3 mb-5" data-aos="fade-up" data-aos-delay="<?= ($index % 4 + 1) * 100 ?>">
                 <div class="product-card-premium bg-white rounded-4 h-100 d-flex flex-column position-relative overflow-hidden transition-all" style="box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02);">
-                    <div class="card-img-wrap bg-light position-relative p-4 rounded-top-4 d-flex align-items-center justify-content-center overflow-hidden" style="height: 250px;">
+                    <div class="card-img-wrap bg-light position-relative p-4 rounded-top-4 d-flex align-items-center justify-content-center overflow-hidden" style="height: 250px;" onmouseover="this.querySelector('.hover-overlay').style.opacity='1'" onmouseout="this.querySelector('.hover-overlay').style.opacity='0'">
                         <a href="<?= BASE_URL ?>?action=product-detail&id=<?= $product['product_id'] ?? 0 ?>" class="d-block w-100 h-100 position-relative">
                             <img src="<?= $imgUrl ?>" alt="<?= htmlspecialchars($product['product_name'] ?? 'Product') ?>" style="object-fit: contain; width: 100%; height: 100%; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2; position: relative;" class="product-img-main drop-shadow-md">
                         </a>
-                        <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                            <span class="badge bg-dark bg-gradient shadow-sm px-3 py-2 rounded-pill fw-bold" style="font-size:0.7rem; letter-spacing: 1px;"><i class="bi bi-fire text-warning"></i> BÁN CHẠY</span>
+                        <div class="position-absolute" style="top: 15px; left: 15px; z-index: 10;">
+                            <span class="badge bg-warning text-dark shadow-sm px-3 py-2 rounded-pill fw-bold" style="font-size:0.7rem; letter-spacing: 1px;"><i class="bi bi-fire text-danger"></i> HOT</span>
                         </div>
                         
                         <!-- Premium Hover Overlay -->
-                        <div class="premium-hover-overlay" style="padding: 1.5rem 1rem;">
-                            <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form w-100 d-flex justify-content-center">
+                        <div class="position-absolute d-flex justify-content-center align-items-center w-100 h-100 hover-overlay" style="top: 0; left: 0; background: rgba(255,255,255,0.4); opacity: 0; transition: all 0.3s ease; z-index: 15; pointer-events: none;">
+                            <form action="?action=cart-add" method="POST" class="ajax-add-to-cart-form" style="pointer-events: auto;">
                                 <input type="hidden" name="variant_id" value="<?= htmlspecialchars($product['default_variant_id'] ?? 0) ?>">
                                 <input type="hidden" name="quantity" value="1">
-                                <button type="submit" name="action_type" value="add_to_cart" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-premium-add shadow d-flex justify-content-center align-items-center gap-2 transition-all hover-scale" style="font-size: 0.9rem;">
-                                    <i class="bi bi-cart-plus fs-5"></i> Thêm vào giỏ
+                                <button type="submit" name="action_type" value="add_to_cart" class="btn btn-dark rounded-circle shadow-lg d-flex justify-content-center align-items-center transition-all hover-scale" style="width: 55px; height: 55px; transform: translateY(10px); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(0)'" onmouseout="this.style.transform='translateY(10px)'" title="Thêm vào giỏ">
+                                    <i class="bi bi-cart-plus fs-4"></i>
                                 </button>
                             </form>
                         </div>

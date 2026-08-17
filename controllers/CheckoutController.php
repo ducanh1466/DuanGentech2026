@@ -76,6 +76,7 @@ class CheckoutController
         foreach ($cartItems as $item) {
             $totalAmount += $item['price'] * $item['quantity'];
         }
+        $subTotal = $totalAmount; // Lưu lại để tính phí ship
 
         // Lấy danh sách mã giảm giá
         $activeDiscounts = $this->discountModel->getActiveDiscounts();
@@ -93,6 +94,11 @@ class CheckoutController
                 unset($_SESSION['discount']);
             }
         }
+
+        // Tính phí vận chuyển (dựa trên $subTotal ban đầu)
+        $shippingFee = ($subTotal >= 1000000) ? 0 : 30000;
+        // Cập nhật tổng tiền cuối cùng
+        $totalAmount += $shippingFee;
 
         $view = 'client/checkout';
         $title = 'Thanh Toán - Gentech';
@@ -134,6 +140,7 @@ class CheckoutController
             foreach ($cartItems as $item) {
                 $totalAmount += $item['price'] * $item['quantity'];
             }
+            $subTotal = $totalAmount; // Lưu lại để tính phí ship
 
             // Nhận dữ liệu từ form
             $recipientName = trim($_POST['recipient_name'] ?? '');
@@ -175,6 +182,10 @@ class CheckoutController
                 }
             }
             
+            // Tính phí vận chuyển (dựa trên $subTotal ban đầu)
+            $shippingFee = ($subTotal >= 1000000) ? 0 : 30000;
+            $totalAmount += $shippingFee;
+            
             // Bắt đầu TRANSACTION
             $pdo = $this->orderModel->getPdo();
             try {
@@ -191,7 +202,8 @@ class CheckoutController
                     $shippingAddress, 
                     $note, 
                     $paymentMethod, 
-                    'unpaid'
+                    'unpaid',
+                    $shippingFee
                 );
 
                 if (!$orderId) {

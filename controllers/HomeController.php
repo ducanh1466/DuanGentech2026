@@ -146,14 +146,21 @@ class HomeController
         $brandModel = new BrandModel();
         
         // Setup pagination
-        $limit = 10;
+        $limit = 12; // Lấy 12 sản phẩm
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $offset = ($page - 1) * $limit;
         
+        // Handle category_id from menu links
+        $cats = isset($_GET['categories']) && is_array($_GET['categories']) ? $_GET['categories'] : [];
+        if (isset($_GET['category_id']) && !in_array($_GET['category_id'], $cats)) {
+            $cats[] = $_GET['category_id'];
+            $_GET['categories'] = $cats; // Sync back to $_GET for the view
+        }
+
         // Parse filters from URL
         $filters = [
             'keyword' => $_GET['keyword'] ?? '',
-            'categories' => isset($_GET['categories']) && is_array($_GET['categories']) ? $_GET['categories'] : [],
+            'categories' => $cats,
             'brands' => isset($_GET['brands']) && is_array($_GET['brands']) ? $_GET['brands'] : [],
             'attributeValues' => isset($_GET['attributes']) && is_array($_GET['attributes']) ? $_GET['attributes'] : [], // Changed from attributeValues to attributes in GET for shorter URL
             'minPrice' => isset($_GET['price_min']) ? (float)$_GET['price_min'] : 0,
@@ -174,6 +181,11 @@ class HomeController
         $allCategories = $categoryModel->getAllCategories();
         $allBrands = $brandModel->getAllBrands();
         $allAttributes = $productModel->getAttributesForFilter();
+        
+        // Fetch Banner for product page
+        require_once PATH_MODEL . 'BannerModel.php';
+        $bannerModel = new BannerModel();
+        $productBanners = $bannerModel->getActiveBannersByPosition('product_page_banner');
         
         $view = 'client/products';
         $title = 'Tất Cả Sản Phẩm - Gentech';

@@ -14,7 +14,7 @@ class ProductModel extends BaseModel
     {
         // Get products with their primary image and minimum variant price
         $baseSql = "SELECT p.*, c.category_name, b.brand_name,
-                   (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                   (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                    (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
                    (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id
             FROM {$this->table} p
@@ -88,7 +88,7 @@ class ProductModel extends BaseModel
     public function getLatestProducts($limit = 8)
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
-                       (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
                        (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id
                 FROM {$this->table} p
@@ -107,7 +107,7 @@ class ProductModel extends BaseModel
     public function getBestSellingProducts($limit = 8)
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
-                       (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
                        (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id,
                        (SELECT SUM(oi.quantity) 
@@ -130,7 +130,7 @@ class ProductModel extends BaseModel
     public function getProductById($id)
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
-                       (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
                        fsi.flash_price,
                        fs.end_time as flash_end_time,
@@ -166,7 +166,7 @@ class ProductModel extends BaseModel
     public function getAllInventory($keyword = '', $limit = 0, $offset = 0, $stockFilter = '', $category_id = null)
     {
         $sql = "SELECT pv.variant_id, p.product_id, p.product_name, pv.sku, pv.price, pv.stock_quantity as stock,
-                       (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT GROUP_CONCAT(av.attribute_value SEPARATOR ' - ') 
                         FROM tb_variant_attributes va 
                         JOIN tb_attribute_values av ON va.attribute_value_id = av.attribute_value_id 
@@ -274,7 +274,7 @@ class ProductModel extends BaseModel
     // Lấy danh sách các hình ảnh của một sản phẩm (Sắp xếp theo thứ tự hiển thị)
     public function getProductImages($product_id)
     {
-        $sql = "SELECT * FROM tb_product_images WHERE product_id = :product_id ORDER BY display_order ASC";
+        $sql = "SELECT *, REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') as image_url FROM tb_product_images WHERE product_id = :product_id ORDER BY display_order ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['product_id' => $product_id]);
         return $stmt->fetchAll();
@@ -328,7 +328,7 @@ class ProductModel extends BaseModel
     public function getProductsByCategory($category_id, $limit = 4, $exclude_id = 0)
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
-                       (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
                 FROM {$this->table} p
                 LEFT JOIN tb_categories c ON p.category_id = c.category_id
@@ -682,19 +682,18 @@ class ProductModel extends BaseModel
         return [$sql, $params];
     }
 
-    // Lấy danh sách sản phẩm sau khi đã áp dụng các tiêu chí lọc (có phân trang)
     public function getProductsFiltered($filters, $limit, $offset)
     {
         list($sql, $params) = $this->buildFilterQuery($filters);
 
-        $sql .= " LIMIT :limit OFFSET :offset";
+        $limitInt = (int)$limit;
+        $offsetInt = (int)$offset;
+        $sql .= " LIMIT {$limitInt} OFFSET {$offsetInt}";
 
         $stmt = $this->pdo->prepare($sql);
         foreach ($params as $key => $value) {
             $stmt->bindValue(":$key", $value);
         }
-        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
 
         $stmt->execute();
         return $stmt->fetchAll();
@@ -717,24 +716,24 @@ class ProductModel extends BaseModel
     public function getVariantStock($variant_id)
     {
         try {
-            $sql = "SELECT stock FROM tb_product_variants WHERE variant_id = :variant_id";
+            $sql = "SELECT stock_quantity FROM tb_product_variants WHERE variant_id = :variant_id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute(['variant_id' => $variant_id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($result && isset($result['stock'])) {
-                return (int) $result['stock'];
+            if ($result && isset($result['stock_quantity'])) {
+                return (int) $result['stock_quantity'];
             }
         } catch (PDOException $e) {
-            // Cột stock không tồn tại, bỏ qua
+            // Cột stock_quantity không tồn tại, bỏ qua
         }
 
-        // Fallback to stock_quantity
+        // Fallback to stock
         try {
-            $sql2 = "SELECT stock_quantity FROM tb_product_variants WHERE variant_id = :variant_id";
+            $sql2 = "SELECT stock FROM tb_product_variants WHERE variant_id = :variant_id";
             $stmt2 = $this->pdo->prepare($sql2);
             $stmt2->execute(['variant_id' => $variant_id]);
             $res2 = $stmt2->fetch(PDO::FETCH_ASSOC);
-            return $res2 ? (int) $res2['stock_quantity'] : 0;
+            return $res2 ? (int) $res2['stock'] : 0;
         } catch (PDOException $e) {
             return 0;
         }
@@ -779,21 +778,21 @@ class ProductModel extends BaseModel
     public function getProductStock($product_id)
     {
         try {
-            $sql = "SELECT stock FROM tb_products WHERE product_id = :product_id";
+            $sql = "SELECT stock_quantity FROM tb_products WHERE product_id = :product_id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute(['product_id' => $product_id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($result && isset($result['stock'])) return (int) $result['stock'];
+            if ($result && isset($result['stock_quantity'])) return (int) $result['stock_quantity'];
         } catch (PDOException $e) {
             // Ignore if column doesn't exist
         }
         
         try {
-            $sql2 = "SELECT stock_quantity FROM tb_products WHERE product_id = :product_id";
+            $sql2 = "SELECT stock FROM tb_products WHERE product_id = :product_id";
             $stmt2 = $this->pdo->prepare($sql2);
             $stmt2->execute(['product_id' => $product_id]);
             $res2 = $stmt2->fetch(PDO::FETCH_ASSOC);
-            return $res2 ? (int) $res2['stock_quantity'] : 0;
+            return $res2 ? (int) $res2['stock'] : 0;
         } catch (PDOException $e) {
             return 0;
         }

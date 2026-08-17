@@ -99,7 +99,10 @@
                         <tr>
                             <td class="fw-semibold">#<?= $item['variant_id'] ?></td>
                             <td>
-                                <img src="<?= $item['image'] ? BASE_ASSETS_UPLOADS . 'products/' . $item['image'] : BASE_IMAGES . 'no-image.png' ?>"
+                                <?php 
+                                    $imgUrl = !empty($item['image']) ? $item['image'] : 'https://placehold.co/45x45/e2e8f0/64748b?text=IMG';
+                                ?>
+                                <img src="<?= htmlspecialchars($imgUrl) ?>"
                                     class="img-thumbnail border-0"
                                     style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px;" alt="">
                             </td>

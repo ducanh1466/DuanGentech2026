@@ -51,7 +51,7 @@ if (isset($_SESSION['user'])) {
                             <a class="nav-link active" href="<?= BASE_URL ?? '/' ?>">Trang chủ</a>
                         </li>
                         <li class="nav-item dropdown mega-dropdown">
-                            <a class="nav-link dropdown-toggle" href="<?= BASE_URL ?? '/' ?>?action=products" data-bs-toggle="dropdown">Sản phẩm</a>
+                            <a class="nav-link dropdown-toggle" href="<?= BASE_URL ?? '/' ?>?action=products">Sản phẩm</a>
                             <!-- Mega Menu -->
                             <div class="dropdown-menu mega-menu mt-0 border-0 shadow-sm rounded-4 p-4">
                                 <div class="row">
@@ -394,71 +394,79 @@ if (isset($_SESSION['user'])) {
         });
 
         // Xử lý AJAX thêm vào giỏ hàng
-        document.addEventListener('DOMContentLoaded', function() {
-            const addForms = document.querySelectorAll('.ajax-add-to-cart-form');
-            addForms.forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    if (e.submitter && e.submitter.value === 'buy_now') {
-                        return; // Để form submit bình thường và chuyển trang
+        document.addEventListener('submit', function(e) {
+            if (e.target && e.target.classList.contains('ajax-add-to-cart-form')) {
+                const form = e.target;
+                if (e.submitter && e.submitter.value === 'buy_now') {
+                    return; // Để form submit bình thường và chuyển trang
+                }
+                
+                e.preventDefault();
+                
+                // Thêm trạng thái loading cho nút bấm
+                const submitBtn = e.submitter || form.querySelector('button[type="submit"]');
+                let originalBtnContent = '';
+                if(submitBtn) {
+                    originalBtnContent = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+                    submitBtn.disabled = true;
+                }
+                
+                const formData = new FormData(form);
+                formData.append('action_type', 'add_to_cart');
+                
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
-                    
-                    e.preventDefault();
-                    
-                    // Thêm trạng thái loading cho nút bấm
-                    const submitBtn = e.submitter || this.querySelector('button[type="submit"]');
-                    const originalBtnContent = submitBtn.innerHTML;
+                })
+                .then(async response => {
+                    const text = await response.text();
+                    try {
+                        return JSON.parse(text);
+                    } catch (err) {
+                        console.error('Invalid JSON response:', text);
+                        throw new Error('Máy chủ phản hồi không đúng định dạng. Vui lòng thử lại!');
+                    }
+                })
+                .then(data => {
                     if(submitBtn) {
-                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ĐANG THÊM...';
-                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = originalBtnContent;
+                        submitBtn.disabled = false;
                     }
                     
-                    const formData = new FormData(this);
-                    formData.append('action_type', 'add_to_cart');
-                    
-                    fetch(this.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if(submitBtn) {
-                            submitBtn.innerHTML = originalBtnContent;
-                            submitBtn.disabled = false;
+                    if (data.status === 'success') {
+                        // Hiện Toast
+                        const toastEl = document.getElementById('cartToast');
+                        if(toastEl) {
+                            const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+                            toast.show();
                         }
                         
-                        if (data.status === 'success') {
-                            // Hiện Toast
-                            const toastEl = document.getElementById('cartToast');
-                            if(toastEl) {
-                                const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
-                                toast.show();
-                            }
-                            
-                            // Cập nhật và tạo hiệu ứng nảy cho số lượng giỏ hàng
-                            const cartBadge = document.getElementById('header-cart-badge');
-                            if (cartBadge && data.cart_count !== undefined) {
-                                cartBadge.innerText = data.cart_count;
-                                cartBadge.classList.add('animate-bounce');
-                                setTimeout(() => {
-                                    cartBadge.classList.remove('animate-bounce');
-                                }, 500);
-                            }
-                        } else {
-                            alert(data.message || 'Có lỗi xảy ra');
+                        // Cập nhật và tạo hiệu ứng nảy cho số lượng giỏ hàng
+                        const cartBadge = document.getElementById('header-cart-badge');
+                        if (cartBadge && data.cart_count !== undefined) {
+                            cartBadge.innerText = data.cart_count;
+                            cartBadge.classList.add('animate-bounce');
+                            setTimeout(() => {
+                                cartBadge.classList.remove('animate-bounce');
+                            }, 500);
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        if(submitBtn) {
-                            submitBtn.innerHTML = originalBtnContent;
-                            submitBtn.disabled = false;
-                        }
-                    });
+                    } else {
+                        alert(data.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    if(submitBtn) {
+                        submitBtn.innerHTML = originalBtnContent;
+                        submitBtn.disabled = false;
+                    }
+                    alert(error.message || 'Lỗi kết nối. Vui lòng thử lại sau.');
                 });
-            });
+            }
         });
     </script>
 

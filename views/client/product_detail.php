@@ -16,27 +16,86 @@
         <!-- Image Gallery (Trái) -->
         <div class="col-lg-7" data-aos="fade-right">
             <div class="position-sticky" style="top: 100px;">
-                <!-- Main Image -->
-                <div class="rounded-4 overflow-hidden shadow-sm bg-white mb-3 position-relative" style="height: 600px;">
+                <!-- Main Image Carousel -->
+                <div id="productGalleryCarousel" class="carousel slide rounded-4 overflow-hidden shadow-sm bg-white mb-3" data-bs-ride="carousel" data-bs-interval="false" style="height: 600px;">
                     <!-- Nút Favorite -->
                     <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-4 shadow-sm" style="width: 45px; height: 45px; z-index: 10;">
                         <i class="bi bi-heart text-danger"></i>
                     </button>
-                    <!-- ĐIỀN ĐƯỜNG DẪN ẢNH SẢN PHẨM CHÍNH VÀO ĐÂY -->
-                    <img src="<?= $product['image'] ?>" id="mainImage" class="w-100 h-100 object-fit-contain p-5" alt="<?= htmlspecialchars($product['product_name']) ?>">
+                    
+                    <div class="carousel-inner h-100">
+                        <?php
+                            $mainImg = $product['image'] ?? '';
+                            $mainImgName = !empty($mainImg) ? basename($mainImg) : '';
+                            $mainImgUrl = !empty($mainImgName) ? BASE_ASSETS_UPLOADS . 'products/' . $mainImgName : 'https://placehold.co/600x600/e2e8f0/64748b?text=IMG';
+                        ?>
+                        <div class="carousel-item active h-100">
+                            <img src="<?= htmlspecialchars($mainImgUrl) ?>" class="w-100 h-100 object-fit-contain p-5" alt="<?= htmlspecialchars($product['product_name']) ?>">
+                        </div>
+                        
+                        <?php if(!empty($images)): ?>
+                            <?php foreach($images as $img): 
+                                $galleryImg = $img['image_url'] ?? '';
+                                $galleryImgName = !empty($galleryImg) ? basename($galleryImg) : '';
+                                $galleryImgUrl = !empty($galleryImgName) ? BASE_ASSETS_UPLOADS . 'products/' . $galleryImgName : 'https://placehold.co/600x600/e2e8f0/64748b?text=IMG';
+                            ?>
+                            <div class="carousel-item h-100">
+                                <img src="<?= htmlspecialchars($galleryImgUrl) ?>" class="w-100 h-100 object-fit-contain p-5" alt="Gallery Image">
+                            </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Carousel Controls -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productGalleryCarousel" data-bs-slide="prev" style="width: 10%; opacity: 1;">
+                        <span class="carousel-control-prev-icon p-3 bg-dark bg-opacity-25 rounded-circle" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productGalleryCarousel" data-bs-slide="next" style="width: 10%; opacity: 1;">
+                        <span class="carousel-control-next-icon p-3 bg-dark bg-opacity-25 rounded-circle" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
+                
                 <!-- Thumbnails -->
-                <div class="row g-3">
+                <div class="row g-3" id="galleryThumbnails">
+                    <div class="col-3">
+                        <div class="rounded-3 overflow-hidden border border-primary border-2 bg-white cursor-pointer thumbnail-box" style="height: 120px;" data-bs-target="#productGalleryCarousel" data-bs-slide-to="0">
+                            <img src="<?= htmlspecialchars($mainImgUrl) ?>" class="w-100 h-100 object-fit-contain p-3" alt="Thumbnail">
+                        </div>
+                    </div>
                     <?php if(!empty($images)): ?>
-                        <?php foreach($images as $index => $img): ?>
+                        <?php foreach($images as $index => $img): 
+                            $thumbImg = $img['image_url'] ?? '';
+                            $thumbImgName = !empty($thumbImg) ? basename($thumbImg) : '';
+                            $thumbImgUrl = !empty($thumbImgName) ? BASE_ASSETS_UPLOADS . 'products/' . $thumbImgName : 'https://placehold.co/120x120/e2e8f0/64748b?text=IMG';
+                        ?>
                         <div class="col-3">
-                            <div class="rounded-3 overflow-hidden border <?= $index==0 ? 'border-primary border-2' : 'border-light' ?> bg-white cursor-pointer thumbnail-box" style="height: 120px;" onclick="document.getElementById('mainImage').src='<?= $img['image_url'] ?>'; document.querySelectorAll('.thumbnail-box').forEach(el=>{el.classList.remove('border-primary', 'border-2'); el.classList.add('border-light');}); this.classList.remove('border-light'); this.classList.add('border-primary', 'border-2');">
-                                <img src="<?= $img['image_url'] ?>" class="w-100 h-100 object-fit-contain p-3" alt="Thumbnail">
+                            <div class="rounded-3 overflow-hidden border border-light bg-white cursor-pointer thumbnail-box" style="height: 120px;" data-bs-target="#productGalleryCarousel" data-bs-slide-to="<?= $index + 1 ?>">
+                                <img src="<?= htmlspecialchars($thumbImgUrl) ?>" class="w-100 h-100 object-fit-contain p-3" alt="Thumbnail">
                             </div>
                         </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var myCarousel = document.getElementById('productGalleryCarousel');
+                        myCarousel.addEventListener('slid.bs.carousel', function (e) {
+                            var index = e.to;
+                            document.querySelectorAll('.thumbnail-box').forEach((el, i) => {
+                                if(i === index) {
+                                    el.classList.remove('border-light');
+                                    el.classList.add('border-primary', 'border-2');
+                                } else {
+                                    el.classList.remove('border-primary', 'border-2');
+                                    el.classList.add('border-light');
+                                }
+                            });
+                        });
+                    });
+                </script>
             </div>
         </div>
 

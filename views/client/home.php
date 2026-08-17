@@ -1,97 +1,133 @@
-<!-- Hero Parallax Section -->
-<div class="container-fluid px-4 mt-3" data-aos="fade-up">
-    <div id="heroCarousel" class="carousel slide shadow-lg rounded-4 overflow-hidden" data-bs-ride="carousel" data-bs-interval="6000">
-        <!-- Indicators -->
-        <div class="carousel-indicators">
-            <?php if (!empty($heroBanners)): ?>
-                <?php foreach ($heroBanners as $index => $banner): ?>
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="<?= $index ?>" class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $index + 1 ?>"></button>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <?php endif; ?>
-        </div>
-        
-        <div class="carousel-inner" style="height: 500px;">
-        <?php if (!empty($heroBanners)): ?>
-            <?php foreach ($heroBanners as $index => $banner): ?>
-                <div class="carousel-item h-100 <?= $index === 0 ? 'active' : '' ?>">
-                    <?php if (!empty($banner['link'])): ?>
-                    <a href="<?= htmlspecialchars($banner['link']) ?>" class="d-block w-100 h-100 position-absolute z-1"></a>
+<!-- Hero Section (Premium Layout) -->
+<div class="container mt-4" data-aos="fade-up">
+    <div class="row g-3">
+        <!-- Main Carousel (Left) -->
+        <div class="col-lg-8">
+            <div id="heroCarousel" class="carousel slide shadow-sm rounded-4 overflow-hidden h-100" data-bs-ride="carousel" data-bs-interval="5000">
+                <!-- Indicators -->
+                <div class="carousel-indicators mb-2">
+                    <?php if (!empty($heroBanners)): ?>
+                        <?php foreach ($heroBanners as $index => $banner): ?>
+                            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="<?= $index ?>" class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $index + 1 ?>" style="width: 10px; height: 10px; border-radius: 50%; margin: 0 4px;"></button>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1" style="width: 10px; height: 10px; border-radius: 50%;"></button>
                     <?php endif; ?>
-                    <div class="position-absolute w-100 h-100" style="background-image: url('<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
-                    <!-- Giảm độ tối của overlay để ảnh banner sáng hơn -->
-                    <div class="position-absolute w-100 h-100" style="background: rgba(0,0,0,0.1);"></div>
                 </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <!-- Fallback nếu không có banner nào -->
-            <div class="carousel-item active h-100">
-                <div class="position-absolute w-100 h-100" style="background-image: url('https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center;"></div>
-                <div class="position-absolute w-100 h-100" style="background: rgba(0,0,0,0.4);"></div>
-                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center h-100" style="bottom: 0;">
-                    <span class="badge bg-primary rounded-pill px-3 py-1 mb-3 fs-6 shadow-sm border border-light border-opacity-25">GENTECH</span>
-                    <h1 class="display-5 fw-bold mb-3 text-white" style="letter-spacing: -1px;">SẢN PHẨM <span class="text-primary">CHÍNH HÃNG</span></h1>
+                
+                <div class="carousel-inner" style="height: 420px;">
+                <?php if (!empty($heroBanners)): ?>
+                    <?php foreach ($heroBanners as $index => $banner): ?>
+                        <div class="carousel-item h-100 <?= $index === 0 ? 'active' : '' ?>">
+                            <?php if (!empty($banner['link'])): ?>
+                            <a href="<?= htmlspecialchars($banner['link']) ?>" class="d-block w-100 h-100 position-absolute z-1"></a>
+                            <?php endif; ?>
+                            <div class="position-absolute w-100 h-100" style="background-image: url('<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+                            <div class="position-absolute w-100 h-100" style="background: rgba(0,0,0,0.05);"></div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="carousel-item active h-100">
+                        <div class="position-absolute w-100 h-100" style="background-image: url('https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center;"></div>
+                        <div class="position-absolute w-100 h-100" style="background: rgba(0,0,0,0.3);"></div>
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center h-100" style="bottom: 0;">
+                            <span class="badge bg-primary rounded-pill px-3 py-1 mb-3 fs-6 shadow-sm border border-light border-opacity-25">GENTECH PRIME</span>
+                            <h1 class="display-5 fw-bold mb-3 text-white" style="letter-spacing: -1px;">CÔNG NGHỆ <span class="text-primary">ĐỈNH CAO</span></h1>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                </div>
+                
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" style="width: 60px;">
+                    <span class="carousel-control-prev-icon p-3 bg-white bg-opacity-25 rounded-circle shadow-sm" aria-hidden="true" style="backdrop-filter: blur(4px);"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" style="width: 60px;">
+                    <span class="carousel-control-next-icon p-3 bg-white bg-opacity-25 rounded-circle shadow-sm" aria-hidden="true" style="backdrop-filter: blur(4px);"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Static Promo Banners (Right) -->
+        <div class="col-lg-4 d-none d-lg-flex flex-column gap-3">
+            <div class="rounded-4 overflow-hidden shadow-sm position-relative hover-scale transition-all cursor-pointer flex-fill" style="background: linear-gradient(135deg, #2563eb, #1e40af); height: 200px;">
+                <!-- Decorative -->
+                <div class="position-absolute opacity-25" style="top: -20px; right: -10px; transform: rotate(15deg);">
+                    <i class="bi bi-controller text-white" style="font-size: 8rem;"></i>
+                </div>
+                <div class="position-absolute w-100 h-100 d-flex flex-column justify-content-center p-4 z-1 text-white">
+                    <span class="badge bg-white text-primary rounded-pill w-auto align-self-start mb-2 fw-bold shadow-sm" style="font-size: 0.7rem;">ƯU ĐÃI ĐỘC QUYỀN</span>
+                    <h4 class="fw-bold mb-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.2);">Gaming Gear</h4>
+                    <p class="mb-0 fs-6 opacity-75 fw-medium">Giảm đến 30%</p>
                 </div>
             </div>
-        <?php endif; ?>
+            <div class="rounded-4 overflow-hidden shadow-sm position-relative hover-scale transition-all cursor-pointer flex-fill" style="background: linear-gradient(135deg, #10b981, #047857); height: 200px;">
+                <!-- Decorative -->
+                <div class="position-absolute opacity-25" style="bottom: -10px; right: 0px; transform: rotate(-10deg);">
+                    <i class="bi bi-laptop text-white" style="font-size: 8rem;"></i>
+                </div>
+                <div class="position-absolute w-100 h-100 d-flex flex-column justify-content-center p-4 z-1 text-white">
+                    <span class="badge bg-white text-success rounded-pill w-auto align-self-start mb-2 fw-bold shadow-sm" style="font-size: 0.7rem;">HÀNG MỚI VỀ</span>
+                    <h4 class="fw-bold mb-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.2);">Laptop Core Ultra</h4>
+                    <p class="mb-0 fs-6 opacity-75 fw-medium">Trải nghiệm AI đỉnh cao</p>
+                </div>
+            </div>
         </div>
-        
-        <!-- Controls -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" style="width: 5%; opacity: 1;">
-            <span class="carousel-control-prev-icon p-3 bg-dark bg-opacity-50 rounded-circle" aria-hidden="true" style="width: 50px; height: 50px;"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" style="width: 5%; opacity: 1;">
-            <span class="carousel-control-next-icon p-3 bg-dark bg-opacity-50 rounded-circle" aria-hidden="true" style="width: 50px; height: 50px;"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-
     </div>
 </div>
 
 <!-- Flash Sale Section -->
 <?php if (!empty($activeFlashSale) && !empty($flashSaleItems)): ?>
 <div class="container mt-5 pt-4">
-    <div class="p-4 rounded-4 position-relative overflow-hidden shadow-lg" style="background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);">
-        <!-- Decorative elements -->
-        <div class="position-absolute opacity-25" style="top: -20px; right: -20px;">
-            <i class="bi bi-lightning-charge-fill text-white" style="font-size: 10rem;"></i>
+    <div class="p-4 rounded-4 position-relative overflow-hidden shadow-lg" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 1px solid rgba(255,255,255,0.1);">
+        
+        <!-- Decorative glowing orbs -->
+        <div class="position-absolute rounded-circle" style="width: 300px; height: 300px; background: rgba(239, 68, 68, 0.4); filter: blur(80px); top: -100px; left: -100px; pointer-events: none;"></div>
+        <div class="position-absolute rounded-circle" style="width: 400px; height: 400px; background: rgba(139, 92, 246, 0.3); filter: blur(100px); bottom: -150px; right: -150px; pointer-events: none;"></div>
+        
+        <!-- Lightning decorative -->
+        <div class="position-absolute opacity-10" style="top: 10px; right: 10px; transform: rotate(15deg);">
+            <i class="bi bi-lightning-charge-fill text-white" style="font-size: 15rem;"></i>
         </div>
         
-        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between position-relative z-1 gap-4">
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between position-relative z-1 gap-4 mb-4">
             <div class="text-white d-flex align-items-center gap-3">
-                <div class="bg-white text-danger rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 60px; height: 60px; font-size: 1.5rem;">
-                    <i class="bi bi-lightning-fill"></i>
+                <div class="bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 60px; height: 60px; font-size: 1.8rem; background: linear-gradient(135deg, #ef4444 0%, #f97316 100%); box-shadow: 0 0 20px rgba(239,68,68,0.5) !important;">
+                    <i class="bi bi-lightning-fill" style="animation: pulse-glow 2s infinite;"></i>
                 </div>
                 <div>
-                    <h3 class="fw-bold mb-1" style="letter-spacing: -1px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?= htmlspecialchars($activeFlashSale['title']) ?></h3>
-                    <p class="mb-0 opacity-75 fw-medium">Săn sale sập sàn - Số lượng có hạn!</p>
+                    <h3 class="fw-bold mb-1 d-flex align-items-center gap-2" style="letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+                        <span class="bg-clip-text text-transparent" style="background-image: linear-gradient(to right, #ff8a00, #e52e71); -webkit-background-clip: text; color: transparent;">FLASHSALE</span> 
+                        <span class="fs-5 text-light fw-normal opacity-75 d-none d-md-inline">| <?= htmlspecialchars($activeFlashSale['title']) ?></span>
+                    </h3>
+                    <p class="mb-0 text-white-50 fw-medium" style="font-size: 0.9rem;">Săn sale sập sàn - Số lượng có hạn!</p>
                 </div>
             </div>
             
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-white fw-bold">Kết thúc trong:</span>
+            <div class="d-flex align-items-center gap-3 bg-white bg-opacity-10 backdrop-blur-md px-4 py-3 rounded-4 border border-white border-opacity-25 shadow-sm">
+                <span class="text-white fw-bold text-uppercase d-none d-sm-inline" style="font-size: 0.85rem; letter-spacing: 1px;">Kết thúc trong</span>
                 <div class="d-flex gap-2">
-                    <div class="bg-white text-danger rounded p-2 text-center shadow-sm" style="min-width: 45px;">
+                    <div class="bg-dark bg-gradient text-white rounded p-2 text-center shadow" style="min-width: 45px; border: 1px solid rgba(255,255,255,0.1);">
                         <div class="fw-bold fs-5 lh-1" id="fs-hours">00</div>
-                        <div style="font-size: 0.65rem;" class="fw-bold text-uppercase mt-1">Giờ</div>
+                        <div style="font-size: 0.6rem;" class="fw-bold text-white-50 text-uppercase mt-1">Giờ</div>
                     </div>
-                    <div class="text-white fw-bold fs-4">:</div>
-                    <div class="bg-white text-danger rounded p-2 text-center shadow-sm" style="min-width: 45px;">
+                    <div class="text-white-50 fw-bold fs-4 align-self-center pb-2">:</div>
+                    <div class="bg-dark bg-gradient text-white rounded p-2 text-center shadow" style="min-width: 45px; border: 1px solid rgba(255,255,255,0.1);">
                         <div class="fw-bold fs-5 lh-1" id="fs-minutes">00</div>
-                        <div style="font-size: 0.65rem;" class="fw-bold text-uppercase mt-1">Phút</div>
+                        <div style="font-size: 0.6rem;" class="fw-bold text-white-50 text-uppercase mt-1">Phút</div>
                     </div>
-                    <div class="text-white fw-bold fs-4">:</div>
-                    <div class="bg-white text-danger rounded p-2 text-center shadow-sm" style="min-width: 45px;">
+                    <div class="text-white-50 fw-bold fs-4 align-self-center pb-2">:</div>
+                    <div class="bg-danger bg-gradient text-white rounded p-2 text-center shadow" style="min-width: 45px; box-shadow: 0 0 15px rgba(220,53,69,0.5) !important;">
                         <div class="fw-bold fs-5 lh-1" id="fs-seconds">00</div>
-                        <div style="font-size: 0.65rem;" class="fw-bold text-uppercase mt-1">Giây</div>
+                        <div style="font-size: 0.6rem;" class="fw-bold text-white-50 text-uppercase mt-1">Giây</div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <div class="row mt-4 position-relative z-1 g-3">
+        <div class="d-flex position-relative z-1 overflow-x-auto custom-scrollbar gap-3 pb-3" style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
             <?php foreach($flashSaleItems as $item): 
                 $img = $item['image'] ?? '';
                 $imgName = !empty($img) ? basename($img) : '';
@@ -99,23 +135,40 @@
                 $discountPercent = $item['price'] > 0 ? round((($item['price'] - $item['flash_price']) / $item['price']) * 100) : 0;
                 $soldPercent = $item['quantity'] > 0 ? min(100, ($item['sold'] / $item['quantity']) * 100) : 0;
             ?>
-                <div class="col-6 col-md-3">
-                    <div class="bg-white rounded-4 p-2 h-100 d-flex flex-column hover-elevate transition-all cursor-pointer" onclick="window.location.href='<?= BASE_URL ?>?action=product-detail&id=<?= $item['product_id'] ?>'">
-                        <div class="position-relative bg-light rounded-3 mb-2" style="padding-top: 100%;">
-                            <img src="<?= $imgUrl ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-contain p-2" alt="Product">
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">-<?= $discountPercent ?>%</span>
+                <div class="flex-shrink-0" style="width: 250px; scroll-snap-align: start;">
+                    <div class="bg-white rounded-4 p-3 h-100 d-flex flex-column hover-elevate transition-all cursor-pointer shadow-sm position-relative" style="border: 1px solid rgba(0,0,0,0.05);" onclick="window.location.href='<?= BASE_URL ?>?action=product-detail&id=<?= $item['product_id'] ?>'">
+                        <div class="position-absolute top-0 start-0 z-3 m-3">
+                            <span class="badge bg-danger bg-gradient shadow-sm px-2 py-1 rounded-pill fw-bold d-flex align-items-center gap-1" style="font-size:0.75rem;">
+                                <i class="bi bi-lightning-fill"></i> -<?= $discountPercent ?>%
+                            </span>
                         </div>
-                        <div class="px-2 pb-2 d-flex flex-column flex-grow-1">
-                            <h6 class="text-dark fw-bold text-truncate mb-1" style="font-size: 0.9rem;"><?= htmlspecialchars($item['product_name']) ?></h6>
-                            <div class="mt-auto d-flex flex-column">
-                                <span class="text-danger fw-bold fs-6"><?= number_format($item['flash_price'], 0, ',', '.') ?>đ</span>
-                                <?php if ($item['price'] > $item['flash_price']): ?>
-                                    <span class="text-muted text-decoration-line-through" style="font-size: 0.75rem;"><?= number_format($item['price'], 0, ',', '.') ?>đ</span>
-                                <?php endif; ?>
-                                <div class="progress mt-2" style="height: 6px;">
-                                    <div class="progress-bar bg-danger" style="width: <?= $soldPercent ?>%"></div>
+                        <div class="position-relative bg-light rounded-3 mb-3 d-flex align-items-center justify-content-center overflow-hidden" style="height: 200px;">
+                            <img src="<?= $imgUrl ?>" class="w-100 h-100 object-fit-contain p-2 hover-scale transition-all" alt="<?= htmlspecialchars($item['product_name']) ?>" style="mix-blend-mode: multiply;">
+                        </div>
+                        <div class="d-flex flex-column flex-grow-1">
+                            <h6 class="text-dark fw-bold mb-2 text-truncate-2" style="font-size: 1rem; line-height: 1.4; height: 2.8em;"><?= htmlspecialchars($item['product_name']) ?></h6>
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-end gap-2 mb-2">
+                                    <span class="text-danger fw-bold fs-5 lh-1"><?= number_format($item['flash_price'], 0, ',', '.') ?>đ</span>
+                                    <?php if ($item['price'] > $item['flash_price']): ?>
+                                        <span class="text-muted text-decoration-line-through mb-1" style="font-size: 0.8rem;"><?= number_format($item['price'], 0, ',', '.') ?>đ</span>
+                                    <?php endif; ?>
                                 </div>
-                                <small class="text-danger mt-1" style="font-size: 0.65rem;">Đã bán <?= $item['sold'] ?> <?= $item['quantity'] ? '/ '.$item['quantity'] : '' ?></small>
+                                
+                                <!-- Premium Progress Bar -->
+                                <div class="position-relative bg-danger bg-opacity-10 rounded-pill mt-2 overflow-hidden border border-danger border-opacity-25" style="height: 20px;">
+                                    <div class="position-absolute top-0 start-0 h-100 bg-danger bg-gradient rounded-pill" style="width: <?= $soldPercent ?>%; transition: width 1s ease-in-out;"></div>
+                                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                        <span class="text-white fw-bold" style="font-size: 0.65rem; text-shadow: 0 0 3px rgba(0,0,0,0.8); z-index: 2;">
+                                            <?= $soldPercent >= 100 ? 'Đã bán hết' : 'Đã bán '.$item['sold'].'/'.$item['quantity'] ?>
+                                        </span>
+                                    </div>
+                                    <?php if ($soldPercent >= 80 && $soldPercent < 100): ?>
+                                    <div class="position-absolute top-0 end-0 h-100 d-flex align-items-center pe-2">
+                                        <i class="bi bi-fire text-white" style="font-size: 0.7rem; filter: drop-shadow(0 0 2px rgba(0,0,0,0.5)); animation: pulse-glow 1s infinite;"></i>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -124,6 +177,41 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Custom scrollbar for Flash Sale horizontal scroll */
+.custom-scrollbar::-webkit-scrollbar {
+    height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    margin: 0 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.4);
+}
+@keyframes pulse-glow {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.backdrop-blur-md {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+</style>
 
 <!-- Script đếm ngược -->
 <script>

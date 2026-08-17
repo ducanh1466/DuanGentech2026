@@ -20,9 +20,9 @@
                 <?php endif; ?>
             </div>
 
-            <form method="POST" action="<?= BASE_URL ?>?action=admin-discount-create" enctype="multipart/form-data">
+            <form method="POST" action="<?= BASE_URL ?>?action=<?= $id ? 'admin-discount-update' : 'admin-discount-create' ?>" enctype="multipart/form-data">
                 <?php if ($id): ?>
-                    <input type="hidden" name="discount_id" value="<?= $id ?>">
+                    <input type="hidden" name="id" value="<?= $id ?>">
                 <?php endif; ?>
 
                 <div class="row form-horizontal-row align-items-center">

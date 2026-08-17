@@ -107,7 +107,7 @@
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <span class="text-muted" style="font-size:0.85rem;">Tổng <?= $totalRecords ?? 0 ?> bản ghi</span>
+            <span class="text-muted" style="font-size:0.85rem;">Tổng <?= max(0, min((($page ?? 1) * ($limit ?? 10)), ($totalRecords ?? 0)) - ((($page ?? 1) - 1) * ($limit ?? 10))) ?> bản ghi</span>
             
             <?php if (isset($totalPages) && $totalPages > 1): ?>
                 <nav aria-label="Page navigation">

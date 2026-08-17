@@ -1901,15 +1901,36 @@ class AdminController
             $review_id = $_POST['review_id'];
             $content = trim($_POST['reply_content']);
             $user_id = $_SESSION['user']['user_id'];
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
             
             if ($content !== '') {
                 if ($reviewModel->addReply($review_id, $user_id, $content, 1)) {
+                    if ($isAjax) {
+                        echo json_encode([
+                            'success' => true,
+                            'message' => 'Đã gửi phản hồi thành công!',
+                            'reply' => [
+                                'content' => nl2br(htmlspecialchars($content)),
+                                'created_at' => date('H:i d/m')
+                            ]
+                        ]);
+                        exit();
+                    }
                     $_SESSION['success'] = "Đã gửi phản hồi thành công!";
                 } else {
+                    if ($isAjax) {
+                        echo json_encode(['success' => false, 'message' => 'Có lỗi xảy ra!']);
+                        exit();
+                    }
                     $_SESSION['error'] = "Có lỗi xảy ra khi gửi phản hồi!";
                 }
+            } else if ($isAjax) {
+                echo json_encode(['success' => false, 'message' => 'Vui lòng nhập nội dung']);
+                exit();
             }
         }
+        header("Location: " . BASE_URL . "?action=admin-reviews");
+        exit();
     }
     
     // --- MÃ GIẢM GIÁ (DISCOUNTS) ---

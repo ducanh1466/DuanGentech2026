@@ -2,30 +2,31 @@
 $hasCustomBanner = !empty($productBanners);
 ?>
 <!-- Premium Page Header Slider -->
-<div class="container-fluid px-4 mt-3" data-aos="fade-up">
-    <div id="productCarousel" class="carousel slide shadow-lg rounded-4 overflow-hidden" data-bs-ride="carousel" data-bs-interval="6000">
+<div class="container mt-4 mb-4" data-aos="fade-up">
+    <div id="productCarousel" class="carousel slide shadow-sm rounded-4 overflow-hidden" data-bs-ride="carousel" data-bs-interval="6000">
         <?php if ($hasCustomBanner && count($productBanners) > 1): ?>
         <!-- Indicators -->
-        <div class="carousel-indicators">
+        <div class="carousel-indicators mb-2">
             <?php foreach ($productBanners as $index => $banner): ?>
-                <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="<?= $index ?>" class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $index + 1 ?>"></button>
+                <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="<?= $index ?>" class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $index + 1 ?>" style="width: 8px; height: 8px; border-radius: 50%; margin: 0 4px;"></button>
             <?php endforeach; ?>
         </div>
         <?php endif; ?>
         
-        <div class="carousel-inner" style="height: 400px;">
+        <div class="carousel-inner" style="height: 240px;">
         <?php if ($hasCustomBanner): ?>
             <?php foreach ($productBanners as $index => $banner): ?>
                 <div class="carousel-item h-100 <?= $index === 0 ? 'active' : '' ?>">
                     <div class="position-absolute w-100 h-100" style="background-image: url('<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
-                    <!-- Lớp phủ tối nhẹ để làm nổi bật breadcrumb nhưng không che mất ảnh gốc -->
-                    <div class="position-absolute w-100 h-100" style="background: rgba(0,0,0,0.25);"></div>
-                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-end h-100 pb-4">
-                        <div class="px-4 py-2 rounded-pill" style="background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                    <!-- Loại bỏ lớp phủ đen để ảnh sáng 100% -->
+                    <div class="carousel-caption d-flex flex-column align-items-start justify-content-center h-100 text-start" style="left: 5%; right: auto; top: 0; bottom: 0;">
+                        <!-- Glassmorphism Card cao cấp -->
+                        <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 15px 35px rgba(0,0,0,0.05); max-width: 450px;">
+                            <h2 class="fw-bolder text-dark mb-2" style="font-size: 2.2rem; letter-spacing: -1px; line-height: 1.2;">Sản Phẩm Nổi Bật</h2>
                             <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb mb-0" style="font-size: 0.9rem;">
-                                    <li class="breadcrumb-item"><a href="<?= BASE_URL ?? '/' ?>" class="text-decoration-none text-white-50 hover-white">Trang chủ</a></li>
-                                    <li class="breadcrumb-item active text-white fw-bold" aria-current="page">Sản phẩm</li>
+                                <ol class="breadcrumb mb-0" style="font-size: 0.95rem; font-weight: 500;">
+                                    <li class="breadcrumb-item"><a href="<?= BASE_URL ?? '/' ?>" class="text-decoration-none text-secondary hover-primary" style="transition: color 0.3s ease;">Trang chủ</a></li>
+                                    <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Sản phẩm</li>
                                 </ol>
                             </nav>
                         </div>
@@ -35,18 +36,24 @@ $hasCustomBanner = !empty($productBanners);
         <?php else: ?>
             <!-- Fallback tĩnh nếu không có banner -->
             <div class="carousel-item active h-100">
-                <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
-                    <!-- Svg pattern -->
-                    <div class="position-absolute w-100 h-100 opacity-50" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                    <!-- Svg pattern cao cấp (chế độ sáng) -->
+                    <div class="position-absolute w-100 h-100 opacity-25" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                    <!-- Khối sáng trừu tượng -->
+                    <div class="position-absolute rounded-circle" style="width: 300px; height: 300px; background: rgba(59, 130, 246, 0.15); filter: blur(60px); top: -100px; right: 5%;"></div>
                 </div>
-                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center h-100">
-                    <h1 class="fw-bold mb-3 display-5 text-white" style="letter-spacing: -1px; text-shadow: 0 4px 15px rgba(0,0,0,0.8);">Khám Phá Công Nghệ Đỉnh Cao</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center mb-0" style="text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
-                            <li class="breadcrumb-item"><a href="<?= BASE_URL ?? '/' ?>" class="text-decoration-none text-white-50 hover-white">Trang chủ</a></li>
-                            <li class="breadcrumb-item active text-white fw-medium" aria-current="page">Sản phẩm</li>
-                        </ol>
-                    </nav>
+                <div class="carousel-caption d-flex flex-column align-items-start justify-content-center h-100 text-start" style="left: 5%; right: auto; top: 0; bottom: 0;">
+                    <!-- Glassmorphism Card cao cấp -->
+                    <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 15px 35px rgba(0,0,0,0.03); max-width: 450px;">
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 mb-3 fw-bold border border-primary border-opacity-25" style="font-size: 0.75rem; letter-spacing: 1px;">BỘ SƯU TẬP MỚI</span>
+                        <h2 class="fw-bolder text-dark mb-2" style="font-size: 2.2rem; letter-spacing: -1px; line-height: 1.2;">Khám Phá Công Nghệ</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0" style="font-size: 0.95rem; font-weight: 500;">
+                                <li class="breadcrumb-item"><a href="<?= BASE_URL ?? '/' ?>" class="text-decoration-none text-secondary hover-primary" style="transition: color 0.3s ease;">Trang chủ</a></li>
+                                <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Sản phẩm</li>
+                            </ol>
+                        </nav>
+                    </div>
                 </div>
             </div>
         <?php endif; ?>
@@ -54,12 +61,12 @@ $hasCustomBanner = !empty($productBanners);
         
         <?php if ($hasCustomBanner && count($productBanners) > 1): ?>
         <!-- Controls -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev" style="width: 5%; opacity: 1;">
-            <span class="carousel-control-prev-icon p-3 bg-dark bg-opacity-50 rounded-circle" aria-hidden="true" style="width: 50px; height: 50px;"></span>
+        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev" style="width: 50px;">
+            <span class="carousel-control-prev-icon p-2 bg-white bg-opacity-25 rounded-circle shadow-sm" aria-hidden="true" style="backdrop-filter: blur(4px); width: 35px; height: 35px;"></span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next" style="width: 5%; opacity: 1;">
-            <span class="carousel-control-next-icon p-3 bg-dark bg-opacity-50 rounded-circle" aria-hidden="true" style="width: 50px; height: 50px;"></span>
+        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next" style="width: 50px;">
+            <span class="carousel-control-next-icon p-2 bg-white bg-opacity-25 rounded-circle shadow-sm" aria-hidden="true" style="backdrop-filter: blur(4px); width: 35px; height: 35px;"></span>
             <span class="visually-hidden">Next</span>
         </button>
         <?php endif; ?>

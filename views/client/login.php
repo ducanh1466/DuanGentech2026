@@ -38,12 +38,13 @@
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="<?= BASE_URL ?>?action=post-login" id="loginForm">
+            <form method="POST" action="<?= BASE_URL ?>?action=post-login" id="loginForm" class="needs-validation" novalidate>
                 
                 <div class="form-floating-custom">
                     <input type="email" name="email" id="email" placeholder=" " required>
                     <label for="email">Địa chỉ Email</label>
                     <i class="bi bi-envelope"></i>
+                    <div class="invalid-feedback text-start mt-1 ms-2" style="font-size: 0.8rem;">Vui lòng nhập địa chỉ email hợp lệ.</div>
                 </div>
                 
                 <div class="form-floating-custom mb-3">
@@ -53,6 +54,7 @@
                     <button type="button" class="btn-toggle-pass" onclick="togglePass('password', this)">
                         <i class="bi bi-eye"></i>
                     </button>
+                    <div class="invalid-feedback text-start mt-1 ms-2" style="font-size: 0.8rem;">Vui lòng nhập mật khẩu.</div>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-4 pb-2">
@@ -103,9 +105,16 @@
         }
     }
 
-    // Loading Button effect
-    document.getElementById('loginForm').addEventListener('submit', function() {
-        const btn = document.getElementById('loginBtn');
-        btn.classList.add('loading');
-    });
+    // Form validation and loading effect
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        const form = this;
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            const btn = document.getElementById('loginBtn');
+            btn.classList.add('loading');
+        }
+        form.classList.add('was-validated');
+    }, false);
 </script>

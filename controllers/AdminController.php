@@ -322,25 +322,14 @@ class AdminController
             $categoryModel = new CategoryModel();
             $name = trim($_POST['name'] ?? '');
             $description = trim($_POST['description'] ?? '');
-            $image = null; // Default image
-
-            // Handle Image Upload
-            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $upload_dir = 'assets/uploads/categories/';
-                if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-                $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-                $file_name = uniqid() . '.' . $file_extension;
-                if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $file_name)) {
-                    $image = $file_name;
-                }
-            }
+            $icon = trim($_POST['icon'] ?? '');
 
             if (empty($name)) {
                 $_SESSION['error'] = 'Tên danh mục không được để trống!';
             } elseif (mb_strlen($name) > 255) {
                 $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
             } else {
-                $categoryModel->insertCategory($name, $description, $image);
+                $categoryModel->insertCategory($name, $description, $icon);
                 $_SESSION['success'] = 'Thêm danh mục thành công!';
             }
             header('Location: ' . BASE_URL . '?action=admin-categories');
@@ -357,19 +346,11 @@ class AdminController
             $name = trim($_POST['name'] ?? '');
             $description = trim($_POST['description'] ?? '');
             
-            // Get existing category to keep old image if no new one is uploaded
+            // Get existing category to keep old icon if no new one is provided
             $existingCat = $categoryModel->getCategoryById($id);
-            $image = $existingCat['icon'] ?? null; // using the same column name 'icon' to avoid db re-alter if possible, but let's assume it's 'icon' or 'image'. We will use 'icon' column to store image filename so we don't need to change DB again if it was already created.
-
-            // Handle Image Upload
-            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $upload_dir = 'assets/uploads/categories/';
-                if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-                $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-                $file_name = uniqid() . '.' . $file_extension;
-                if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $file_name)) {
-                    $image = $file_name;
-                }
+            $icon = trim($_POST['icon'] ?? '');
+            if (empty($icon)) {
+                $icon = $existingCat['icon'] ?? null;
             }
 
             if (empty($name)) {
@@ -377,7 +358,7 @@ class AdminController
             } elseif (mb_strlen($name) > 255) {
                 $_SESSION['error'] = 'Tên danh mục không được vượt quá 255 ký tự!';
             } else {
-                $categoryModel->updateCategory($id, $name, $description, $image);
+                $categoryModel->updateCategory($id, $name, $description, $icon);
                 $_SESSION['success'] = 'Cập nhật danh mục thành công!';
             }
             header('Location: ' . BASE_URL . '?action=admin-categories');
@@ -501,7 +482,7 @@ class AdminController
 
             // Upload ảnh chính
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $upload_dir = 'uploads/products/';
+                $upload_dir = 'assets/uploads/products/';
                 if (!is_dir($upload_dir))
                     mkdir($upload_dir, 0777, true);
                 $file_name = time() . '_' . basename($_FILES['image']['name']);
@@ -513,7 +494,7 @@ class AdminController
 
             // Upload ảnh phụ (gallery)
             if (isset($_FILES['gallery_images']) && !empty($_FILES['gallery_images']['name'][0])) {
-                $upload_dir = 'uploads/products/';
+                $upload_dir = 'assets/uploads/products/';
                 if (!is_dir($upload_dir))
                     mkdir($upload_dir, 0777, true);
 
@@ -623,7 +604,7 @@ class AdminController
 
             // Upload ảnh mới (nếu có)
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $upload_dir = 'uploads/products/';
+                $upload_dir = 'assets/uploads/products/';
                 if (!is_dir($upload_dir))
                     mkdir($upload_dir, 0777, true);
                 $file_name = time() . '_' . basename($_FILES['image']['name']);
@@ -636,7 +617,7 @@ class AdminController
 
             // Xử lý Upload ảnh phụ mới (nếu người dùng chọn upload thêm ảnh phụ, sẽ ghi đè ảnh phụ cũ)
             if (isset($_FILES['gallery_images']) && !empty($_FILES['gallery_images']['name'][0])) {
-                $upload_dir = 'uploads/products/';
+                $upload_dir = 'assets/uploads/products/';
                 if (!is_dir($upload_dir))
                     mkdir($upload_dir, 0777, true);
 

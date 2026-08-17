@@ -13,7 +13,7 @@
 
 <!-- Checkout Content -->
 <div class="container py-5 my-3 mb-5">
-    <form method="POST" action="?action=checkout-process">
+    <form method="POST" action="?action=checkout-process" id="checkoutForm" class="needs-validation" novalidate>
         <div class="row g-5">
             <!-- Billing & Shipping Details -->
             <div class="col-lg-7" data-aos="fade-right">
@@ -27,12 +27,14 @@
                                 <label class="form-label text-muted small mb-1 fw-bold">Tên người nhận <span class="text-danger">*</span></label>
                                 <div class="position-relative">
                                     <input type="text" name="recipient_name" class="form-control border rounded-3 p-2 shadow-none text-dark bg-white" value="<?= htmlspecialchars($user['full_name'] ?? '') ?>" placeholder="Nhập tên người nhận" required>
+                                    <div class="invalid-feedback">Vui lòng nhập tên người nhận.</div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-muted small mb-1 fw-bold">Số điện thoại người nhận <span class="text-danger">*</span></label>
                                 <div class="position-relative">
-                                    <input type="tel" name="recipient_phone" class="form-control border rounded-3 p-2 shadow-none text-dark bg-white" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="Nhập số điện thoại" required>
+                                    <input type="tel" name="recipient_phone" class="form-control border rounded-3 p-2 shadow-none text-dark bg-white" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="Nhập số điện thoại" required pattern="[0-9]{9,11}">
+                                    <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ.</div>
                                 </div>
                             </div>
 
@@ -45,6 +47,7 @@
                                 <select name="province" id="province" class="form-select border rounded-3 p-2 shadow-none text-dark bg-white" required>
                                     <option value="">Chọn Tỉnh/Thành phố</option>
                                 </select>
+                                <div class="invalid-feedback">Vui lòng chọn Tỉnh/Thành phố.</div>
                                 <input type="hidden" name="province_name" id="province_name">
                             </div>
                             <div class="col-md-6 mt-3">
@@ -52,6 +55,7 @@
                                 <select name="district" id="district" class="form-select border rounded-3 p-2 shadow-none text-dark bg-white" required disabled>
                                     <option value="">Chọn Quận/Huyện</option>
                                 </select>
+                                <div class="invalid-feedback">Vui lòng chọn Quận/Huyện.</div>
                                 <input type="hidden" name="district_name" id="district_name">
                             </div>
 
@@ -60,11 +64,13 @@
                                 <select name="ward" id="ward" class="form-select border rounded-3 p-2 shadow-none text-dark bg-white" required disabled>
                                     <option value="">Chọn Phường/Xã</option>
                                 </select>
+                                <div class="invalid-feedback">Vui lòng chọn Phường/Xã.</div>
                                 <input type="hidden" name="ward_name" id="ward_name">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-muted small mb-1 fw-bold">Địa chỉ nhà <span class="text-danger">*</span></label>
                                 <input type="text" name="street_address" class="form-control border rounded-3 p-2 shadow-none text-dark bg-white" placeholder="Nhập địa chỉ nhà" required>
+                                <div class="invalid-feedback">Vui lòng nhập địa chỉ cụ thể.</div>
                             </div>
 
                             <div class="col-12 mt-2">
@@ -400,5 +406,25 @@ document.addEventListener('DOMContentLoaded', function() {
             applyDiscount(code);
         });
     });
+
+    // Form Validation logic
+    document.getElementById('checkoutForm').addEventListener('submit', function(event) {
+        const form = this;
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // Scroll to the first invalid element for better UX
+            const firstInvalid = form.querySelector(':invalid');
+            if(firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } else {
+            const btn = form.querySelector('button[type="submit"]');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ĐANG XỬ LÝ...';
+            btn.classList.add('disabled');
+        }
+        form.classList.add('was-validated');
+    }, false);
 });
 </script>

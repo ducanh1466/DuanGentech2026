@@ -32,20 +32,22 @@
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="<?= BASE_URL ?>?action=post-register" id="registerForm">
+            <form method="POST" action="<?= BASE_URL ?>?action=post-register" id="registerForm" class="needs-validation" novalidate>
                 <div class="row">
                     <div class="col-12 col-md-6">
                         <div class="form-floating-custom mb-3">
                             <input type="text" name="full_name" id="full_name" placeholder=" " required>
                             <label for="full_name">Họ và tên</label>
                             <i class="bi bi-person"></i>
+                            <div class="invalid-feedback text-start mt-1 ms-2" style="font-size: 0.8rem;">Vui lòng nhập họ và tên.</div>
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
                         <div class="form-floating-custom mb-3">
-                            <input type="tel" name="phone" id="phone" placeholder=" " required>
+                            <input type="tel" name="phone" id="phone" placeholder=" " required pattern="[0-9]{9,11}">
                             <label for="phone">Số điện thoại</label>
                             <i class="bi bi-telephone"></i>
+                            <div class="invalid-feedback text-start mt-1 ms-2" style="font-size: 0.8rem;">Vui lòng nhập số ĐT hợp lệ.</div>
                         </div>
                     </div>
                 </div>
@@ -54,15 +56,17 @@
                     <input type="email" name="email" id="email" placeholder=" " required>
                     <label for="email">Địa chỉ Email</label>
                     <i class="bi bi-envelope"></i>
+                    <div class="invalid-feedback text-start mt-1 ms-2" style="font-size: 0.8rem;">Vui lòng nhập địa chỉ email hợp lệ.</div>
                 </div>
 
                 <div class="form-floating-custom mb-2">
-                    <input type="password" name="password" id="password" placeholder=" " required oninput="checkStrength(this.value)">
+                    <input type="password" name="password" id="password" placeholder=" " required minlength="6" oninput="checkStrength(this.value)">
                     <label for="password">Mật khẩu (Tối thiểu 6 ký tự)</label>
                     <i class="bi bi-shield-lock"></i>
                     <button type="button" class="btn-toggle-pass" onclick="togglePass('password', this)">
                         <i class="bi bi-eye"></i>
                     </button>
+                    <div class="invalid-feedback text-start mt-1 ms-2" style="font-size: 0.8rem;">Mật khẩu phải có ít nhất 6 ký tự.</div>
                 </div>
 
                 <!-- Password Strength Meter -->
@@ -76,19 +80,21 @@
                 </div>
 
                 <div class="form-floating-custom mb-4">
-                    <input type="password" name="confirm_password" id="confirm_password" placeholder=" " required>
+                    <input type="password" name="confirm_password" id="confirm_password" placeholder=" " required minlength="6">
                     <label for="confirm_password">Xác nhận mật khẩu</label>
                     <i class="bi bi-shield-check"></i>
                     <button type="button" class="btn-toggle-pass" onclick="togglePass('confirm_password', this)">
                         <i class="bi bi-eye"></i>
                     </button>
+                    <div class="invalid-feedback text-start mt-1 ms-2" style="font-size: 0.8rem;">Vui lòng xác nhận mật khẩu.</div>
                 </div>
                 
-                <div class="form-check mb-4 pb-2">
+                <div class="form-check mb-4 pb-2 text-start">
                     <input class="form-check-input shadow-none" type="checkbox" id="agreeTerms" required>
-                    <label class="form-check-label text-secondary" for="agreeTerms" style="font-size:0.85rem; font-weight:500;">
+                    <label class="form-check-label text-secondary ms-1" for="agreeTerms" style="font-size:0.85rem; font-weight:500;">
                         Tôi đồng ý với <a href="#" class="text-decoration-none fw-semibold" style="color:#2563eb;">Điều khoản dịch vụ</a> và <a href="#" class="text-decoration-none fw-semibold" style="color:#2563eb;">Chính sách bảo mật</a>
                     </label>
+                    <div class="invalid-feedback" style="font-size: 0.8rem;">Vui lòng đồng ý với điều khoản để tiếp tục.</div>
                 </div>
                 
                 <button type="submit" class="btn-auth" id="registerBtn">
@@ -157,8 +163,25 @@
         else if (strength === 3) { text.textContent = 'Mạnh'; text.style.color = '#22c55e'; b1.style.backgroundColor = '#22c55e'; b2.style.backgroundColor = '#22c55e'; }
     }
 
-    document.getElementById('registerForm').addEventListener('submit', function() {
-        const btn = document.getElementById('registerBtn');
-        btn.classList.add('loading');
-    });
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+        const form = this;
+        const pass = document.getElementById('password').value;
+        const confirmPass = document.getElementById('confirm_password').value;
+        
+        // Custom match check
+        if(pass !== confirmPass) {
+            document.getElementById('confirm_password').setCustomValidity('Mật khẩu không khớp');
+        } else {
+            document.getElementById('confirm_password').setCustomValidity('');
+        }
+        
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            const btn = document.getElementById('registerBtn');
+            btn.classList.add('loading');
+        }
+        form.classList.add('was-validated');
+    }, false);
 </script>

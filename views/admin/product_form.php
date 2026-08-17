@@ -111,6 +111,18 @@ $all_attributes = $all_attributes ?? [];
                             </div>
                         </div>
 
+                        <div class="row form-horizontal-row align-items-center mt-3">
+                            <div class="col-md-2">
+                                <label class="form-horizontal-label">Trạng thái <span class="text-danger">*</span></label>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select fw-medium" name="status">
+                                    <option value="active" <?= (!isset($product['status']) || $product['status'] == 1 || $product['status'] === 'active') ? 'selected' : '' ?>>Đang bán</option>
+                                    <option value="inactive" <?= (isset($product['status']) && ($product['status'] == 0 || $product['status'] === 'inactive')) ? 'selected' : '' ?>>Ngừng bán</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="row form-horizontal-row mt-4">
                             <div class="col-md-2">
                                 <label class="form-horizontal-label">Hình ảnh chính <span class="text-danger">*</span></label>

@@ -49,16 +49,27 @@
 
                 <div class="row form-horizontal-row align-items-center">
                     <div class="col-md-3">
-                        <label class="form-horizontal-label">Hình ảnh danh mục</label>
+                        <label class="form-horizontal-label">Icon danh mục (Bootstrap Icon)</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="file" class="form-control" name="image" accept="image/*" <?= $isDetail ? 'disabled' : '' ?>>
-                        <?php if (!empty($category['icon'])): ?>
-                            <div class="mt-3">
-                                <img src="<?= BASE_URL ?>assets/uploads/categories/<?= htmlspecialchars($category['icon']) ?>" alt="Category Image" style="max-width: 100px; height: auto; border-radius: 8px; border: 1px solid #dee2e6;">
-                            </div>
-                        <?php endif; ?>
-                        <small class="text-muted mt-1 d-block">Chọn hình ảnh đại diện cho danh mục. Định dạng: JPG, PNG, GIF, WebP.</small>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="<?= htmlspecialchars($category['icon'] ?? 'bi-grid') ?>" id="iconPreview"></i></span>
+                            <input type="text" class="form-control" name="icon" id="iconInput"
+                                value="<?= htmlspecialchars($category['icon'] ?? '') ?>" placeholder="VD: bi-laptop, bi-phone..." 
+                                <?= $isDetail ? 'disabled' : '' ?>>
+                        </div>
+                        <small class="text-muted d-block mt-1">
+                            Nhập tên class của Bootstrap Icon. Ví dụ: <code>bi-laptop</code>, <code>bi-phone</code>, <code>bi-headphones</code>, <code>bi-mouse</code>...
+                        </small>
+                        <script>
+                            document.getElementById('iconInput').addEventListener('input', function(e) {
+                                let iconClass = e.target.value.trim();
+                                if(!iconClass.startsWith('bi-')) {
+                                    iconClass = 'bi-grid';
+                                }
+                                document.getElementById('iconPreview').className = 'bi ' + iconClass;
+                            });
+                        </script>
                     </div>
                 </div>
 

@@ -207,52 +207,56 @@
                             </div>
                         <?php endif; ?>
 
-                        <form action="" method="POST" enctype="multipart/form-data">
+                        <form action="" method="POST" enctype="multipart/form-data" id="supportForm" class="needs-validation" novalidate>
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label class="support-label">Họ và tên <span class="text-danger">*</span></label>
-                                    <input type="text" name="fullname" class="support-form-input" placeholder="Ví dụ: Nguyễn Văn A" required>
+                                    <input type="text" name="fullname" class="support-form-input form-control" placeholder="Ví dụ: Nguyễn Văn A" required>
+                                    <div class="invalid-feedback">Vui lòng nhập họ và tên.</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="support-label">Số điện thoại <span class="text-danger">*</span></label>
-                                    <input type="tel" name="phone" class="support-form-input" placeholder="Ví dụ: 0912 345 678" required>
+                                    <input type="tel" name="phone" class="support-form-input form-control" placeholder="Ví dụ: 0912 345 678" required pattern="[0-9]{9,11}">
+                                    <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ.</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="support-label">Mã đơn hàng <span class="text-muted fw-normal">(Tùy chọn)</span></label>
-                                    <input type="text" name="order_id" class="support-form-input" placeholder="Ví dụ: ORD-12345">
+                                    <input type="text" name="order_id" class="support-form-input form-control" placeholder="Ví dụ: ORD-12345">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="support-label">Độ ưu tiên</label>
-                                    <select name="priority" class="support-form-input">
+                                    <select name="priority" class="support-form-input form-select">
                                         <option value="normal">Bình thường</option>
                                         <option value="urgent">Khẩn cấp</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="support-label">Tên máy / Model sản phẩm</label>
-                                    <input type="text" name="product_model" class="support-form-input" placeholder="Ví dụ: Laptop Dell XPS 13, iPhone 15...">
+                                    <input type="text" name="product_model" class="support-form-input form-control" placeholder="Ví dụ: Laptop Dell XPS 13, iPhone 15...">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="support-label">Số Serial / IMEI</label>
-                                    <input type="text" name="serial_number" class="support-form-input" placeholder="Ví dụ: SN123456789">
+                                    <input type="text" name="serial_number" class="support-form-input form-control" placeholder="Ví dụ: SN123456789">
                                 </div>
                                 <div class="col-12">
                                     <label class="support-label">Chủ đề cần hỗ trợ <span class="text-danger">*</span></label>
-                                    <select name="type" class="support-form-input" required>
+                                    <select name="type" class="support-form-input form-select" required>
                                         <option value="Tư vấn & Hỏi đáp">Tư vấn & Hỏi đáp</option>
                                         <option value="Hỗ trợ kỹ thuật / Bảo hành">Hỗ trợ kỹ thuật / Bảo hành (Báo hỏng)</option>
                                         <option value="Tra cứu & Giục giao đơn hàng">Tra cứu & Giục giao đơn hàng</option>
                                         <option value="Khiếu nại dịch vụ">Khiếu nại dịch vụ</option>
                                         <option value="Khác">Khác</option>
                                     </select>
+                                    <div class="invalid-feedback">Vui lòng chọn chủ đề.</div>
                                 </div>
                                 <div class="col-12">
                                     <label class="support-label">Nội dung chi tiết <span class="text-danger">*</span></label>
-                                    <textarea name="message" class="support-form-input" rows="4" placeholder="Mô tả rõ vấn đề bạn đang gặp phải để chúng tôi hỗ trợ nhanh nhất..." required></textarea>
+                                    <textarea name="message" class="support-form-input form-control" rows="4" placeholder="Mô tả rõ vấn đề bạn đang gặp phải để chúng tôi hỗ trợ nhanh nhất..." required></textarea>
+                                    <div class="invalid-feedback">Vui lòng nhập nội dung chi tiết.</div>
                                 </div>
                                 <div class="col-12">
                                     <label class="support-label">Đính kèm hình ảnh/video lỗi</label>
-                                    <input type="file" name="attached_file" class="support-form-input" accept="image/*,video/*">
+                                    <input type="file" name="attached_file" class="support-form-input form-control" accept="image/*,video/*">
                                 </div>
                                 <div class="col-12 mt-4 pt-2">
                                     <button type="submit" class="support-btn">Gửi Yêu Cầu Ngay <i class="bi bi-send ms-2"></i></button>
@@ -265,3 +269,18 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('supportForm').addEventListener('submit', function(event) {
+        const form = this;
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            const btn = form.querySelector('.support-btn');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Đang gửi...';
+            btn.classList.add('disabled');
+        }
+        form.classList.add('was-validated');
+    }, false);
+</script>

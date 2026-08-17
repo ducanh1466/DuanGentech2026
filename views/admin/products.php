@@ -24,8 +24,8 @@
                     <span class="input-group-text bg-white border-end-0 border-light text-muted"><i class="bi bi-funnel"></i></span>
                     <select name="status" class="form-select border-start-0 border-light shadow-none fw-medium" onchange="this.form.submit()" style="color: #475569; cursor: pointer;">
                         <option value="">Tất cả trạng thái</option>
-                        <option value="1" <?= (($status ?? '') === '1' || ($status ?? '') === 'active') ? 'selected' : '' ?>>Hiển thị</option>
-                        <option value="0" <?= (($status ?? '') === '0' || ($status ?? '') === 'inactive') ? 'selected' : '' ?>>Ẩn</option>
+                        <option value="1" <?= (($status ?? '') === '1' || ($status ?? '') === 'active') ? 'selected' : '' ?>>Đang bán</option>
+                        <option value="0" <?= (($status ?? '') === '0' || ($status ?? '') === 'inactive') ? 'selected' : '' ?>>Ngừng bán</option>
                     </select>
                 </div>
 
@@ -81,7 +81,7 @@
                                 <span class="text-accent"><?= number_format($p['price'] ?? 0, 0, ',', '.') ?> VNĐ</span>
                             </td>
                         <td><span
-                                    class="status-badge <?= ($p['status'] == 1 || $p['status'] === 'active') ? 'active' : 'inactive' ?>"><?= ($p['status'] == 1 || $p['status'] === 'active') ? 'Hiển thị' : 'Ẩn' ?></span>
+                                    class="status-badge <?= ($p['status'] == 1 || $p['status'] === 'active') ? 'active' : 'inactive' ?>"><?= ($p['status'] == 1 || $p['status'] === 'active') ? 'Đang bán' : 'Ngừng bán' ?></span>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2 action-dropdown position-relative">

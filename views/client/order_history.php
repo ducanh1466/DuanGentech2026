@@ -7,7 +7,7 @@
     .premium-page-header {
         background: linear-gradient(135deg, #ffffff 0%, #f1f3f5 100%);
         border-bottom: 1px solid rgba(0,0,0,0.05);
-        padding: 3rem 0;
+        padding: 2rem 0;
     }
 
     .premium-filter-nav {
@@ -80,7 +80,7 @@
     .premium-timeline::before {
         content: '';
         position: absolute;
-        top: 24px; /* Center of icon */
+        top: 18px; /* Center of icon */
         left: 0;
         right: 0;
         height: 3px;
@@ -97,19 +97,19 @@
     }
 
     .premium-timeline-icon {
-        width: 50px;
-        height: 50px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         background: #ffffff;
-        border: 3px solid #e9ecef;
+        border: 2px solid #e9ecef;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 10px auto;
+        margin: 0 auto 8px auto;
         color: #adb5bd;
-        font-size: 1.2rem;
+        font-size: 1rem;
         transition: all 0.4s ease;
-        box-shadow: 0 0 0 4px #ffffff;
+        box-shadow: 0 0 0 3px #ffffff;
     }
 
     .premium-timeline-step.active .premium-timeline-icon {
@@ -127,7 +127,7 @@
     .premium-timeline-step.active::after {
         content: '';
         position: absolute;
-        top: 24px;
+        top: 18px;
         left: 50%;
         width: 100%;
         height: 3px;
@@ -218,8 +218,8 @@
             <?php else: ?>
                 
                 <?php foreach ($orders as $order): ?>
-                <div class="premium-order-card p-4 p-md-5 mb-5" data-aos="fade-up">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-4 gap-3">
+                <div class="premium-order-card p-4 mb-4" data-aos="fade-up">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start mb-3 gap-3">
                         <div>
                             <?php
                             $statusLabel = 'Chờ xác nhận';
@@ -253,12 +253,12 @@
                                 <?php endif; ?>
                             </div>
                             
-                            <h4 class="fw-bold mb-1" style="color: #1a1d20;">Đơn hàng #GENTECH-<?= $order['order_id'] ?></h4>
+                            <h5 class="fw-bold mb-1" style="color: #1a1d20;">Đơn hàng #GENTECH-<?= $order['order_id'] ?></h5>
                             <p class="text-secondary small fw-medium mb-0"><i class="bi bi-calendar3 me-2"></i><?= date('H:i - d/m/Y', strtotime($order['order_date'])) ?></p>
                         </div>
                         <div class="text-md-end">
                             <span class="text-secondary fw-medium small text-uppercase letter-spacing-1 d-block mb-1">Tổng cộng</span>
-                            <h3 class="fw-bold text-dark mb-0"><?= number_format($order['total_amount'], 0, ',', '.') ?>đ</h3>
+                            <h4 class="fw-bold text-dark mb-0"><?= number_format($order['total_amount'], 0, ',', '.') ?>đ</h4>
                         </div>
                     </div>
 
@@ -288,19 +288,19 @@
 
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-4">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="bg-gray-100 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                <i class="bi bi-geo-alt-fill text-secondary fs-5"></i>
+                            <div class="bg-gray-100 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="bi bi-geo-alt-fill text-secondary"></i>
                             </div>
                             <div>
-                                <h6 class="fw-bold mb-1 text-dark"><?= htmlspecialchars($order['recipient_name']) ?> <span class="text-muted fw-normal mx-1">•</span> <?= htmlspecialchars($order['recipient_phone']) ?></h6>
+                                <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.95rem;"><?= htmlspecialchars($order['recipient_name']) ?> <span class="text-muted fw-normal mx-1">•</span> <?= htmlspecialchars($order['recipient_phone']) ?></h6>
                                 <p class="text-secondary small mb-0" style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?= htmlspecialchars($order['shipping_address']) ?></p>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
                             <?php if ($order['status'] == 'completed'): ?>
-                                <a href="?action=order-detail&id=<?= $order['order_id'] ?>" class="btn btn-dark px-4 py-2 flex-grow-1 text-nowrap">Đánh Giá</a>
+                                <a href="?action=order-detail&id=<?= $order['order_id'] ?>" class="btn btn-dark btn-sm px-4 py-2 flex-grow-1 text-nowrap">Đánh Giá</a>
                             <?php endif; ?>
-                            <a href="?action=order-detail&id=<?= $order['order_id'] ?>" class="btn btn-premium-outline px-4 py-2 flex-grow-1 text-nowrap">Chi Tiết Đơn</a>
+                            <a href="?action=order-detail&id=<?= $order['order_id'] ?>" class="btn btn-premium-outline btn-sm px-4 py-2 flex-grow-1 text-nowrap">Chi Tiết</a>
                         </div>
                     </div>
                 </div>

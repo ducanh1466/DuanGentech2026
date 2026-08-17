@@ -63,7 +63,19 @@
                     </div>
                     <a href="#reviews" class="text-muted text-decoration-none hover-primary">(<?= $totalReviews ?> đánh giá)</a>
                     <span class="text-muted">|</span>
-                    <span class="text-success fw-medium"><i class="bi bi-check-circle-fill me-1"></i>Còn hàng</span>
+                    <?php 
+                    $totalStock = 0;
+                    foreach ($variantsData as $v) {
+                        $totalStock += (int)($v['stock_quantity'] ?? $v['stock'] ?? 0);
+                    }
+                    ?>
+                    <span id="stockDisplay">
+                        <?php if ($totalStock > 0): ?>
+                            <span class="text-success fw-medium"><i class="bi bi-check-circle-fill me-1"></i>Còn hàng</span>
+                        <?php else: ?>
+                            <span class="text-danger fw-medium"><i class="bi bi-x-circle-fill me-1"></i>Hết hàng</span>
+                        <?php endif; ?>
+                    </span>
                 </div>
                 <div class="mb-4">
                     <?php if (!empty($product['is_flash_sale'])): ?>
@@ -489,10 +501,22 @@
                 }
             }
             
-            // Cập nhật giá
-            if (matchedVariant && priceDisplay) {
-                const price = parseFloat(matchedVariant.price);
-                priceDisplay.textContent = price.toLocaleString('vi-VN').replace(/,/g, '.') + 'đ';
+            // Cập nhật giá & số lượng tồn kho
+            if (matchedVariant) {
+                if (priceDisplay) {
+                    const price = parseFloat(matchedVariant.price);
+                    priceDisplay.textContent = price.toLocaleString('vi-VN').replace(/,/g, '.') + 'đ';
+                }
+                
+                const stockDisplay = document.getElementById('stockDisplay');
+                if (stockDisplay) {
+                    const stock = parseInt(matchedVariant.stock_quantity !== undefined ? matchedVariant.stock_quantity : (matchedVariant.stock || 0));
+                    if (stock > 0) {
+                        stockDisplay.innerHTML = `<span class="text-success fw-medium"><i class="bi bi-check-circle-fill me-1"></i>Còn hàng</span>`;
+                    } else {
+                        stockDisplay.innerHTML = `<span class="text-danger fw-medium"><i class="bi bi-x-circle-fill me-1"></i>Hết hàng</span>`;
+                    }
+                }
             }
         }
         

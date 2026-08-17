@@ -7,21 +7,21 @@
                     <div class="hero-parallax-bg" style="background-image: url('<?= BASE_URL ?>assets/uploads/banner/<?= $banner['image_url'] ?>');"></div>
                     <div class="hero-parallax-overlay"></div>
                     <div class="hero-parallax-content d-flex flex-column align-items-center justify-content-center h-100">
-                        <div class="p-5 rounded-4 text-center mx-3" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); max-width: 800px; transform: translateY(20px); animation: fadeInUp 1s ease forwards;">
-                            <span class="badge bg-white text-primary rounded-pill px-4 py-2 mb-4 fw-bold text-uppercase tracking-wider" style="letter-spacing: 2px; font-size: 0.85rem;" data-aos="fade-up" data-aos-delay="100">Khám Phá Kỷ Nguyên Mới</span>
+                        <div class="p-4 rounded-4 text-center mx-3" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); max-width: 700px; transform: translateY(20px); animation: fadeInUp 1s ease forwards;">
+                            <span class="badge bg-white text-primary rounded-pill px-3 py-1 mb-3 fw-bold text-uppercase tracking-wider" style="letter-spacing: 1px; font-size: 0.75rem;" data-aos="fade-up" data-aos-delay="100">Khám Phá Kỷ Nguyên Mới</span>
                             
-                            <h1 class="display-3 fw-bolder mb-4 text-white text-shadow-sm" style="line-height: 1.2; letter-spacing: -1px;" data-aos="fade-up" data-aos-delay="200">
+                            <h1 class="display-5 fw-bolder mb-3 text-white text-shadow-sm" style="line-height: 1.2; letter-spacing: -0.5px;" data-aos="fade-up" data-aos-delay="200">
                                 <?= htmlspecialchars($banner['title']) ?>
                             </h1>
                             
-                            <p class="lead text-white mb-5 opacity-75 mx-auto" style="max-width: 600px; font-size: 1.15rem;" data-aos="fade-up" data-aos-delay="300">
+                            <p class="text-white mb-4 opacity-75 mx-auto" style="max-width: 500px; font-size: 1rem;" data-aos="fade-up" data-aos-delay="300">
                                 Trải nghiệm đỉnh cao công nghệ cùng Gentech. Sự hoàn hảo đến từ những chi tiết nhỏ nhất.
                             </p>
                             
                             <!-- Nút bấm với link động -->
                             <div class="d-flex gap-3 justify-content-center" data-aos="fade-up" data-aos-delay="400">
                                 <?php if (!empty($banner['link'])): ?>
-                                    <a href="<?= htmlspecialchars($banner['link']) ?>" class="btn btn-light text-primary rounded-pill px-5 py-3 fw-bold fs-6 shadow-lg hover-scale transition-all d-flex align-items-center gap-2">
+                                    <a href="<?= htmlspecialchars($banner['link']) ?>" class="btn btn-light text-primary rounded-pill px-4 py-2 fw-bold fs-6 shadow-sm hover-scale transition-all d-flex align-items-center gap-2">
                                         Khám Phá Ngay <i class="bi bi-arrow-right"></i>
                                     </a>
                                 <?php endif; ?>
@@ -35,9 +35,9 @@
             <div class="hero-parallax-item active">
                 <div class="hero-parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=2070&auto=format&fit=crop');"></div>
                 <div class="hero-parallax-overlay"></div>
-                <div class="hero-parallax-content">
-                    <span class="badge bg-primary rounded-pill px-3 py-2 mb-4 fs-6 shadow-sm border border-light border-opacity-25" data-aos="fade-up" data-aos-delay="200">GENTECH</span>
-                    <h1 class="display-3 fw-bold mb-4 text-white" style="letter-spacing: -2px;">SẢN PHẨM <span class="text-primary">CHÍNH HÃNG</span></h1>
+                <div class="hero-parallax-content d-flex flex-column align-items-center justify-content-center h-100">
+                    <span class="badge bg-primary rounded-pill px-3 py-1 mb-3 fs-6 shadow-sm border border-light border-opacity-25" data-aos="fade-up" data-aos-delay="200">GENTECH</span>
+                    <h1 class="display-5 fw-bold mb-3 text-white" style="letter-spacing: -1px;">SẢN PHẨM <span class="text-primary">CHÍNH HÃNG</span></h1>
                 </div>
             </div>
         <?php endif; ?>
@@ -169,13 +169,16 @@
             <div class="col-6 col-md-3 col-lg-2 mb-4" data-aos="fade-up" data-aos-delay="<?= ($index % 5 + 1) * 100 ?>">
                 <a href="<?= BASE_URL ?>?action=products&category_id=<?= $cat['category_id'] ?>" class="text-decoration-none text-dark category-item d-block">
                     <div class="category-box p-4 rounded-4 text-center transition-all hover-elevate bg-white" style="border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                        <?php if (!empty($cat['icon'])): ?>
-                            <img src="<?= BASE_URL ?>assets/uploads/categories/<?= htmlspecialchars($cat['icon']) ?>" alt="<?= htmlspecialchars($cat['category_name']) ?>" style="height: 65px; width: auto; object-fit: contain; margin-bottom: 15px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);" class="category-icon">
-                        <?php else: ?>
-                            <div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto mb-3" style="width: 70px; height: 70px;">
-                                <i class="bi bi-image text-muted" style="font-size: 1.8rem;"></i>
-                            </div>
-                        <?php endif; ?>
+                        <div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto mb-3 category-icon-wrapper" style="width: 70px; height: 70px; transition: all 0.3s ease;">
+                            <?php 
+                                $iconClass = !empty($cat['icon']) ? htmlspecialchars($cat['icon']) : 'bi-grid';
+                                // Nếu icon cũ đang là file ảnh (chứa dấu chấm), tạm thời fallback về bi-grid để tránh lỗi hiển thị HTML
+                                if (strpos($iconClass, '.') !== false) {
+                                    $iconClass = 'bi-grid';
+                                }
+                            ?>
+                            <i class="bi <?= $iconClass ?> text-primary category-icon" style="font-size: 1.8rem; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);"></i>
+                        </div>
                         <h6 class="mb-0 text-dark category-title transition-all" style="font-weight: 600; font-size: 0.95rem; letter-spacing: -0.3px;"><?= htmlspecialchars($cat['category_name']) ?></h6>
                     </div>
                 </a>

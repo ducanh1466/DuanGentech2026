@@ -1228,7 +1228,7 @@ class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $title = $_POST['title'] ?? '';
             $link = $_POST['link'] ?? '';
-            $position = $_POST['position'] ?? 'promo_banner';
+            $position = isset($_POST['position']) ? trim($_POST['position']) : 'hero_slider';
             $status = isset($_POST['status']) ? (int) $_POST['status'] : 1;
             $image_url = '';
 
@@ -1280,7 +1280,7 @@ class AdminController
             $id = $_POST['id'] ?? 0;
             $title = $_POST['title'] ?? '';
             $link = $_POST['link'] ?? '';
-            $position = $_POST['position'] ?? 'promo_banner';
+            $position = isset($_POST['position']) ? trim($_POST['position']) : 'hero_slider';
             $status = isset($_POST['status']) ? (int) $_POST['status'] : 0;
             $old_image = $_POST['old_image'] ?? '';
             $image_url = $old_image;

@@ -26,8 +26,8 @@ class OrderDetailModel extends BaseModel
 
     public function getDetailsByOrderId($order_id)
     {
-        $sql = "SELECT od.*, p.product_id, p.product_name, 
-                       (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as product_image
+                $sql = "SELECT od.*, p.product_id, p.product_name, 
+                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as product_image
                 FROM {$this->table} od
                 LEFT JOIN tb_product_variants pv ON od.variant_id = pv.variant_id
                 LEFT JOIN tb_products p ON (pv.product_id = p.product_id OR od.variant_id = p.product_id)

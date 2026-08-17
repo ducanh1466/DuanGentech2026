@@ -46,7 +46,7 @@ class CartModel extends BaseModel
             JOIN tb_product_variants v ON ci.variant_id = v.variant_id
             JOIN tb_products p ON v.product_id = p.product_id
             LEFT JOIN (
-                SELECT product_id, image_url 
+                SELECT product_id, REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') as image_url 
                 FROM tb_product_images 
                 WHERE is_primary = 1
             ) pi ON p.product_id = pi.product_id

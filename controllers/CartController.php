@@ -40,6 +40,13 @@ class CartController
     public function add()
     {
         if (!isset($_SESSION['user'])) {
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                echo json_encode([
+                    'status' => 'error', 
+                    'message' => 'Vui lòng đăng nhập để thêm vào giỏ hàng!'
+                ]);
+                exit;
+            }
             header('Location: ?action=login');
             exit;
         }
@@ -48,31 +55,42 @@ class CartController
         $variantId = $_POST['variant_id'] ?? null;
         $quantity = $_POST['quantity'] ?? 1;
 
-        $addedItemId = 0;
-        if ($variantId && $quantity > 0) {
-            // Kiểm tra số lượng tồn kho
-            $stock = $this->productModel->getVariantStock($variantId);
-            $cartId = $this->cartModel->getOrCreateCartId($userId);
-            
-            // Tính tổng số lượng dự kiến sau khi thêm (có thể đã có trong giỏ hàng)
-            // Tuy nhiên, logic hiện tại addItem sẽ tự cộng thêm quantity. 
-            // Ta tạm kiểm tra quantity có vượt stock hiện tại hay không trước
-            if ($quantity > $stock) {
-                if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-                    echo json_encode([
-                        'status' => 'error', 
-                        'message' => 'Số lượng sản phẩm trong kho không đủ!'
-                    ]);
-                    exit;
-                } else {
-                    $_SESSION['error'] = 'Số lượng sản phẩm trong kho không đủ!';
-                    header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '?action=products'));
-                    exit;
-                }
+        if (!$variantId || $quantity <= 0) {
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                echo json_encode([
+                    'status' => 'error', 
+                    'message' => 'Sản phẩm không hợp lệ hoặc chưa có phiên bản!'
+                ]);
+                exit;
             }
-            
-            $addedItemId = $this->cartModel->addItem($cartId, $variantId, $quantity);
+            $_SESSION['error'] = 'Sản phẩm không hợp lệ!';
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '?action=products'));
+            exit;
         }
+
+        $addedItemId = 0;
+        // Kiểm tra số lượng tồn kho
+        $stock = $this->productModel->getVariantStock($variantId);
+        $cartId = $this->cartModel->getOrCreateCartId($userId);
+        
+        // Tính tổng số lượng dự kiến sau khi thêm (có thể đã có trong giỏ hàng)
+        // Tuy nhiên, logic hiện tại addItem sẽ tự cộng thêm quantity. 
+        // Ta tạm kiểm tra quantity có vượt stock hiện tại hay không trước
+        if ($quantity > $stock) {
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                echo json_encode([
+                    'status' => 'error', 
+                    'message' => 'Số lượng sản phẩm trong kho không đủ!'
+                ]);
+                exit;
+            } else {
+                $_SESSION['error'] = 'Số lượng sản phẩm trong kho không đủ!';
+                header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '?action=products'));
+                exit;
+            }
+        }
+        
+        $addedItemId = $this->cartModel->addItem($cartId, $variantId, $quantity);
 
         // Tính lại số lượng sản phẩm trong giỏ để trả về cho AJAX cập nhật badge
         $cartItems = $this->cartModel->getCartItems($cartId ?? 0);

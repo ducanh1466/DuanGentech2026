@@ -55,7 +55,12 @@ $autoTickId = $_GET['tick'] ?? null;
                             
                             <!-- Product Image -->
                             <div class="col-3 col-md-2 px-2">
-                                <img src="<?= htmlspecialchars($item['image_url'] ?? 'assets/images/default.png') ?>" class="img-fluid bg-gray-100 rounded-3 p-2 border" alt="<?= htmlspecialchars($item['product_name']) ?>">
+                                <?php 
+                                    $cartImg = $item['image_url'] ?? '';
+                                    $cartImgName = !empty($cartImg) ? basename($cartImg) : '';
+                                    $cartImgUrl = !empty($cartImgName) ? BASE_ASSETS_UPLOADS . 'products/' . $cartImgName : 'assets/images/default.png';
+                                ?>
+                                <img src="<?= htmlspecialchars($cartImgUrl) ?>" class="img-fluid bg-gray-100 rounded-3 p-2 border" alt="<?= htmlspecialchars($item['product_name']) ?>">
                             </div>
                             
                             <!-- Product Info -->

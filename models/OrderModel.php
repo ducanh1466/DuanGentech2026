@@ -95,10 +95,10 @@ class OrderModel extends BaseModel
     }
 
     // Tạo mới 1 đơn hàng vào CSDL (Khi khách thực hiện thao tác đặt hàng/thanh toán)
-    public function insertOrder($user_id, $discount_id = null, $total_amount, $status = 'pending', $recipient_name, $recipient_phone, $shipping_address, $note = null, $payment_method = 'cod', $payment_status = 'unpaid')
+    public function insertOrder($user_id, $discount_id = null, $total_amount, $status = 'pending', $recipient_name, $recipient_phone, $shipping_address, $note = null, $payment_method = 'cod', $payment_status = 'unpaid', $shipping_fee = 0)
     {
-        $sql = "INSERT INTO {$this->table} (user_id, discount_id, total_amount, status, recipient_name, recipient_phone, shipping_address, note, payment_method, payment_status, order_date) 
-                VALUES (:user_id, :discount_id, :total_amount, :status, :recipient_name, :recipient_phone, :shipping_address, :note, :payment_method, :payment_status, NOW())";
+        $sql = "INSERT INTO {$this->table} (user_id, discount_id, total_amount, status, recipient_name, recipient_phone, shipping_address, note, payment_method, payment_status, order_date, shipping_fee) 
+                VALUES (:user_id, :discount_id, :total_amount, :status, :recipient_name, :recipient_phone, :shipping_address, :note, :payment_method, :payment_status, NOW(), :shipping_fee)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'user_id' => $user_id,
@@ -110,7 +110,8 @@ class OrderModel extends BaseModel
             'shipping_address' => $shipping_address,
             'note' => $note,
             'payment_method' => $payment_method,
-            'payment_status' => $payment_status
+            'payment_status' => $payment_status,
+            'shipping_fee' => $shipping_fee
         ]);
         return $this->pdo->lastInsertId();
     }

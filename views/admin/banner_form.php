@@ -33,9 +33,11 @@
                         <label class="form-horizontal-label">Vị trí hiển thị</label>
                     </div>
                     <div class="col-md-9">
-                        <select class="form-select" name="position">
-                            <option value="hero_slider" <?= (isset($banner) && $banner['position'] == 'hero_slider') ? 'selected' : '' ?>>Hero Slider (Banner lớn nhất)</option>
-                            <option value="promo_banner" <?= (isset($banner) && $banner['position'] == 'promo_banner') ? 'selected' : '' ?>>Khuyến Mãi (Banner nhỏ)</option>
+                        <?php $currentPosition = isset($banner) ? trim($banner['position']) : ''; ?>
+                        <select class="form-select" name="position" required>
+                            <option value="hero_slider" <?= ($currentPosition === 'hero_slider') ? 'selected' : '' ?>>Hero Slider (Banner lớn nhất)</option>
+                            <option value="promo_banner" <?= ($currentPosition === 'promo_banner') ? 'selected' : '' ?>>Khuyến Mãi (Banner nhỏ)</option>
+                            <option value="product_page_banner" <?= ($currentPosition === 'product_page_banner') ? 'selected' : '' ?>>Trang Sản Phẩm (Banner ngang)</option>
                         </select>
                     </div>
                 </div>

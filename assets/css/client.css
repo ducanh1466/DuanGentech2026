@@ -751,3 +751,8 @@ html {
 .text-shadow-sm {
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+/* Tăng thời gian chuyển cảnh (animation) của slider để hiệu ứng mượt mà và chậm hơn */
+.carousel-item {
+    transition: transform 1.2s ease-in-out !important;
+}

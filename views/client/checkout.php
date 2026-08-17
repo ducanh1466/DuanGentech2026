@@ -187,11 +187,15 @@
                     
                     <div class="d-flex justify-content-between mb-3 text-muted">
                         <span>Tổng tiền hàng</span>
-                        <span class="text-dark fw-medium" id="subTotalDisplay"><?= number_format($totalAmount + $discountAmount, 0, ',', '.') ?>đ</span>
+                        <span class="text-dark fw-medium" id="subTotalDisplay"><?= number_format($subTotal, 0, ',', '.') ?>đ</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3 text-muted border-bottom border-gray-300 pb-4">
                         <span>Phí vận chuyển</span>
-                        <span class="text-success fw-medium">Miễn phí</span>
+                        <?php if (isset($shippingFee) && $shippingFee > 0): ?>
+                            <span class="text-dark fw-medium"><?= number_format($shippingFee, 0, ',', '.') ?>đ</span>
+                        <?php else: ?>
+                            <span class="text-success fw-medium">Miễn phí</span>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Giảm giá -->

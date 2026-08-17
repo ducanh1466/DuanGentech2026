@@ -158,7 +158,8 @@
                 $subtotal += $detail['unit_price'] * $detail['quantity'];
             }
         }
-        $discountAmount = $subtotal - ($order['total_amount'] ?? 0);
+        $shippingFee = $order['shipping_fee'] ?? 0;
+        $discountAmount = $subtotal + $shippingFee - ($order['total_amount'] ?? 0);
         if ($discountAmount < 0) $discountAmount = 0;
         ?>
         <!-- Order Summary -->
@@ -167,7 +168,14 @@
             <div class="info-row"><span class="label">Tạm tính</span><span class="value">
                     <?= number_format($subtotal, 0, ',', '.') ?>₫
                 </span></div>
-            <div class="info-row"><span class="label">Phí vận chuyển</span><span class="value text-success">Miễn phí</span></div>
+            <div class="info-row">
+                <span class="label">Phí vận chuyển</span>
+                <?php if ($shippingFee > 0): ?>
+                    <span class="value"><?= number_format($shippingFee, 0, ',', '.') ?>₫</span>
+                <?php else: ?>
+                    <span class="value text-success">Miễn phí</span>
+                <?php endif; ?>
+            </div>
             <div class="info-row">
                 <span class="label">
                     Giảm giá 

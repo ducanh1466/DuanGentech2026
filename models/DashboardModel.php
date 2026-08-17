@@ -121,10 +121,11 @@ class DashboardModel extends BaseModel
     {
         try {
             $sql = "SELECT p.product_name, p.product_id, SUM(od.quantity) as total_sold,
-                           (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image
-                    FROM tb_order_details od
+                           (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image
+                    FROM tb_order_items od
                     JOIN tb_orders o ON o.order_id = od.order_id
-                    JOIN tb_products p ON p.product_id = od.product_id
+                    LEFT JOIN tb_product_variants pv ON od.variant_id = pv.variant_id
+                    JOIN tb_products p ON (pv.product_id = p.product_id OR od.variant_id = p.product_id)
                     WHERE o.status = 'completed'";
             $params = [];
             
@@ -175,15 +176,15 @@ class DashboardModel extends BaseModel
     public function getLowStockProducts($limit = 5, $threshold = 10)
     {
         try {
-            $sql = "SELECT p.product_name, pv.variant_id, pv.stock,
+            $sql = "SELECT p.product_name, pv.variant_id, pv.stock_quantity as stock,
                            (SELECT GROUP_CONCAT(val.attribute_value SEPARATOR ' - ') 
                             FROM tb_variant_attributes va 
-                            JOIN tb_attribute_values val ON va.attribute_value_id = val.value_id 
+                            JOIN tb_attribute_values val ON va.attribute_value_id = val.attribute_value_id 
                             WHERE va.variant_id = pv.variant_id) as attributes
                     FROM tb_product_variants pv
                     JOIN tb_products p ON p.product_id = pv.product_id
-                    WHERE pv.stock <= :threshold
-                    ORDER BY pv.stock ASC
+                    WHERE pv.stock_quantity <= :threshold
+                    ORDER BY pv.stock_quantity ASC
                     LIMIT :limit";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':threshold', (int)$threshold, PDO::PARAM_INT);
@@ -244,10 +245,11 @@ class DashboardModel extends BaseModel
     public function getSalesByCategory($startDate = null, $endDate = null)
     {
         try {
-            $sql = "SELECT c.category_name, SUM(od.price * od.quantity) as total_revenue
-                    FROM tb_order_details od
+            $sql = "SELECT c.category_name, SUM(od.unit_price * od.quantity) as total_revenue
+                    FROM tb_order_items od
                     JOIN tb_orders o ON od.order_id = o.order_id
-                    JOIN tb_products p ON od.product_id = p.product_id
+                    LEFT JOIN tb_product_variants pv ON od.variant_id = pv.variant_id
+                    JOIN tb_products p ON (pv.product_id = p.product_id OR od.variant_id = p.product_id)
                     JOIN tb_categories c ON p.category_id = c.category_id
                     WHERE o.status = 'completed'";
             $params = [];

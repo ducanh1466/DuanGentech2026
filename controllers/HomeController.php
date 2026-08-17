@@ -328,7 +328,10 @@ class HomeController
 
     public function postReview()
     {
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        
         if (!isset($_SESSION['user']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập!']); exit; }
             header('Location: ?action=/');
             exit;
         }
@@ -339,6 +342,7 @@ class HomeController
         $content = trim($_POST['content'] ?? '');
 
         if (!$productId || empty($content)) {
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => 'Vui lòng điền nội dung đánh giá.']); exit; }
             $_SESSION['error'] = 'Vui lòng điền nội dung đánh giá.';
             header("Location: ?action=product-detail&id={$productId}");
             exit;
@@ -351,8 +355,22 @@ class HomeController
         
         if ($orderId) {
             $reviewModel->insertReview($orderId, $productId, $rating, $content);
+            if ($isAjax) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Cảm ơn bạn đã đánh giá sản phẩm!',
+                    'review' => [
+                        'full_name' => htmlspecialchars($_SESSION['user']['full_name']),
+                        'content' => nl2br(htmlspecialchars($content)),
+                        'rating' => (int)$rating,
+                        'review_date' => date('d/m/Y')
+                    ]
+                ]);
+                exit;
+            }
             $_SESSION['success'] = 'Cảm ơn bạn đã đánh giá sản phẩm!';
         } else {
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => 'Bạn không có quyền đánh giá sản phẩm này.']); exit; }
             $_SESSION['error'] = 'Bạn không có quyền đánh giá sản phẩm này (Chưa mua hoặc đã đánh giá rồi).';
         }
 
@@ -362,7 +380,10 @@ class HomeController
 
     public function clientReplyReview()
     {
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        
         if (!isset($_SESSION['user']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập!']); exit; }
             header('Location: ?action=/');
             exit;
         }
@@ -373,6 +394,7 @@ class HomeController
         $content = trim($_POST['reply_content'] ?? '');
 
         if (!$reviewId || !$productId || empty($content)) {
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => 'Vui lòng nhập nội dung trả lời.']); exit; }
             $_SESSION['error'] = 'Vui lòng nhập nội dung trả lời.';
             header("Location: ?action=product-detail&id={$productId}#reviews");
             exit;
@@ -382,8 +404,21 @@ class HomeController
         $reviewModel = new ReviewModel();
 
         if ($reviewModel->addReply($reviewId, $userId, $content, 0)) {
+            if ($isAjax) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Gửi trả lời thành công!',
+                    'reply' => [
+                        'full_name' => htmlspecialchars($_SESSION['user']['full_name']),
+                        'content' => nl2br(htmlspecialchars($content)),
+                        'created_at' => date('H:i - d/m/Y')
+                    ]
+                ]);
+                exit;
+            }
             $_SESSION['success'] = 'Gửi trả lời thành công!';
         } else {
+            if ($isAjax) { echo json_encode(['success' => false, 'message' => 'Gửi trả lời thất bại, vui lòng thử lại.']); exit; }
             $_SESSION['error'] = 'Gửi trả lời thất bại, vui lòng thử lại.';
         }
 

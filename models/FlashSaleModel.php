@@ -76,7 +76,7 @@ class FlashSaleModel extends BaseModel
     public function getFlashSaleItems($flash_sale_id)
     {
         $sql = "SELECT fi.*, p.product_name,
-                       (SELECT image_url FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
                 FROM tb_flash_sale_items fi 
                 JOIN tb_products p ON fi.product_id = p.product_id 

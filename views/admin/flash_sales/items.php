@@ -84,7 +84,7 @@
                                             <div class="rounded border" style="width: 45px; height: 45px; overflow: hidden;">
                                                 <?php 
                                                     $img = $item['image'] ?? '';
-                                                    $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_ASSETS_UPLOADS . 'products/' . basename($img)) : 'assets/images/placeholder.png';
+                                                    $imgUrl = !empty($img) ? (str_starts_with($img, 'http') ? $img : BASE_ASSETS_UPLOADS . 'products/' . basename($img)) : 'https://placehold.co/60x60/e2e8f0/64748b?text=IMG';
                                                 ?>
                                                 <img src="<?= htmlspecialchars($imgUrl) ?>" style="width: 100%; height: 100%; object-fit: cover;">
                                             </div>

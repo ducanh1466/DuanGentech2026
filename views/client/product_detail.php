@@ -627,5 +627,170 @@
                 });
             });
         }
+
+        // AJAX form submission for client replies
+        const replyForms = document.querySelectorAll('form[action="?action=client-reply-review"]');
+        replyForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalHtml = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang gửi...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData(this);
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    submitBtn.innerHTML = originalHtml;
+                    submitBtn.disabled = false;
+                    
+                    if (data.success) {
+                        const collapseDiv = this.closest('.collapse');
+                        const reviewContainer = collapseDiv.parentElement;
+                        let repliesContainer = reviewContainer.querySelector('.ms-5.mt-3.space-y-3');
+                        
+                        if (!repliesContainer) {
+                            repliesContainer = document.createElement('div');
+                            repliesContainer.className = 'ms-5 mt-3 border-start border-2 border-gray-100 ps-4 space-y-3';
+                            reviewContainer.insertBefore(repliesContainer, reviewContainer.querySelector('.mt-4.text-end'));
+                        }
+
+                        const initial = data.reply.full_name ? data.reply.full_name.charAt(0).toUpperCase() : 'K';
+
+                        const newHtml = `
+                            <div class="mb-3">
+                                <div class="p-3 bg-white rounded-4 shadow-sm position-relative hover-elevate transition-all border border-gray-100">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px; font-size: 0.9rem;">
+                                            ${initial}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.95rem;">${data.reply.full_name}</h6>
+                                            <small class="text-muted" style="font-size: 0.75rem;">${data.reply.created_at}</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-dark" style="line-height: 1.6; font-size: 0.95rem;">
+                                        ${data.reply.content}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        repliesContainer.insertAdjacentHTML('beforeend', newHtml);
+                        this.querySelector('textarea').value = '';
+                        
+                        const bsCollapse = bootstrap.Collapse.getInstance(collapseDiv);
+                        if (bsCollapse) {
+                            bsCollapse.hide();
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(err => {
+                    submitBtn.innerHTML = originalHtml;
+                    submitBtn.disabled = false;
+                    alert('Có lỗi xảy ra, vui lòng thử lại!');
+                });
+            });
+        });
+
+        // AJAX form submission for new reviews
+        const reviewForm = document.querySelector('form[action="?action=post-review"]');
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalHtml = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ĐANG GỬI...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData(this);
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    submitBtn.innerHTML = originalHtml;
+                    submitBtn.disabled = false;
+                    
+                    if (data.success) {
+                        // Find the reviews container
+                        const reviewsCol = document.querySelector('.col-lg-8 .d-flex.flex-column.gap-4') || document.querySelector('.col-lg-8');
+                        
+                        // Generate stars html
+                        let starsHtml = '';
+                        for(let i=1; i<=5; i++) {
+                            starsHtml += `<i class="bi bi-star-${i <= data.review.rating ? 'fill' : ''}"></i>`;
+                        }
+
+                        const initial = data.review.full_name ? data.review.full_name.charAt(0).toUpperCase() : 'K';
+
+                        const newReviewHtml = `
+                            <div class="bg-white rounded-4 p-4 border border-gray-100 shadow-sm mb-4">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 45px; height: 45px; font-size: 1.2rem;">
+                                            ${initial}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">${data.review.full_name}</h6>
+                                            <span class="text-success small fw-medium"><i class="bi bi-check-circle-fill me-1"></i>Đã mua hàng</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="text-warning mb-1">
+                                            ${starsHtml}
+                                        </div>
+                                        <small class="text-muted">${data.review.review_date}</small>
+                                    </div>
+                                </div>
+                                <p class="mb-0 text-dark" style="line-height: 1.6;">${data.review.content}</p>
+                            </div>
+                        `;
+                        
+                        if (document.querySelector('.col-lg-8 .d-flex.flex-column.gap-4')) {
+                            document.querySelector('.col-lg-8 .d-flex.flex-column.gap-4').insertAdjacentHTML('afterbegin', newReviewHtml);
+                        } else {
+                            // If no reviews existed, replace the empty state
+                            document.querySelector('.col-lg-8').innerHTML = '<div class="d-flex flex-column gap-4">' + newReviewHtml + '</div>';
+                        }
+                        
+                        // Clear the textarea and reset stars
+                        this.querySelector('textarea').value = '';
+                        document.querySelectorAll('.rating-star').forEach(s => {
+                            if (parseInt(s.getAttribute('data-rating')) <= 5) {
+                                s.classList.remove('bi-star');
+                                s.classList.add('bi-star-fill');
+                            }
+                        });
+                        document.getElementById('ratingInput').value = 5;
+                        document.getElementById('ratingText').textContent = 'Tuyệt vời';
+                        
+                        // Scroll to the new review smoothly
+                        document.querySelector('.col-lg-8').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(err => {
+                    submitBtn.innerHTML = originalHtml;
+                    submitBtn.disabled = false;
+                    alert('Có lỗi xảy ra, vui lòng thử lại!');
+                });
+            });
+        }
     });
 </script>

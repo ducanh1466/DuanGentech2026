@@ -92,7 +92,7 @@
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <span class="text-muted" style="font-size:0.85rem;">Tổng <?= $totalReviews ?? 0 ?> bản ghi</span>
+            <span class="text-muted" style="font-size:0.85rem;">Tổng <?= max(0, min((($page ?? 1) * ($limit ?? 10)), ($totalReviews ?? 0)) - ((($page ?? 1) - 1) * ($limit ?? 10))) ?> bản ghi</span>
             
             <?php if (isset($totalPages) && $totalPages > 1): ?>
                 <nav aria-label="Page navigation">
@@ -208,3 +208,58 @@
         <!-- End Reply Modal -->
     <?php endforeach; ?>
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const replyForms = document.querySelectorAll('form[action="?action=admin-reply-review"]');
+    replyForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                submitBtn.innerHTML = originalHtml;
+                submitBtn.disabled = false;
+                
+                if (data.success) {
+                    const modalBody = this.querySelector('.modal-body');
+                    const newHtml = `
+                        <div class="d-flex mb-3 justify-content-end">
+                            <div class="p-3 bg-primary text-white border-0 rounded shadow-sm" style="max-width: 85%;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong><i class="bi bi-shop me-1"></i> Shop phản hồi</strong>
+                                    <small class="text-white-50 ms-3">${data.reply.created_at}</small>
+                                </div>
+                                <p class="mb-0">${data.reply.content}</p>
+                            </div>
+                        </div>
+                    `;
+                    modalBody.insertAdjacentHTML('beforeend', newHtml);
+                    this.querySelector('textarea').value = '';
+                    modalBody.scrollTop = modalBody.scrollHeight;
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(err => {
+                submitBtn.innerHTML = originalHtml;
+                submitBtn.disabled = false;
+                alert('Có lỗi xảy ra, vui lòng thử lại!');
+            });
+        });
+    });
+});
+</script>

@@ -14,7 +14,7 @@ class ProductModel extends BaseModel
     {
         // Get products with their primary image and minimum variant price
         $baseSql = "SELECT p.*, c.category_name, b.brand_name,
-                   (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                   (SELECT REPLACE(REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/'), '/assets/assets/', '/assets/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                    (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
                    (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id
             FROM {$this->table} p
@@ -88,7 +88,7 @@ class ProductModel extends BaseModel
     public function getLatestProducts($limit = 8)
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
-                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/'), '/assets/assets/', '/assets/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
                        (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id
                 FROM {$this->table} p
@@ -107,7 +107,7 @@ class ProductModel extends BaseModel
     public function getBestSellingProducts($limit = 8)
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
-                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/'), '/assets/assets/', '/assets/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
                        (SELECT variant_id FROM tb_product_variants WHERE product_id = p.product_id ORDER BY price ASC LIMIT 1) as default_variant_id,
                        (SELECT SUM(oi.quantity) 
@@ -130,7 +130,7 @@ class ProductModel extends BaseModel
     public function getProductById($id)
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
-                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/'), '/assets/assets/', '/assets/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price,
                        fsi.flash_price,
                        fs.end_time as flash_end_time,
@@ -166,7 +166,7 @@ class ProductModel extends BaseModel
     public function getAllInventory($keyword = '', $limit = 0, $offset = 0, $stockFilter = '', $category_id = null)
     {
         $sql = "SELECT pv.variant_id, p.product_id, p.product_name, pv.sku, pv.price, pv.stock_quantity as stock,
-                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/'), '/assets/assets/', '/assets/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT GROUP_CONCAT(av.attribute_value SEPARATOR ' - ') 
                         FROM tb_variant_attributes va 
                         JOIN tb_attribute_values av ON va.attribute_value_id = av.attribute_value_id 
@@ -274,7 +274,7 @@ class ProductModel extends BaseModel
     // Lấy danh sách các hình ảnh của một sản phẩm (Sắp xếp theo thứ tự hiển thị)
     public function getProductImages($product_id)
     {
-        $sql = "SELECT *, REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') as image_url FROM tb_product_images WHERE product_id = :product_id ORDER BY display_order ASC";
+        $sql = "SELECT *, REPLACE(REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/'), '/assets/assets/', '/assets/') as image_url FROM tb_product_images WHERE product_id = :product_id ORDER BY display_order ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['product_id' => $product_id]);
         return $stmt->fetchAll();
@@ -328,7 +328,7 @@ class ProductModel extends BaseModel
     public function getProductsByCategory($category_id, $limit = 4, $exclude_id = 0)
     {
         $sql = "SELECT p.*, c.category_name, b.brand_name,
-                       (SELECT REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT REPLACE(REPLACE(image_url, '/uploads/products/', '/assets/uploads/products/'), '/assets/assets/', '/assets/') FROM tb_product_images WHERE product_id = p.product_id AND is_primary = 1 LIMIT 1) as image,
                        (SELECT MIN(price) FROM tb_product_variants WHERE product_id = p.product_id) as price
                 FROM {$this->table} p
                 LEFT JOIN tb_categories c ON p.category_id = c.category_id

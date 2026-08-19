@@ -21,6 +21,10 @@
                             elseif (($status ?? '') === 'confirmed') echo 'Đã xác nhận';
                             elseif (($status ?? '') === 'shipping') echo 'Đang giao';
                             elseif (($status ?? '') === 'completed') echo 'Hoàn thành';
+                            elseif (($status ?? '') === 'return_requested') echo 'Yêu cầu trả hàng';
+                            elseif (($status ?? '') === 'return_processing') echo 'Đang xử lý trả hàng';
+                            elseif (($status ?? '') === 'returned') echo 'Đã hoàn trả';
+                            elseif (($status ?? '') === 'return_rejected') echo 'Từ chối trả hàng';
                             elseif (($status ?? '') === 'cancelled') echo 'Đã hủy';
                             else echo 'Tất cả trạng thái';
                         ?>
@@ -32,6 +36,10 @@
                         <li><a class="dropdown-item py-2 rounded mb-1 <?= ($status ?? '') === 'confirmed' ? 'active text-white' : '' ?>" style="<?= ($status ?? '') === 'confirmed' ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='confirmed'; this.closest('form').submit(); return false;">Đã xác nhận</a></li>
                         <li><a class="dropdown-item py-2 rounded mb-1 <?= ($status ?? '') === 'shipping' ? 'active text-white' : '' ?>" style="<?= ($status ?? '') === 'shipping' ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='shipping'; this.closest('form').submit(); return false;">Đang giao</a></li>
                         <li><a class="dropdown-item py-2 rounded mb-1 <?= ($status ?? '') === 'completed' ? 'active text-white' : '' ?>" style="<?= ($status ?? '') === 'completed' ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='completed'; this.closest('form').submit(); return false;">Hoàn thành</a></li>
+                        <li><a class="dropdown-item py-2 rounded mb-1 <?= ($status ?? '') === 'return_requested' ? 'active text-white' : '' ?>" style="<?= ($status ?? '') === 'return_requested' ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='return_requested'; this.closest('form').submit(); return false;">Yêu cầu trả hàng</a></li>
+                        <li><a class="dropdown-item py-2 rounded mb-1 <?= ($status ?? '') === 'return_processing' ? 'active text-white' : '' ?>" style="<?= ($status ?? '') === 'return_processing' ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='return_processing'; this.closest('form').submit(); return false;">Đang xử lý trả hàng</a></li>
+                        <li><a class="dropdown-item py-2 rounded mb-1 <?= ($status ?? '') === 'returned' ? 'active text-white' : '' ?>" style="<?= ($status ?? '') === 'returned' ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='returned'; this.closest('form').submit(); return false;">Đã hoàn trả</a></li>
+                        <li><a class="dropdown-item py-2 rounded mb-1 <?= ($status ?? '') === 'return_rejected' ? 'active text-white' : '' ?>" style="<?= ($status ?? '') === 'return_rejected' ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='return_rejected'; this.closest('form').submit(); return false;">Từ chối trả hàng</a></li>
                         <li><a class="dropdown-item py-2 rounded <?= ($status ?? '') === 'cancelled' ? 'active text-white' : '' ?>" style="<?= ($status ?? '') === 'cancelled' ? 'background-color: var(--accent);' : '' ?>" href="#" onclick="document.getElementById('statusFilter').value='cancelled'; this.closest('form').submit(); return false;">Đã hủy</a></li>
                     </ul>
                 </div>
@@ -106,7 +114,11 @@
                                     'confirmed' => 'Đã xác nhận',
                                     'shipping' => 'Đang giao',
                                     'completed' => 'Hoàn thành',
-                                    'cancelled' => 'Đã hủy'
+                                    'cancelled' => 'Đã hủy',
+                                    'return_requested' => 'Yêu cầu trả hàng',
+                                    'return_processing' => 'Đang xử lý hoàn trả',
+                                    'returned' => 'Đã hoàn trả',
+                                    'return_rejected' => 'Từ chối trả hàng'
                                 ];
                                 $stText = $statusMap[$order['status']] ?? 'Không rõ';
                                 ?>
@@ -214,21 +226,27 @@
 
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Trạng thái</label>
-                        <select class="form-select" name="status" id="modalOrderStatus"
+                        <label class="form-label fw-semibold">Trạng thái mới</label>
+                        <select class="form-select" name="status" id="modalOrderStatus" onchange="toggleCancelReason()"
                             style="border:2px solid var(--border-color);border-radius:var(--radius-md);padding:10px 14px;background:var(--bg-primary);color:var(--text-primary);">
                             <option value="pending">Chờ xử lý</option>
                             <option value="confirmed">Đã xác nhận</option>
+                            <option value="processing">Chờ lấy hàng</option>
                             <option value="shipping">Đang giao</option>
                             <option value="completed">Hoàn thành</option>
                             <option value="cancelled">Đã hủy</option>
                         </select>
                     </div>
+                    
+                    <div class="mb-3" id="cancelReasonDiv" style="display: none;">
+                        <label class="form-label fw-semibold text-danger">Lý do hủy đơn *</label>
+                        <textarea class="form-control" name="cancel_reason" id="cancelReason" rows="3" placeholder="Nhập lý do hủy đơn hàng..."></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary rounded-pill"
                         data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-accent">Lưu thay đổi</button>
+                    <button type="submit" class="btn btn-accent" id="btnSaveStatus">Lưu thay đổi</button>
                 </div>
             </form>
         </div>
@@ -236,8 +254,61 @@
 </div>
 
 <script>
-    function editOrderStatus(id, status) {
+    function editOrderStatus(id, currentStatus) {
         document.getElementById('modalOrderId').value = id;
-        document.getElementById('modalOrderStatus').value = status;
+        
+        let select = document.getElementById('modalOrderStatus');
+        let options = select.options;
+        
+        // Define allowed transitions
+        let allowed = [];
+        if (currentStatus === 'pending') allowed = ['pending', 'confirmed', 'cancelled'];
+        else if (currentStatus === 'confirmed') allowed = ['confirmed', 'processing', 'cancelled'];
+        else if (currentStatus === 'processing') allowed = ['processing', 'shipping', 'cancelled'];
+        else if (currentStatus === 'shipping') allowed = ['shipping', 'completed', 'cancelled'];
+        else allowed = [currentStatus]; // completed or cancelled -> locked
+        
+        // Hide/disable options not in allowed list
+        let firstAllowed = null;
+        for (let i = 0; i < options.length; i++) {
+            if (allowed.includes(options[i].value)) {
+                options[i].disabled = false;
+                options[i].style.display = 'block';
+                if (!firstAllowed) firstAllowed = options[i].value;
+            } else {
+                options[i].disabled = true;
+                options[i].style.display = 'none';
+            }
+        }
+        
+        // Set the value to current if allowed, else first allowed
+        if (allowed.includes(currentStatus)) {
+            select.value = currentStatus;
+        } else if (firstAllowed) {
+            select.value = firstAllowed;
+        }
+        
+        toggleCancelReason();
+        
+        // Disable save button if final state
+        if (currentStatus === 'completed' || currentStatus === 'cancelled') {
+            document.getElementById('btnSaveStatus').disabled = true;
+        } else {
+            document.getElementById('btnSaveStatus').disabled = false;
+        }
+    }
+    
+    function toggleCancelReason() {
+        let status = document.getElementById('modalOrderStatus').value;
+        let reasonDiv = document.getElementById('cancelReasonDiv');
+        let reasonInput = document.getElementById('cancelReason');
+        
+        if (status === 'cancelled') {
+            reasonDiv.style.display = 'block';
+            reasonInput.required = true;
+        } else {
+            reasonDiv.style.display = 'none';
+            reasonInput.required = false;
+        }
     }
 </script>

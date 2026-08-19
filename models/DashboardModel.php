@@ -23,7 +23,25 @@ class DashboardModel extends BaseModel
     public function getTotalRevenue($startDate = null, $endDate = null)
     {
         try {
-            $sql = "SELECT SUM(total_amount) FROM tb_orders WHERE status = 'completed'";
+            $sql = "SELECT SUM(total_amount) FROM tb_orders WHERE status = 'completed' AND payment_status = 'paid'";
+            $params = [];
+            if ($startDate && $endDate) {
+                $sql .= " AND order_date >= :start AND order_date <= :end";
+                $params['start'] = $startDate . ' 00:00:00';
+                $params['end'] = $endDate . ' 23:59:59';
+            }
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            return (float) $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            return 0;
+        }
+    }
+
+    public function getTotalRefunded($startDate = null, $endDate = null)
+    {
+        try {
+            $sql = "SELECT SUM(total_amount) FROM tb_orders WHERE status = 'returned'";
             $params = [];
             if ($startDate && $endDate) {
                 $sql .= " AND order_date >= :start AND order_date <= :end";
@@ -96,10 +114,10 @@ class DashboardModel extends BaseModel
             // Khởi tạo mảng doanh thu 12 tháng bằng 0
             $revenue = array_fill(0, 12, 0);
 
-            // Truy vấn lấy tổng doanh thu theo từng tháng trong năm (chỉ lấy đơn hàng đã hoàn thành)
+            // Truy vấn lấy tổng doanh thu theo từng tháng trong năm (chỉ lấy đơn hàng đã hoàn thành và đã thanh toán)
             $sql = "SELECT MONTH(order_date) as month, SUM(total_amount) as total 
                     FROM tb_orders 
-                    WHERE YEAR(order_date) = :year AND status = 'completed'
+                    WHERE YEAR(order_date) = :year AND status = 'completed' AND payment_status = 'paid'
                     GROUP BY MONTH(order_date)";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':year', $year, PDO::PARAM_INT);

@@ -192,17 +192,21 @@ class CheckoutController
                 $pdo->beginTransaction();
 
                 // 1. Tạo đơn hàng
+                $isWallet = in_array($paymentMethod, ['vnpay', 'momo', 'zalopay', 'applepay']);
+                $initialPaymentStatus = $isWallet ? 'paid' : 'unpaid';
+                $initialOrderStatus = $isWallet ? 'processing' : 'pending';
+
                 $orderId = $this->orderModel->insertOrder(
                     $userId, 
                     $discountId, 
                     $totalAmount, 
-                    'pending', 
+                    $initialOrderStatus, 
                     $recipientName, 
                     $recipientPhone, 
                     $shippingAddress, 
                     $note, 
                     $paymentMethod, 
-                    'unpaid',
+                    $initialPaymentStatus,
                     $shippingFee
                 );
 

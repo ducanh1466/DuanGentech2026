@@ -62,7 +62,12 @@
                             }
                         ?>
                     </div>
-                    <div class="stat-label">Doanh thu</div>
+                    <div class="stat-label">Doanh thu Net</div>
+                    <?php if ($totalRefunded > 0): ?>
+                    <div class="stat-label mt-1 text-danger" style="font-size: 0.8rem;">
+                        <i class="bi bi-arrow-return-left"></i> Đã hoàn: <?= number_format($totalRefunded, 0, ',', '.') ?>đ
+                    </div>
+                    <?php endif; ?>
                 </div>
                 <div class="stat-icon bg-green icon-pulse"><i class="bi bi-currency-dollar"></i></div>
             </div>

@@ -326,6 +326,132 @@ class HomeController
         require_once PATH_VIEW . 'layouts/client_layout.php';
     }
 
+    public function orderCancel()
+    {
+        if (!isset($_SESSION['user'])) {
+            header('Location: ?action=login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $orderId = $_POST['order_id'] ?? 0;
+            $cancelReason = $_POST['cancel_reason'] ?? '';
+
+            if (!$orderId || empty($cancelReason)) {
+                $_SESSION['error'] = 'Vui lòng cung cấp lý do hủy.';
+                header('Location: ?action=order-detail&id=' . $orderId);
+                exit;
+            }
+
+            require_once PATH_MODEL . 'OrderModel.php';
+            $orderModel = new OrderModel();
+            
+            $order = $orderModel->getOrderById($orderId);
+            
+            // Validate ownership and status
+            if ($order && $order['user_id'] == $_SESSION['user']['user_id']) {
+                $allowedCancelStatuses = ['pending', 'confirmed', 'processing'];
+                if (in_array($order['status'], $allowedCancelStatuses)) {
+                    $orderModel->updateOrderStatus($orderId, 'cancelled', $cancelReason);
+                    $orderModel->rollbackOrderInventoryAndDiscount($orderId);
+                    $_SESSION['success'] = 'Hủy đơn hàng thành công.';
+                } else {
+                    $_SESSION['error'] = 'Đơn hàng này không thể hủy do đang được giao hoặc đã hoàn thành.';
+                }
+            } else {
+                $_SESSION['error'] = 'Không tìm thấy đơn hàng.';
+            }
+
+            header('Location: ?action=order-detail&id=' . $orderId);
+            exit;
+        }
+        
+        header('Location: ?action=order-history');
+        exit;
+    }
+
+    public function orderReturn()
+    {
+        if (!isset($_SESSION['user'])) {
+            header('Location: ?action=login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $orderId = $_POST['order_id'] ?? 0;
+            $returnReason = $_POST['return_reason'] ?? '';
+
+            if (!$orderId || empty($returnReason)) {
+                $_SESSION['error'] = 'Vui lòng cung cấp lý do yêu cầu trả hàng.';
+                header('Location: ?action=order-detail&id=' . $orderId);
+                exit;
+            }
+            
+            // Handle file uploads
+            $uploadedImages = [];
+            if (isset($_FILES['return_images']) && !empty($_FILES['return_images']['name'][0])) {
+                $files = $_FILES['return_images'];
+                $totalFiles = count($files['name']);
+                
+                if ($totalFiles > 4) {
+                    $_SESSION['error'] = 'Chỉ được phép tải lên tối đa 4 ảnh.';
+                    header('Location: ?action=order-detail&id=' . $orderId);
+                    exit;
+                }
+                
+                $uploadDir = PATH_ROOT . 'assets/uploads/returns/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                
+                for ($i = 0; $i < $totalFiles; $i++) {
+                    if ($files['error'][$i] === UPLOAD_ERR_OK) {
+                        $tmpName = $files['tmp_name'][$i];
+                        $fileName = $files['name'][$i];
+                        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                        
+                        if (in_array($fileExt, $allowedExtensions)) {
+                            $newFileName = uniqid('return_') . '_' . time() . '.' . $fileExt;
+                            $destination = $uploadDir . $newFileName;
+                            
+                            if (move_uploaded_file($tmpName, $destination)) {
+                                $uploadedImages[] = 'assets/uploads/returns/' . $newFileName;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            $cancelImagesJson = !empty($uploadedImages) ? json_encode($uploadedImages) : null;
+
+            require_once PATH_MODEL . 'OrderModel.php';
+            $orderModel = new OrderModel();
+            
+            $order = $orderModel->getOrderById($orderId);
+            
+            // Validate ownership and status
+            if ($order && $order['user_id'] == $_SESSION['user']['user_id']) {
+                if ($order['status'] === 'completed') {
+                    // Cập nhật trạng thái thành return_requested và lưu lý do, ảnh vào db
+                    $orderModel->updateOrderStatus($orderId, 'return_requested', $returnReason, $cancelImagesJson);
+                    $_SESSION['success'] = 'Gửi yêu cầu trả hàng thành công. Vui lòng chờ quản trị viên phê duyệt.';
+                } else {
+                    $_SESSION['error'] = 'Chỉ có thể yêu cầu trả hàng đối với các đơn hàng đã hoàn thành.';
+                }
+            } else {
+                $_SESSION['error'] = 'Không tìm thấy đơn hàng.';
+            }
+
+            header('Location: ?action=order-detail&id=' . $orderId);
+            exit;
+        }
+        
+        header('Location: ?action=order-history');
+        exit;
+    }
+
     public function postReview()
     {
         $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';

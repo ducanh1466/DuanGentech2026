@@ -27,6 +27,8 @@ match ($action) {
     'profile' => (new HomeController)->profile(),
     'order-history' => (new HomeController)->orderHistory(),
     'order-detail' => (new HomeController)->orderDetail(),
+    'order-cancel' => (new HomeController)->orderCancel(),
+    'order-return' => (new HomeController)->orderReturn(),
 
     'login'         => (new AuthController)->login(),
     'post-login'    => (new AuthController)->postLogin(),

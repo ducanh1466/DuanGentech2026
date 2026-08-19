@@ -85,6 +85,14 @@ class OrderModel extends BaseModel
         if (empty($status) || $status === 'all') {
             return $this->getOrdersByUserId($user_id);
         }
+        
+        if ($status === 'returned_all') {
+            $sql = "SELECT * FROM {$this->table} WHERE user_id = :user_id AND status IN ('return_requested', 'returned') ORDER BY order_id DESC";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['user_id' => $user_id]);
+            return $stmt->fetchAll();
+        }
+
         $sql = "SELECT * FROM {$this->table} WHERE user_id = :user_id AND status = :status ORDER BY order_id DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -116,15 +124,53 @@ class OrderModel extends BaseModel
         return $this->pdo->lastInsertId();
     }
 
-    // Cập nhật trạng thái đơn hàng (VD: Từ Chờ xử lý -> Đang giao hàng)
-    public function updateOrderStatus($id, $status)
+    // Cập nhật trạng thái đơn hàng (kèm lý do hủy/trả hàng và ảnh minh chứng nếu có)
+    public function updateOrderStatus($id, $status, $cancel_reason = null, $cancel_images = null)
     {
-        $sql = "UPDATE {$this->table} SET status = :status WHERE order_id = :id";
+        $sql = "UPDATE {$this->table} SET status = :status";
+        $params = ['status' => $status, 'id' => $id];
+        
+        if ($cancel_reason !== null) {
+            $sql .= ", cancel_reason = :cancel_reason";
+            $params['cancel_reason'] = $cancel_reason;
+        }
+        
+        if ($cancel_images !== null) {
+            $sql .= ", cancel_images = :cancel_images";
+            $params['cancel_images'] = $cancel_images;
+        }
+        
+        $sql .= " WHERE order_id = :id";
+        
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([
-            'status' => $status,
-            'id' => $id
-        ]);
+        return $stmt->execute($params);
+    }
+
+    // Rollback tồn kho và mã giảm giá khi đơn hàng bị Hủy hoặc Hoàn trả
+    public function rollbackOrderInventoryAndDiscount($order_id)
+    {
+        require_once PATH_MODEL . 'OrderDetailModel.php';
+        require_once PATH_MODEL . 'ProductModel.php';
+        require_once PATH_MODEL . 'DiscountModel.php';
+
+        $orderDetailModel = new OrderDetailModel();
+        $orderDetailModel->pdo = $this->pdo;
+
+        $productModel = new ProductModel();
+        $productModel->pdo = $this->pdo;
+
+        $discountModel = new DiscountModel();
+        $discountModel->pdo = $this->pdo;
+
+        // Restore stock
+        $details = $orderDetailModel->getDetailsByOrderId($order_id);
+        foreach ($details as $item) {
+            $productModel->restoreVariantStock($item['variant_id'], $item['quantity']);
+            $productModel->restoreProductStock($item['product_id'], $item['quantity']);
+        }
+
+        // Revert discount usage
+        $discountModel->revertUsage($order_id);
     }
 
     // Đếm tổng số lượng tất cả các đơn hàng (Dùng cho thống kê Dashboard)

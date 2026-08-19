@@ -149,6 +149,30 @@ class DiscountModel extends BaseModel
         $stmtReduce->execute(['discount_id' => $discount_id]);
     }
 
+    // Trả lại mã giảm giá (khi hủy đơn/hoàn hàng)
+    public function revertUsage($order_id)
+    {
+        // Lấy discount_id từ bảng tb_discount_usage
+        $sql = "SELECT discount_id FROM tb_discount_usage WHERE order_id = :order_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['order_id' => $order_id]);
+        $usage = $stmt->fetch();
+        
+        if ($usage) {
+            $discount_id = $usage['discount_id'];
+            
+            // Xóa log usage
+            $sqlDelete = "DELETE FROM tb_discount_usage WHERE order_id = :order_id";
+            $stmtDelete = $this->pdo->prepare($sqlDelete);
+            $stmtDelete->execute(['order_id' => $order_id]);
+            
+            // Cộng lại quantity
+            $sqlRestore = "UPDATE {$this->table} SET quantity = quantity + 1 WHERE discount_id = :discount_id AND quantity IS NOT NULL";
+            $stmtRestore = $this->pdo->prepare($sqlRestore);
+            $stmtRestore->execute(['discount_id' => $discount_id]);
+        }
+    }
+
     // Validate một mã giảm giá và trả về mảng kết quả
     public function validateDiscount($code, $cartTotal, $user_id)
     {
@@ -182,11 +206,10 @@ class DiscountModel extends BaseModel
         }
 
         // Kiểm tra số lần sử dụng tối đa của User
-        if ($discount['max_usage_per_user'] !== null) {
-            $userUsageCount = $this->countUserUsage($discount['discount_id'], $user_id);
-            if ($userUsageCount >= $discount['max_usage_per_user']) {
-                return ['status' => false, 'message' => 'Bạn đã sử dụng hết lượt tối đa cho mã này!'];
-            }
+        $max_usage = ($discount['max_usage_per_user'] !== null && $discount['max_usage_per_user'] > 0) ? $discount['max_usage_per_user'] : 1;
+        $userUsageCount = $this->countUserUsage($discount['discount_id'], $user_id);
+        if ($userUsageCount >= $max_usage) {
+            return ['status' => false, 'message' => 'Bạn đã sử dụng hết lượt tối đa cho mã này!'];
         }
 
         // Tính số tiền được giảm

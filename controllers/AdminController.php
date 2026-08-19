@@ -163,24 +163,28 @@ class AdminController
         // Lấy số liệu thống kê tổng quan từ CSDL (có lọc thời gian)
         $totalOrders = $dashboardModel->getTotalOrders($startDate, $endDate);
         $revenue = $dashboardModel->getTotalRevenue($startDate, $endDate);
+        $totalRefunded = $dashboardModel->getTotalRefunded($startDate, $endDate);
         $totalProducts = $dashboardModel->getTotalProducts($startDate, $endDate);
         $totalUsers = $dashboardModel->getTotalUsers($startDate, $endDate);
 
         // Tính số liệu kỳ trước
         $prevOrders = 0;
         $prevRevenue = 0;
+        $prevRefunded = 0;
         $prevProducts = 0;
         $prevUsers = 0;
 
         if ($dateFilter != 'all') {
             $prevOrders = $dashboardModel->getTotalOrders($prevStartDate, $prevEndDate);
             $prevRevenue = $dashboardModel->getTotalRevenue($prevStartDate, $prevEndDate);
+            $prevRefunded = $dashboardModel->getTotalRefunded($prevStartDate, $prevEndDate);
             $prevProducts = $dashboardModel->getTotalProducts($prevStartDate, $prevEndDate);
             $prevUsers = $dashboardModel->getTotalUsers($prevStartDate, $prevEndDate);
         }
 
         $trendOrders = $calculateTrend($totalOrders, $prevOrders);
         $trendRevenue = $calculateTrend($revenue, $prevRevenue);
+        $trendRefunded = $calculateTrend($totalRefunded, $prevRefunded);
         $trendProducts = $calculateTrend($totalProducts, $prevProducts);
         $trendUsers = $calculateTrend($totalUsers, $prevUsers);
 
@@ -710,7 +714,7 @@ class AdminController
         require_once PATH_VIEW_ADMIN;
     }
 
-    // Chức năng: Xóa sản phẩm
+    // Chức năng: Xóa sản phẩm (Xóa mềm - Soft Delete)
     public function deleteProduct()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -719,47 +723,18 @@ class AdminController
                 $productModel = new ProductModel();
 
                 try {
-                    $pdo = $productModel->getPdo();
-                    $pdo->beginTransaction();
-
-                    // 1. Xóa ảnh
-                    $productModel->deletePrimaryImage($id);
-                    $productModel->deleteGalleryImages($id);
-
-                    // 2. Xóa Specs
-                    $productModel->deleteProductSpecs($id);
-
-                    // Xóa Đánh giá (Reviews) liên quan
-                    $pdo->exec("DELETE FROM tb_reviews WHERE product_id = " . (int)$id);
-
-                    // 3. Xóa thuộc tính biến thể (Variant attributes) và Giỏ hàng
-                    $variants = $productModel->getVariantsByProductId($id);
-                    foreach ($variants as $var) {
-                        $productModel->deleteVariantAttributesByVariant($var['variant_id']);
-                        $pdo->exec("DELETE FROM tb_cart_items WHERE variant_id = " . (int)$var['variant_id']);
-                        
-                        // CẢNH BÁO: Nếu bạn muốn xóa bất chấp sản phẩm đã có trong đơn hàng, hãy bỏ comment dòng dưới.
-                        // Tuy nhiên điều này sẽ làm mất lịch sử đơn hàng của khách.
-                        // $pdo->exec("DELETE FROM tb_order_items WHERE variant_id = " . (int)$var['variant_id']);
-                    }
-
-                    // 4. Xóa các biến thể (Variants)
-                    $productModel->deleteVariantsByProductId($id);
-
-                    // 5. Cuối cùng, xóa Sản phẩm
+                    // Chỉ gọi hàm deleteProduct (hiện tại đã được sửa thành UPDATE status = 'deleted')
                     $productModel->deleteProduct($id);
 
-                    $pdo->commit();
-                    $_SESSION['success'] = 'Xóa sản phẩm thành công!';
-                } catch (\PDOException $e) {
-                    $productModel->getPdo()->rollBack();
-                    if ($e->getCode() == '23000') {
-                        $_SESSION['error'] = 'Không thể xóa sản phẩm này vì nó đã phát sinh đơn hàng! Hãy chuyển trạng thái sản phẩm sang Ngừng kinh doanh thay vì xóa.';
-                    } else {
-                        $_SESSION['error'] = 'Lỗi hệ thống: Không thể xóa sản phẩm.';
+                    // Có thể tùy chọn xóa các sản phẩm này khỏi giỏ hàng của khách
+                    $pdo = $productModel->getPdo();
+                    $variants = $productModel->getVariantsByProductId($id);
+                    foreach ($variants as $var) {
+                        $pdo->exec("DELETE FROM tb_cart_items WHERE variant_id = " . (int)$var['variant_id']);
                     }
+
+                    $_SESSION['success'] = 'Xóa sản phẩm thành công (Sản phẩm đã được ẩn khỏi hệ thống)!';
                 } catch (\Exception $e) {
-                    $productModel->getPdo()->rollBack();
                     $_SESSION['error'] = 'Có lỗi xảy ra: ' . $e->getMessage();
                 }
             }
@@ -1029,15 +1004,31 @@ class AdminController
     }
     public function orders()
     {
-
         $orderModel = new OrderModel();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $order_id = $_POST['order_id'] ?? 0;
             $status = $_POST['status'] ?? 'pending';
+            $cancel_reason = $_POST['cancel_reason'] ?? null;
 
-            $orderModel->updateOrderStatus($order_id, $status);
-            $_SESSION['success'] = 'Cập nhật trạng thái đơn hàng thành công!';
+            $order = $orderModel->getOrderById($order_id);
+            if ($order) {
+                if ($this->validateOrderStatusTransition($order['status'], $status)) {
+                    $orderModel->updateOrderStatus($order_id, $status, $cancel_reason);
+                    
+                    if ($status === 'completed' && $order['payment_status'] !== 'paid') {
+                        $orderModel->updatePaymentStatus($order_id, 'paid');
+                    }
+                    
+                    if ($status === 'cancelled' || $status === 'returned') {
+                        $orderModel->rollbackOrderInventoryAndDiscount($order_id);
+                    }
+                    
+                    $_SESSION['success'] = 'Cập nhật trạng thái đơn hàng thành công!';
+                } else {
+                    $_SESSION['error'] = 'Chuyển đổi trạng thái không hợp lệ!';
+                }
+            }
             header('Location: ' . BASE_URL . '?action=admin-orders');
             exit;
         }
@@ -1056,6 +1047,26 @@ class AdminController
         require_once PATH_VIEW_ADMIN;
     }
 
+    private function validateOrderStatusTransition($currentStatus, $newStatus)
+    {
+        if ($currentStatus === $newStatus) return true;
+        
+        $transitions = [
+            'pending' => ['confirmed', 'cancelled'],
+            'confirmed' => ['processing', 'cancelled'],
+            'processing' => ['shipping', 'cancelled'],
+            'shipping' => ['completed', 'cancelled', 'returned'],
+            'completed' => ['return_requested'],
+            'return_requested' => ['return_processing', 'return_rejected', 'returned'],
+            'return_processing' => ['returned', 'return_rejected'],
+            'return_rejected' => [],
+            'cancelled' => [],
+            'returned' => []
+        ];
+
+        return in_array($newStatus, $transitions[$currentStatus] ?? []);
+    }
+
     // Chức năng: Hiển thị chi tiết một đơn hàng cụ thể
     public function orderDetail()
     {
@@ -1064,8 +1075,36 @@ class AdminController
         $id = $_GET['id'] ?? 0;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['action_type']) && $_POST['action_type'] === 'refund') {
+                $orderModel->updatePaymentStatus($id, 'refunded');
+                $_SESSION['success'] = 'Cập nhật trạng thái hoàn tiền thành công!';
+                header("Location: " . BASE_URL . "?action=admin-order-detail&id=" . $id);
+                exit;
+            }
+
             $status = $_POST['status'] ?? 'pending';
-            $orderModel->updateOrderStatus($id, $status);
+            $cancel_reason = $_POST['cancel_reason'] ?? null;
+            
+            $order = $orderModel->getOrderById($id);
+            if ($order && $this->validateOrderStatusTransition($order['status'], $status)) {
+                $orderModel->updateOrderStatus($id, $status, $cancel_reason);
+                
+                if ($status === 'completed' && $order['payment_status'] !== 'paid') {
+                    $orderModel->updatePaymentStatus($id, 'paid');
+                }
+                
+                if ($status === 'cancelled' || $status === 'returned') {
+                    $orderModel->rollbackOrderInventoryAndDiscount($id);
+                }
+
+                if ($status === 'returned') {
+                    $orderModel->updatePaymentStatus($id, 'refunded');
+                }
+                
+                $_SESSION['success'] = 'Cập nhật trạng thái đơn hàng thành công!';
+            } else {
+                $_SESSION['error'] = 'Chuyển đổi trạng thái không hợp lệ!';
+            }
             header("Location: " . BASE_URL . "?action=admin-order-detail&id=" . $id);
             exit;
         }

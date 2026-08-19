@@ -195,7 +195,23 @@
                             $statusLabel = 'Đã giao thành công';
                             $statusClass = 'bg-success-subtle text-success-emphasis';
                             $step = 4;
-                        } elseif ($order['status'] == 'canceled') {
+                        } elseif ($order['status'] == 'return_requested') {
+                            $statusLabel = 'Đang yêu cầu trả hàng';
+                            $statusClass = 'bg-warning-subtle text-warning-emphasis';
+                            $step = 5;
+                        } elseif ($order['status'] == 'return_processing') {
+                            $statusLabel = 'Đang xử lý trả hàng';
+                            $statusClass = 'bg-info-subtle text-info-emphasis';
+                            $step = 5;
+                        } elseif ($order['status'] == 'return_rejected') {
+                            $statusLabel = 'Từ chối trả hàng';
+                            $statusClass = 'bg-dark text-white';
+                            $step = 5;
+                        } elseif ($order['status'] == 'returned') {
+                            $statusLabel = 'Đã hoàn trả';
+                            $statusClass = 'bg-secondary text-white';
+                            $step = 5;
+                        } elseif ($order['status'] == 'cancelled' || $order['status'] == 'canceled') {
                             $statusLabel = 'Đã hủy';
                             $statusClass = 'bg-danger-subtle text-danger-emphasis';
                             $step = 0;
@@ -208,7 +224,7 @@
                 </div>
 
                 <!-- Timeline UI -->
-                <?php if ($order['status'] != 'canceled'): ?>
+                <?php if ($order['status'] != 'cancelled' && $order['status'] != 'canceled' && !in_array($order['status'], ['return_requested', 'return_processing', 'return_rejected', 'returned'])): ?>
                 <div class="px-md-2 mb-3 pb-3 border-bottom border-light">
                     <div class="premium-timeline">
                         <div class="premium-timeline-step <?= $step >= 1 ? 'active' : '' ?>">
@@ -229,12 +245,47 @@
                         </div>
                     </div>
                 </div>
-                <?php else: ?>
-                    <div class="alert alert-danger mb-5 border-0 bg-danger-subtle text-danger-emphasis rounded-4 p-4 d-flex align-items-center">
+                <?php elseif ($order['status'] == 'cancelled' || $order['status'] == 'canceled'): ?>
+                    <div class="alert alert-danger mb-4 border-0 bg-danger-subtle text-danger-emphasis rounded-4 p-4 d-flex align-items-center">
                         <i class="bi bi-x-octagon-fill fs-2 me-4"></i>
                         <div>
                             <h5 class="mb-1 fw-bold">Đơn hàng đã bị hủy</h5>
                             <p class="mb-0">Đơn hàng này không còn hiệu lực. Vui lòng đặt đơn hàng mới nếu bạn vẫn có nhu cầu mua sắm tại Gentech.</p>
+                            <?php if (!empty($order['cancel_reason'])): ?>
+                                <hr class="border-danger opacity-25 my-2">
+                                <p class="mb-0 fw-semibold"><i class="bi bi-info-circle me-1"></i>Lý do hủy: <?= nl2br(htmlspecialchars($order['cancel_reason'])) ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php else: 
+                    $returnMsg = 'Yêu cầu hoàn trả của bạn đang được xem xét.';
+                    if ($order['status'] == 'return_processing') $returnMsg = 'Yêu cầu của bạn đang được xử lý.';
+                    if ($order['status'] == 'returned') $returnMsg = 'Yêu cầu trả hàng của bạn đã được chấp nhận và đơn hàng đã hoàn trả.';
+                    if ($order['status'] == 'return_rejected') $returnMsg = 'Yêu cầu trả hàng của bạn đã bị từ chối.';
+                ?>
+                    <div class="alert alert-warning mb-4 border-0 bg-warning-subtle text-warning-emphasis rounded-4 p-4 d-flex align-items-center">
+                        <i class="bi bi-arrow-return-left fs-2 me-4"></i>
+                        <div>
+                            <h5 class="mb-1 fw-bold">Yêu cầu hoàn trả</h5>
+                            <p class="mb-0"><?= $returnMsg ?></p>
+                            <?php if (!empty($order['cancel_reason'])): ?>
+                                <hr class="border-warning opacity-25 my-2">
+                                <p class="mb-0 fw-semibold"><i class="bi bi-info-circle me-1"></i>Lý do / Phản hồi: <?= nl2br(htmlspecialchars($order['cancel_reason'])) ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($order['cancel_images'])): 
+                                $images = json_decode($order['cancel_images'], true);
+                                if (is_array($images) && count($images) > 0):
+                            ?>
+                                <div class="mt-2 d-flex gap-2 flex-wrap">
+                                    <?php foreach($images as $img): ?>
+                                        <a href="<?= BASE_URL . $img ?>" target="_blank">
+                                            <img src="<?= BASE_URL . $img ?>" alt="Minh chứng" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php 
+                                endif;
+                            endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -270,8 +321,10 @@
                             <div class="mt-2">
                                 <?php if($order['payment_status'] == 'paid'): ?>
                                     <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.75rem;"><i class="bi bi-check-circle-fill me-1"></i>Đã thanh toán</span>
+                                <?php elseif($order['payment_status'] == 'refunded'): ?>
+                                    <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.75rem;"><i class="bi bi-arrow-counterclockwise me-1"></i>Đã hoàn tiền</span>
                                 <?php else: ?>
-                                    <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.75rem;"><i class="bi bi-clock-fill me-1"></i>Chưa thanh toán</span>
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.75rem;"><i class="bi bi-clock-fill me-1"></i>Chưa thanh toán</span>
                                 <?php endif; ?>
                             </div>
                             <?php if (!empty($order['note'])): ?>
@@ -367,8 +420,20 @@
                     </div>
                 </div>
 
-                <div class="mt-3 text-center">
-                    <a href="?action=order-history" class="btn btn-outline-dark rounded-pill px-4 py-1 fw-bold transition-all" style="font-size: 0.85rem;"><i class="bi bi-arrow-left me-1"></i>Trở về</a>
+                <div class="mt-4 text-center d-flex justify-content-center gap-2">
+                    <a href="?action=order-history" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold transition-all" style="font-size: 0.85rem;"><i class="bi bi-arrow-left me-1"></i>Trở về</a>
+                    
+                    <?php if (in_array($order['status'], ['pending', 'confirmed', 'processing'])): ?>
+                        <button type="button" class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold transition-all" style="font-size: 0.85rem;" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                            <i class="bi bi-x-circle me-1"></i>Hủy đơn hàng
+                        </button>
+                    <?php endif; ?>
+
+                    <?php if ($order['status'] === 'completed'): ?>
+                        <button type="button" class="btn btn-outline-warning rounded-pill px-4 py-2 fw-bold transition-all" style="font-size: 0.85rem;" data-bs-toggle="modal" data-bs-target="#returnOrderModal">
+                            <i class="bi bi-arrow-return-left me-1"></i>Yêu cầu trả hàng
+                        </button>
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -376,3 +441,152 @@
         </div>
     </div>
 </section>
+
+<!-- Cancel Order Modal -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Hủy đơn hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="?action=order-cancel" method="POST" onsubmit="prepareCancelReason()">
+                <div class="modal-body">
+                    <p class="text-secondary small mb-3">Bạn chắc chắn muốn hủy đơn hàng <strong>#GENTECH-<?= $order['order_id'] ?></strong>? Hành động này không thể hoàn tác.</p>
+                    <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
+                    <input type="hidden" name="cancel_reason" id="finalCancelReason" value="">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size: 0.9rem;">Lý do hủy đơn *</label>
+                        <select class="form-select" id="cancelReasonSelect" required onchange="toggleOtherReason()">
+                            <option value="">-- Chọn lý do --</option>
+                            <option value="Đổi ý, không muốn mua nữa">Đổi ý, không muốn mua nữa</option>
+                            <option value="Muốn thay đổi địa chỉ/SĐT giao hàng">Muốn thay đổi địa chỉ/SĐT giao hàng</option>
+                            <option value="Muốn thay đổi sản phẩm/số lượng">Muốn thay đổi sản phẩm/số lượng</option>
+                            <option value="Thời gian giao hàng dự kiến quá lâu">Thời gian giao hàng dự kiến quá lâu</option>
+                            <option value="Khác">Lý do khác...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="otherReasonDiv" style="display: none;">
+                        <textarea class="form-control" id="otherReasonText" rows="3" placeholder="Nhập lý do chi tiết của bạn..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Không hủy</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">Xác nhận hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Return Order Modal -->
+<div class="modal fade" id="returnOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-warning"><i class="bi bi-arrow-return-left me-2"></i>Yêu cầu trả hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="?action=order-return" method="POST" enctype="multipart/form-data" onsubmit="return prepareReturnReason()">
+                <div class="modal-body">
+                    <p class="text-secondary small mb-3">Vui lòng cung cấp lý do bạn muốn hoàn trả đơn hàng <strong>#GENTECH-<?= $order['order_id'] ?></strong>. Yêu cầu của bạn sẽ được quản trị viên xem xét.</p>
+                    <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
+                    <input type="hidden" name="return_reason" id="finalReturnReason" value="">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size: 0.9rem;">Lý do trả hàng *</label>
+                        <select class="form-select" id="returnReasonSelect" required onchange="toggleReturnOtherReason()">
+                            <option value="">-- Chọn lý do --</option>
+                            <option value="Sản phẩm bị lỗi/hư hỏng">Sản phẩm bị lỗi/hư hỏng</option>
+                            <option value="Giao sai sản phẩm">Giao sai sản phẩm</option>
+                            <option value="Sản phẩm không giống mô tả">Sản phẩm không giống mô tả</option>
+                            <option value="Hàng giả/hàng nhái">Hàng giả/hàng nhái</option>
+                            <option value="Khác">Lý do khác...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3" id="returnOtherReasonDiv" style="display: none;">
+                        <textarea class="form-control" id="returnOtherReasonText" rows="3" placeholder="Nhập lý do chi tiết của bạn..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size: 0.9rem;">Ảnh minh chứng (Tối đa 4 ảnh) *</label>
+                        <input class="form-control" type="file" id="returnImages" name="return_images[]" multiple accept="image/*" required>
+                        <div class="form-text">Vui lòng cung cấp hình ảnh rõ nét về tình trạng sản phẩm.</div>
+                        <div id="imageError" class="text-danger small mt-1" style="display: none;">Vui lòng chọn tối đa 4 ảnh.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-warning rounded-pill px-4 text-white">Gửi yêu cầu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleOtherReason() {
+        const select = document.getElementById('cancelReasonSelect');
+        const otherDiv = document.getElementById('otherReasonDiv');
+        const otherText = document.getElementById('otherReasonText');
+        
+        if (select.value === 'Khác') {
+            otherDiv.style.display = 'block';
+            otherText.required = true;
+        } else {
+            otherDiv.style.display = 'none';
+            otherText.required = false;
+        }
+    }
+    
+    function prepareCancelReason() {
+        const select = document.getElementById('cancelReasonSelect');
+        const otherText = document.getElementById('otherReasonText');
+        const finalInput = document.getElementById('finalCancelReason');
+        
+        if (select.value === 'Khác') {
+            finalInput.value = otherText.value;
+        } else {
+            finalInput.value = select.value;
+        }
+    }
+    
+    function toggleReturnOtherReason() {
+        const select = document.getElementById('returnReasonSelect');
+        const otherDiv = document.getElementById('returnOtherReasonDiv');
+        const otherText = document.getElementById('returnOtherReasonText');
+        
+        if (select.value === 'Khác') {
+            otherDiv.style.display = 'block';
+            otherText.required = true;
+        } else {
+            otherDiv.style.display = 'none';
+            otherText.required = false;
+        }
+    }
+    
+    function prepareReturnReason() {
+        const select = document.getElementById('returnReasonSelect');
+        const otherText = document.getElementById('returnOtherReasonText');
+        const finalInput = document.getElementById('finalReturnReason');
+        const fileInput = document.getElementById('returnImages');
+        const imageError = document.getElementById('imageError');
+        
+        if (fileInput.files.length > 4) {
+            imageError.style.display = 'block';
+            return false;
+        } else {
+            imageError.style.display = 'none';
+        }
+        
+        if (select.value === 'Khác') {
+            finalInput.value = otherText.value;
+        } else {
+            finalInput.value = select.value;
+        }
+        return true;
+    }
+</script>

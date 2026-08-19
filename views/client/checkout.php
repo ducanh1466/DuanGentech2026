@@ -204,6 +204,7 @@
                         <div class="input-group mb-3">
                             <input type="text" id="discountCodeInput" class="form-control border shadow-none" placeholder="Nhập mã giảm giá" value="<?= htmlspecialchars($appliedDiscount['code'] ?? '') ?>">
                             <button class="btn btn-dark" type="button" id="btnApplyDiscount">Áp dụng</button>
+                            <button class="btn btn-outline-danger <?= isset($appliedDiscount) ? '' : 'd-none' ?>" type="button" id="btnRemoveDiscount">Gỡ mã</button>
                         </div>
                         <div id="discountMessage" class="small mb-3"></div>
 
@@ -237,7 +238,7 @@
                     <div class="d-flex justify-content-between align-items-end mt-4 mb-5">
                         <span class="fw-bold fs-5 text-dark">Tổng Cộng</span>
                         <div class="text-end">
-                            <span class="fw-bold text-primary d-block" style="font-size: 2.2rem; line-height: 1;"><?= number_format($totalAmount, 0, ',', '.') ?>đ</span>
+                            <span class="fw-bold text-primary d-block" style="font-size: 2.2rem; line-height: 1;" data-base-total="<?= $subTotal + (isset($shippingFee) ? $shippingFee : 0) ?>"><?= number_format($totalAmount, 0, ',', '.') ?>đ</span>
                             <span class="text-muted small">Đã bao gồm VAT</span>
                         </div>
                     </div>
@@ -359,6 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountAppliedRow = document.getElementById('discountAppliedRow');
     const discountValueDisplay = document.getElementById('discountValueDisplay');
     const finalTotalDisplay = document.querySelector('.text-primary.d-block');
+    const btnRemoveDiscount = document.getElementById('btnRemoveDiscount');
 
     function applyDiscount(code) {
         discountMessage.innerHTML = '<span class="text-info">Đang kiểm tra...</span>';
@@ -378,6 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 discountValueDisplay.textContent = new Intl.NumberFormat('vi-VN').format(data.discount_amount);
                 finalTotalDisplay.textContent = new Intl.NumberFormat('vi-VN').format(data.new_total) + 'đ';
                 discountCodeInput.value = code;
+                if (btnRemoveDiscount) btnRemoveDiscount.classList.remove('d-none');
             } else {
                 discountMessage.innerHTML = '<span class="text-danger">' + data.message + '</span>';
                 discountAppliedRow.classList.add('d-none');
@@ -400,6 +403,28 @@ document.addEventListener('DOMContentLoaded', function() {
             discountMessage.innerHTML = '<span class="text-danger">Vui lòng nhập mã!</span>';
         }
     });
+
+    if (btnRemoveDiscount) {
+        btnRemoveDiscount.addEventListener('click', function() {
+            discountMessage.innerHTML = '<span class="text-info">Đang gỡ mã...</span>';
+            fetch('?action=remove-discount')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error === 0) {
+                    discountMessage.innerHTML = '<span class="text-success">' + data.message + '</span>';
+                    discountAppliedRow.classList.add('d-none');
+                    discountCodeInput.value = '';
+                    btnRemoveDiscount.classList.add('d-none');
+                    const baseTotal = finalTotalDisplay.getAttribute('data-base-total') || 0;
+                    finalTotalDisplay.textContent = new Intl.NumberFormat('vi-VN').format(baseTotal) + 'đ';
+                }
+            })
+            .catch(error => {
+                console.error('Error removing discount:', error);
+                discountMessage.innerHTML = '<span class="text-danger">Có lỗi xảy ra khi gỡ mã!</span>';
+            });
+        });
+    }
 
     // Xử lý các nút "Dùng" ở danh sách gợi ý
     const useDiscountBtns = document.querySelectorAll('.btn-use-discount');

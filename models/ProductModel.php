@@ -34,6 +34,9 @@ class ProductModel extends BaseModel
                 $params['status'] = $status;
             }
             $whereAdded = true;
+        } else {
+            $baseSql .= " WHERE p.status != 'deleted'";
+            $whereAdded = true;
         }
 
         if ($category_id) {
@@ -68,6 +71,9 @@ class ProductModel extends BaseModel
                 $params['status'] = $status;
             }
             $whereAdded = true;
+        } else {
+            $sql .= " WHERE p.status != 'deleted'";
+            $whereAdded = true;
         }
 
         if ($category_id) {
@@ -94,7 +100,7 @@ class ProductModel extends BaseModel
                 FROM {$this->table} p
                 LEFT JOIN tb_categories c ON p.category_id = c.category_id
                 LEFT JOIN tb_brands b ON p.brand_id = b.brand_id
-                WHERE p.status = 'active' OR p.status = 1
+                WHERE (p.status = 'active' OR p.status = 1) AND p.status != 'deleted'
                 ORDER BY p.product_id DESC 
                 LIMIT :limit";
         $stmt = $this->pdo->prepare($sql);
@@ -389,10 +395,10 @@ class ProductModel extends BaseModel
         ]);
     }
 
-    // Xóa một sản phẩm khỏi CSDL
+    // Xóa một sản phẩm khỏi CSDL (Xóa mềm - Soft Delete)
     public function deleteProduct($id)
     {
-        $sql = "DELETE FROM {$this->table} WHERE product_id = :id";
+        $sql = "UPDATE {$this->table} SET status = 'deleted' WHERE product_id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute(['id' => $id]);
     }
@@ -774,6 +780,24 @@ class ProductModel extends BaseModel
         return true;
     }
 
+    // Phục hồi số lượng tồn kho của một biến thể (dùng khi hủy đơn/hoàn hàng)
+    public function restoreVariantStock($variant_id, $quantity)
+    {
+        try {
+            $sql = "UPDATE tb_product_variants SET stock = stock + :quantity WHERE variant_id = :variant_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['quantity' => $quantity, 'variant_id' => $variant_id]);
+        } catch(PDOException $e) {}
+
+        try {
+            $sql2 = "UPDATE tb_product_variants SET stock_quantity = stock_quantity + :quantity WHERE variant_id = :variant_id";
+            $stmt2 = $this->pdo->prepare($sql2);
+            $stmt2->execute(['quantity' => $quantity, 'variant_id' => $variant_id]);
+        } catch(PDOException $e) {}
+        
+        return true;
+    }
+
     // Lấy số lượng tồn kho của sản phẩm gốc
     public function getProductStock($product_id)
     {
@@ -821,6 +845,24 @@ class ProductModel extends BaseModel
         } catch (PDOException $e) {
             // Ignore if column doesn't exist
         }
+        return true;
+    }
+
+    // Phục hồi số lượng tồn kho của sản phẩm gốc (dùng khi hủy đơn/hoàn hàng)
+    public function restoreProductStock($product_id, $quantity)
+    {
+        try {
+            $sql = "UPDATE tb_products SET stock = stock + :quantity WHERE product_id = :product_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['quantity' => $quantity, 'product_id' => $product_id]);
+        } catch(PDOException $e) {}
+
+        try {
+            $sql2 = "UPDATE tb_products SET stock_quantity = stock_quantity + :quantity WHERE product_id = :product_id";
+            $stmt2 = $this->pdo->prepare($sql2);
+            $stmt2->execute(['quantity' => $quantity, 'product_id' => $product_id]);
+        } catch(PDOException $e) {}
+        
         return true;
     }
 }

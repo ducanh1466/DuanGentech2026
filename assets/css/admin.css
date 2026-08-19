@@ -509,6 +509,30 @@
 }
 .status-badge.inactive::before { background: var(--text-secondary); }
 
+.status-badge.return_requested {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+}
+.status-badge.return_requested::before { background: #d97706; }
+
+.status-badge.return_processing {
+    background: rgba(6, 182, 212, 0.1);
+    color: #0891b2;
+}
+.status-badge.return_processing::before { background: #0891b2; }
+
+.status-badge.returned {
+    background: rgba(107, 114, 128, 0.12);
+    color: var(--text-secondary);
+}
+.status-badge.returned::before { background: var(--text-secondary); }
+
+.status-badge.return_rejected {
+    background: rgba(17, 24, 39, 0.1);
+    color: #111827;
+}
+.status-badge.return_rejected::before { background: #111827; }
+
 /* ==========================================
    ADMIN FORM CARD
    ========================================== */

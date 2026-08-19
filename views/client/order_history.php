@@ -198,7 +198,10 @@
                     <a class="nav-link <?= $currentStatus == 'completed' ? 'active' : '' ?>" href="?action=order-history&status=completed">Đã giao</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= $currentStatus == 'canceled' ? 'active' : '' ?>" href="?action=order-history&status=canceled">Đã hủy</a>
+                    <a class="nav-link <?= $currentStatus == 'returned_all' ? 'active' : '' ?>" href="?action=order-history&status=returned_all">Trả hàng/Hoàn tiền</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?= $currentStatus == 'cancelled' ? 'active' : '' ?>" href="?action=order-history&status=cancelled">Đã hủy</a>
                 </li>
             </ul>
         </div>
@@ -238,7 +241,23 @@
                                 $statusLabel = 'Đã giao thành công';
                                 $statusClass = 'bg-success-subtle text-success-emphasis';
                                 $step = 4;
-                            } elseif ($order['status'] == 'canceled') {
+                            } elseif ($order['status'] == 'return_requested') {
+                                $statusLabel = 'Đang yêu cầu trả hàng';
+                                $statusClass = 'bg-warning-subtle text-warning-emphasis';
+                                $step = 4;
+                            } elseif ($order['status'] == 'return_processing') {
+                                $statusLabel = 'Đang xử lý trả hàng';
+                                $statusClass = 'bg-info-subtle text-info-emphasis';
+                                $step = 4;
+                            } elseif ($order['status'] == 'returned') {
+                                $statusLabel = 'Đã hoàn trả';
+                                $statusClass = 'bg-secondary text-white';
+                                $step = 4;
+                            } elseif ($order['status'] == 'return_rejected') {
+                                $statusLabel = 'Từ chối trả hàng';
+                                $statusClass = 'bg-dark text-white';
+                                $step = 4;
+                            } elseif ($order['status'] == 'cancelled' || $order['status'] == 'canceled') {
                                 $statusLabel = 'Đã hủy';
                                 $statusClass = 'bg-danger-subtle text-danger-emphasis';
                                 $step = 0;
@@ -248,8 +267,10 @@
                                 <span class="badge <?= $statusClass ?> rounded-pill px-3 py-2 fw-semibold border border-light"><?= $statusLabel ?></span>
                                 <?php if($order['payment_status'] == 'paid'): ?>
                                     <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-3 py-2 fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>Đã thanh toán</span>
+                                <?php elseif($order['payment_status'] == 'refunded'): ?>
+                                    <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-3 py-2 fw-semibold"><i class="bi bi-arrow-counterclockwise me-1"></i>Đã hoàn tiền</span>
                                 <?php else: ?>
-                                    <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill px-3 py-2 fw-semibold"><i class="bi bi-wallet2 me-1"></i>Chưa thanh toán</span>
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill px-3 py-2 fw-semibold"><i class="bi bi-clock me-1"></i>Chưa thanh toán</span>
                                 <?php endif; ?>
                             </div>
                             
@@ -263,7 +284,7 @@
                     </div>
 
                     <!-- Timeline UI -->
-                    <?php if ($order['status'] != 'canceled'): ?>
+                    <?php if ($order['status'] != 'cancelled' && $order['status'] != 'canceled'): ?>
                     <div class="premium-timeline px-md-4">
                         <div class="premium-timeline-step <?= $step >= 1 ? 'active' : '' ?>">
                             <div class="premium-timeline-icon"><i class="bi bi-card-checklist"></i></div>
